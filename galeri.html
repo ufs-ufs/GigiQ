@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -371,6 +372,26 @@
             background: rgba(0,0,0,0.7);
         }
 
+        /* Close Button in Modal */
+        .close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #fff;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: 50%;
+            z-index: 1050;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .close-modal-btn:hover {
+            background: rgba(0,0,0,0.7);
+        }
+
         /* Logout Link */
         .logout-link {
             color: var(--header-text);
@@ -459,6 +480,10 @@
           <!-- Modal Body -->
           <div class="modal-body p-0">
             <div class="modal-img-container">
+                <!-- Close Button -->
+                <button type="button" class="close-modal-btn" aria-label="Close" id="closeModalBtn">
+                    &times;
+                </button>
                 <!-- Zoom Controls for Desktop -->
                 <div class="zoom-controls d-none d-md-flex">
                     <button id="zoomInBtn" aria-label="Zoom In"><i class="fas fa-search-plus"></i></button>
@@ -938,6 +963,14 @@
                 const bsModal = bootstrap.Modal.getInstance(imageModalElement);
                 bsModal.hide();
             }
+        });
+
+        // Menambahkan Event Listener untuk Tombol Close
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        closeModalBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Mencegah pemicu klik pada container
+            const bsModal = bootstrap.Modal.getInstance(imageModalElement);
+            bsModal.hide();
         });
 
         // Reset transform when modal is closed
