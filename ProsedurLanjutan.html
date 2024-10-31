@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prosedur & Perawatan Gigi - GigiQ</title>
+    <!-- Bootstrap CSS (Minified) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Minified) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Optimized) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --back-button-bg: #007bff; /* Warna dasar tombol "Kembali" di mode terang */
+            --back-button-text: #fff; /* Warna teks tombol "Kembali" di mode terang */
+            --back-button-hover-bg: #0056b3; /* Warna hover tombol "Kembali" di mode terang */
+            --section-bg: #fff;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --back-button-bg: #ffc107; /* Warna dasar tombol "Kembali" di mode gelap */
+            --back-button-text: #212529; /* Warna teks tombol "Kembali" di mode gelap */
+            --back-button-hover-bg: #e6ac00; /* Warna hover tombol "Kembali" di mode gelap */
+            --section-bg: #1f1f1f;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107; /* Warna aksen di mode terang */
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b; /* Warna aksen di mode gelap */
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px 60px 20px; /* Adjust padding-top and padding-bottom to prevent overlap with fixed header and footer */
+            min-height: calc(100vh - 140px); /* Adjust based on header and footer height */
+            transition: opacity 0.5s ease;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Menu Button */
+        .menu-button {
+            background-color: var(--button-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            text-decoration: none; /* Remove underline for <a> tags */
+            color: var(--button-text); /* Inherit text color */
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .menu-button i {
+            font-size: 2rem;
+            color: inherit;
+            margin-bottom: 10px;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .menu-button:hover i {
+            transform: rotate(10deg);
+        }
+
+        .menu-button span {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .menu-button:hover span {
+            color: var(--button-hover-text);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: var(--back-button-bg);
+            color: var(--back-button-text);
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: var(--back-button-hover-bg);
+            color: var(--back-button-hover-text);
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .back-button span {
+            font-size: 1rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        /* Footer (Optional) */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .menu-button {
+                padding: 20px 10px;
+            }
+
+            .menu-button i {
+                font-size: 1.5rem;
+            }
+
+            .menu-button span {
+                font-size: 0.9rem;
+            }
+
+            .back-button i {
+                font-size: 1rem;
+            }
+
+            .back-button span {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>GigiQ By: UFS</h2>
+        <!-- Toggle Switch for Dark Mode -->
+        <div class="dark-mode-toggle form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">
+                <i class="fas fa-sun" id="sunIcon"></i>
+                <i class="fas fa-moon" id="moonIcon"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Prosedur dan Perawatan Gigi Section -->
+        <div id="prosedur-perawatan-section" class="content-section active-section">
+            <button class="back-button" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Prosedur & Perawatan Gigi</h2>
+            <div class="menu-grid">
+                <!-- Scaling -->
+                <div class="menu-button" onclick="showSection('scaling-section')">
+                    <i class="fas fa-bolt"></i>
+                    <span>Scaling</span>
+                </div>
+                <!-- Pemutihan Gigi -->
+                <div class="menu-button" onclick="showSection('pemutihan-gigi-section')">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Pemutihan Gigi</span>
+                </div>
+                <!-- Tambal Gigi -->
+                <div class="menu-button" onclick="showSection('tambal-gigi-section')">
+                    <i class="fas fa-paste"></i>
+                    <span>Tambal Gigi</span>
+                </div>
+                <!-- Perawatan Saluran Akar -->
+                <div class="menu-button" onclick="showSection('perawatan-saluran-akar-section')">
+                    <i class="fas fa-cannabis"></i>
+                    <span>Saluran Akar</span>
+                </div>
+                <!-- Pencabutan Gigi -->
+                <div class="menu-button" onclick="showSection('pencabutan-gigi-section')">
+                    <i class="fas fa-tooth"></i>
+                    <span>Pencabutan Gigi</span>
+                </div>
+                <!-- Implan Gigi -->
+                <div class="menu-button" onclick="showSection('implan-gigi-section')">
+                    <i class="fas fa-diagnoses"></i> <!-- Sesuaikan ikon jika diperlukan -->
+                    <span>Implan Gigi</span>
+                </div>
+                <!-- Kawat Gigi -->
+                <div class="menu-button" onclick="showSection('orthodontic-treatment-section')">
+                    <i class="fas fa-braces"></i> <!-- Pastikan ikon ini tersedia -->
+                    <span>Kawat Gigi</span>
+                </div>
+                <!-- Veneer Gigi -->
+                <div class="menu-button" onclick="showSection('veneer-gigi-section')">
+                    <i class="fas fa-smile"></i>
+                    <span>Veneer Gigi</span>
+                </div>
+                <!-- Perawatan Gusi -->
+                <div class="menu-button" onclick="showSection('perawatan-gusi-section')">
+                    <i class="fas fa-teeth"></i>
+                    <span>Perawatan Gusi</span>
+                </div>
+                <!-- Pemeriksaan Rutin -->
+                <div class="menu-button" onclick="showSection('pemeriksaan-gigi-section')">
+                    <i class="fas fa-stethoscope"></i>
+                    <span>Pemeriksaan Rutin</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scaling Section -->
+        <div id="scaling-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Scaling</h2>
+            <h4>Apa Itu Scaling?</h4>
+            <p>Scaling adalah prosedur pembersihan profesional yang dilakukan oleh dokter gigi untuk menghilangkan plak dan karang gigi yang tidak dapat dihilangkan dengan menyikat gigi biasa.</p>
+            
+            <h4>Proses Scaling</h4>
+            <ol>
+                <li>Dokter gigi akan memeriksa kondisi gigi dan gusi Anda.</li>
+                <li>Penggunaan alat khusus untuk menghilangkan plak dan karang gigi dari permukaan gigi.</li>
+                <li>Polishing gigi untuk menghaluskan permukaan gigi dan mencegah penumpukan plak baru.</li>
+            </ol>
+            
+            <h4>Manfaat Scaling</h4>
+            <ul>
+                <li>Mencegah penyakit gusi seperti gingivitis dan periodontitis.</li>
+                <li>Meningkatkan kesehatan mulut secara keseluruhan.</li>
+                <li>Membantu menjaga estetika senyum Anda.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="scaling.gif" alt="Scaling" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pemutihan Gigi Section -->
+        <div id="pemutihan-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pemutihan Gigi</h2>
+            <h4>Apa Itu Pemutihan Gigi?</h4>
+            <p>Pemutihan gigi adalah prosedur estetika yang bertujuan untuk mencerahkan warna gigi dan menghilangkan noda atau warna yang tidak diinginkan.</p>
+            
+            <h4>Proses Pemutihan Gigi</h4>
+            <ol>
+                <li>Dokter gigi akan membersihkan gigi secara menyeluruh.</li>
+                <li>Penggunaan agen pemutih seperti hydrogen peroxide atau carbamide peroxide untuk mencerahkan warna gigi.</li>
+                <li>Pemantauan proses pemutihan dan penyesuaian jika diperlukan.</li>
+            </ol>
+            
+            <h4>Manfaat Pemutihan Gigi</h4>
+            <ul>
+                <li>Meningkatkan kepercayaan diri dengan senyum yang lebih cerah.</li>
+                <li>Menghilangkan noda akibat makanan, minuman, atau kebiasaan merokok.</li>
+                <li>Meningkatkan estetika penampilan gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="bleaching.jpeg" alt="Pemutihan Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Tambal Gigi Section -->
+        <div id="tambal-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Tambal Gigi</h2>
+            <h4>Apa Itu Tambal Gigi?</h4>
+            <p>Tambal gigi adalah prosedur restorasi yang dilakukan untuk memperbaiki gigi yang berlubang atau rusak akibat kerusakan email gigi.</p>
+            
+            <h4>Proses Tambal Gigi</h4>
+            <ol>
+                <li>Dokter gigi akan membersihkan area gigi yang berlubang.</li>
+                <li>Menghilangkan bagian gigi yang rusak dengan bor atau alat lainnya.</li>
+                <li>Pemilihan bahan tambal yang sesuai, seperti amalgam, komposit, atau keramik.</li>
+                <li>Penempatan dan pembentukan bahan tambal untuk mengembalikan bentuk dan fungsi gigi.</li>
+                <li>Pemolesan tambalan untuk memastikan kenyamanan dan estetika.</li>
+            </ol>
+            
+            <h4>Manfaat Tambal Gigi</h4>
+            <ul>
+                <li>Mencegah perkembangan kerusakan gigi lebih lanjut.</li>
+                <li>Mengembalikan fungsi mengunyah dan berbicara.</li>
+                <li>Meningkatkan estetika gigi yang rusak.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="tambalgigi.jpeg" alt="Tambal Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Perawatan Saluran Akar Section -->
+        <div id="perawatan-saluran-akar-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Perawatan Saluran Akar</h2>
+            <h4>Apa Itu Perawatan Saluran Akar?</h4>
+            <p>Perawatan saluran akar (root canal treatment) adalah prosedur yang dilakukan untuk mengobati infeksi atau peradangan pada jaringan akar gigi.</p>
+            
+            <h4>Proses Perawatan Saluran Akar</h4>
+            <ol>
+                <li>Dokter gigi akan memeriksa dan memindai gigi untuk menentukan tingkat kerusakan.</li>
+                <li>Anestesi lokal diberikan untuk menghilangkan rasa sakit.</li>
+                <li>Membuka gigi dan menghilangkan jaringan pulpa yang terinfeksi atau rusak.</li>
+                <li>Pembersihan dan pembentukan saluran akar untuk menghilangkan bakteri dan sisa jaringan.</li>
+                <li>Pengisian saluran akar dengan bahan pengisi seperti gutta-percha.</li>
+                <li>Pemasangan tambalan atau mahkota gigi untuk melindungi gigi dari kerusakan lebih lanjut.</li>
+            </ol>
+            
+            <h4>Manfaat Perawatan Saluran Akar</h4>
+            <ul>
+                <li>Menyelamatkan gigi yang seharusnya dicabut.</li>
+                <li>Mencegah penyebaran infeksi ke jaringan sekitar.</li>
+                <li>Mengembalikan fungsi dan estetika gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="saluranakar.gif" alt="Perawatan Saluran Akar" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pencabutan Gigi Section -->
+        <div id="pencabutan-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pencabutan Gigi</h2>
+            <h4>Apa Itu Pencabutan Gigi?</h4>
+            <p>Pencabutan gigi adalah prosedur penghilangan gigi yang tidak dapat diselamatkan atau mengganggu kesehatan mulut.</p>
+            
+            <h4>Proses Pencabutan Gigi</h4>
+            <ol>
+                <li>Evaluasi kondisi gigi dan rencana perawatan oleh dokter gigi.</li>
+                <li>Anestesi lokal diberikan untuk menghilangkan rasa sakit.</li>
+                <li>Melepas gigi dengan hati-hati menggunakan alat khusus.</li>
+                <li>Penanganan luka dan instruksi perawatan pasca-operasi.</li>
+            </ol>
+            
+            <h4>Manfaat Pencabutan Gigi</h4>
+            <ul>
+                <li>Mencegah infeksi dan penyebaran penyakit gusi.</li>
+                <li>Membantu menjaga kesehatan mulut secara keseluruhan.</li>
+                <li>Membuka ruang untuk pemasangan implan atau prostetik gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="pencabutangigi.jpeg" alt="Pencabutan Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Implan Gigi Section -->
+        <div id="implan-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Implan Gigi</h2>
+            <h4>Apa Itu Implan Gigi?</h4>
+            <p>Implan gigi adalah struktur titanium yang ditanamkan ke dalam tulang rahang untuk menggantikan akar gigi yang hilang, memberikan dasar yang kuat untuk mahkota atau prostetik gigi.</p>
+            
+            <h4>Proses Pemasangan Implan Gigi</h4>
+            <ol>
+                <li>Evaluasi dan perencanaan perawatan oleh dokter gigi.</li>
+                <li>Pemahaman kondisi tulang rahang dan kesehatan mulut.</li>
+                <li>Penanaman implan ke dalam tulang rahang.</li>
+                <li>Penyembuhan dan integrasi implan dengan tulang (osseointegration).</li>
+                <li>Pemasangan mahkota gigi di atas implan.</li>
+            </ol>
+            
+            <h4>Manfaat Implan Gigi</h4>
+            <ul>
+                <li>Menyediakan pengganti permanen yang kuat untuk gigi yang hilang.</li>
+                <li>Mencegah pergeseran gigi dan kerusakan tulang rahang.</li>
+                <li>Meningkatkan fungsi mengunyah dan estetika senyum.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="implangigi.jpeg" alt="Implan Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Kawat Gigi (Orthodontic Treatment) Section -->
+        <div id="orthodontic-treatment-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Kawat Gigi</h2>
+            <h4>Apa Itu Kawat Gigi?</h4>
+            <p>Kawat gigi adalah perangkat ortodontik yang digunakan untuk merapikan dan memperbaiki susunan gigi serta rahang.</p>
+            
+            <h4>Proses Pemasangan Kawat Gigi</h4>
+            <ol>
+                <li>Evaluasi dan perencanaan perawatan ortodontik.</li>
+                <li>Pemasangan bracket di permukaan gigi.</li>
+                <li>Penghubung bracket dengan kawat dan penyesuaian secara berkala.</li>
+                <li>Penyempurnaan posisi gigi hingga hasil yang diinginkan tercapai.</li>
+            </ol>
+            
+            <h4>Manfaat Kawat Gigi</h4>
+            <ul>
+                <li>Merapikan susunan gigi untuk estetika yang lebih baik.</li>
+                <li>Meningkatkan fungsi mengunyah dan bicara.</li>
+                <li>Mencegah kerusakan gigi akibat gigitan yang tidak seimbang.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="kawategigi.jpeg" alt="Kawat Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Veneer Gigi Section -->
+        <div id="veneer-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Veneer Gigi</h2>
+            <h4>Apa Itu Veneer Gigi?</h4>
+            <p>Veneer gigi adalah lapisan tipis porselen atau resin yang ditempelkan pada permukaan depan gigi untuk meningkatkan penampilan estetika.</p>
+            
+            <h4>Proses Pemasangan Veneer Gigi</h4>
+            <ol>
+                <li>Evaluasi dan perencanaan desain veneer yang sesuai.</li>
+                <li>Penghilangan lapisan tipis enamel gigi.</li>
+                <li>Pembuatan cetakan gigi dan pembuatan veneer di laboratorium.</li>
+                <li>Pemasangan dan penyesuaian veneer pada gigi.</li>
+            </ol>
+            
+            <h4>Manfaat Veneer Gigi</h4>
+            <ul>
+                <li>Meningkatkan estetika gigi yang rusak atau berwarna tidak merata.</li>
+                <li>Membetulkan bentuk dan ukuran gigi.</li>
+                <li>Menciptakan senyum yang lebih cerah dan menarik.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="veneergigi.jpeg" alt="Veneer Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Perawatan Gusi Section -->
+        <div id="perawatan-gusi-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Perawatan Gusi</h2>
+            <h4>Apa Itu Perawatan Gusi?</h4>
+            <p>Perawatan gusi melibatkan berbagai prosedur untuk menjaga kesehatan jaringan gusi dan mencegah penyakit gusi.</p>
+            
+            <h4>Proses Perawatan Gusi</h4>
+            <ol>
+                <li>Pemeriksaan dan diagnosis kondisi gusi.</li>
+                <li>Pembersihan plak dan karang gigi di bawah garis gusi.</li>
+                <li>Penggunaan antibiotik atau terapi laser jika diperlukan.</li>
+                <li>Pendidikan perawatan gigi dan gusi yang baik.</li>
+            </ol>
+            
+            <h4>Manfaat Perawatan Gusi</h4>
+            <ul>
+                <li>Mencegah penyakit gusi seperti gingivitis dan periodontitis.</li>
+                <li>Meningkatkan kesehatan mulut dan sistem tubuh secara keseluruhan.</li>
+                <li>Mengurangi risiko kehilangan gigi akibat kerusakan jaringan gusi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="perawatangusi.jpeg" alt="Perawatan Gusi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pemeriksaan Rutin Section -->
+        <div id="pemeriksaan-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('prosedur-perawatan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pemeriksaan Rutin</h2>
+            <h4>Apa Itu Pemeriksaan Rutin?</h4>
+            <p>Pemeriksaan rutin gigi adalah kunjungan berkala ke dokter gigi untuk memeriksa dan menjaga kesehatan mulut secara keseluruhan.</p>
+            
+            <h4>Proses Pemeriksaan Rutin</h4>
+            <ol>
+                <li>Pemeriksaan visual kondisi gigi dan gusi.</li>
+                <li>Pembersihan profesional untuk menghilangkan plak dan karang gigi.</li>
+                <li>Pemeriksaan sinar-X jika diperlukan untuk mendeteksi masalah yang tidak terlihat secara visual.</li>
+                <li>Diskusi dan saran perawatan untuk menjaga kesehatan mulut.</li>
+            </ol>
+            
+            <h4>Manfaat Pemeriksaan Rutin</h4>
+            <ul>
+                <li>Mendeteksi masalah kesehatan mulut sejak dini.</li>
+                <li>Mencegah perkembangan penyakit gusi dan kerusakan gigi.</li>
+                <li>Meningkatkan kesehatan mulut dan keseluruhan tubuh.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="pemeriksaangigi.jpeg" alt="Pemeriksaan Rutin" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (Optional) -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies (Minified) dengan defer untuk non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS dengan Async untuk non-blocking -->
+    <script>
+        // Fungsi untuk menampilkan section yang dipilih dan menyembunyikan lainnya
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                if(section.id === sectionId) {
+                    section.classList.add('active-section');
+                } else {
+                    section.classList.remove('active-section');
+                    // Pause dan reset video di section yang disembunyikan
+                    const videos = section.querySelectorAll('video');
+                    videos.forEach(video => {
+                        video.pause();
+                        video.currentTime = 0;
+                    });
+                }
+            });
+        }
+
+        // Fungsi untuk menavigasi ke halaman HTML lokal yang berbeda (jika diperlukan)
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Cek preferensi mode dari localStorage saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+        });
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    </script>
+</body>
+</html>

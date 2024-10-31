@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - GigiQ</title>
+    <!-- Bootstrap CSS (Minified) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Minified) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Optimized) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+            --accordion-bg: #fff;
+            --accordion-text: #333;
+            --badge-bg: #007bff;
+            --badge-text: #fff;
+            --active-badge-bg: #0056b3;
+            --active-badge-text: #fff;
+            --overlay-bg: rgba(255, 255, 255, 0.8); /* Untuk loader */
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+            --accordion-bg: #1f1f1f;
+            --accordion-text: #e0e0e0;
+            --badge-bg: #ffc107;
+            --badge-text: #212529;
+            --active-badge-bg: #e0a800;
+            --active-badge-text: #212529;
+            --overlay-bg: rgba(18, 18, 18, 0.8); /* Untuk loader di mode gelap */
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: var(--overlay-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Tombol Kembali */
+        .back-button {
+            background: none;
+            border: none;
+            color: var(--header-text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: var(--button-hover-text);
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107; /* Warna aksen di mode terang */
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b; /* Warna aksen di mode gelap */
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px 60px 20px; /* Adjust padding-top and padding-bottom to prevent overlap with fixed header and footer */
+            min-height: calc(100vh - 140px); /* Adjust based on header and footer height */
+            transition: opacity 0.5s ease;
+        }
+
+        /* Accordion Styles */
+        .accordion-button {
+            background-color: var(--accordion-bg) !important;
+            color: var(--accordion-text) !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: var(--button-hover-bg) !important;
+            color: var(--button-hover-text) !important;
+        }
+
+        .accordion-body {
+            background-color: var(--accordion-bg) !important;
+            color: var(--accordion-text) !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Kategori sebagai Balon */
+        .badge-category {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .badge-category:hover {
+            transform: scale(1.05);
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .badge-category.active {
+            background-color: var(--active-badge-bg) !important;
+            color: var(--active-badge-text) !important;
+        }
+
+        /* Padding untuk kategori agar tidak tertutup header saat digulir */
+        .accordion-item {
+            padding-top: 60px;
+            margin-top: -60px;
+        }
+
+        /* Flexbox untuk Kategori agar wrap pada layar besar */
+        .categories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .header h2 {
+                font-size: 1.2rem;
+            }
+
+            .dark-mode-toggle i {
+                font-size: 1rem;
+            }
+
+            .footer {
+                font-size: 0.9rem;
+            }
+
+            .badge-category {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+
+            .accordion-button {
+                font-size: 1rem;
+            }
+
+            .accordion-body {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Landscape Mode Adjustments */
+        @media (orientation: landscape) {
+            .main-content {
+                padding: 80px 40px 60px 40px;
+            }
+
+            .header h2 {
+                font-size: 1.5rem;
+            }
+
+            .footer {
+                font-size: 1rem;
+            }
+
+            .badge-category {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+
+            .accordion-button {
+                font-size: 1.1rem;
+            }
+
+            .accordion-body {
+                font-size: 1rem;
+            }
+        }
+
+        /* Tambahan: Penyesuaian Warna untuk Elemen Tambahan dalam Mode Gelap */
+        .accordion-header, .accordion-item, .accordion-button, .accordion-body, .badge-category {
+            /* Pastikan semua elemen menyesuaikan warna teks dan latar belakang */
+            background-color: var(--accordion-bg);
+            color: var(--accordion-text);
+        }
+
+        /* Pastikan link dan teks lainnya juga menyesuaikan warna */
+        a {
+            color: var(--header-bg);
+        }
+
+        body.dark-mode a {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <!-- Tombol Kembali -->
+        <button class="back-button" onclick="window.location.href='index.html'" aria-label="Kembali ke Beranda">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>GigiQ</h2>
+        <!-- Toggle Switch for Dark Mode -->
+        <div class="dark-mode-toggle form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">
+                <i class="fas fa-sun" id="sunIcon"></i>
+                <i class="fas fa-moon" id="moonIcon"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Tombol Kembali -->
+        <button class="btn btn-secondary mb-4" onclick="window.location.href='index.html'" aria-label="Kembali ke Beranda">
+            <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+        </button>
+        
+        <h2>Pertanyaan yang Sering Diajukan (FAQ)</h2>
+        <p>Pilih kategori di bawah ini untuk menemukan jawaban atas pertanyaan Anda:</p>
+        <!-- Kategori sebagai Balon tanpa Scroll Horizontal -->
+        <div class="categories-container mb-4">
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseGeneral">Kesehatan Gigi Umum</span>
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseProcedures">Prosedur & Perawatan</span>
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseEmergency">Kecelakaan dan Darurat</span>
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseCosmetic">Estetika Gigi</span>
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseHygiene">Kebersihan Mulut</span>
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseInfection">Penyakit & Infeksi Gigi</span>
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseRecovery">Pemulihan & Perawatan Pasca Perawatan</span>
+            <span class="badge bg-primary badge-category" data-bs-toggle="collapse" data-bs-target="#collapseOthers">Pertanyaan Lainnya</span>
+        </div>
+
+        <!-- Accordion Kategori -->
+        <div class="accordion" id="faqAccordion">
+            <!-- Kategori 1: Kesehatan Gigi Umum -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingGeneral">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGeneral" aria-expanded="false" aria-controls="collapseGeneral">
+                        Kesehatan Gigi Umum
+                    </button>
+                </h2>
+                <div id="collapseGeneral" class="accordion-collapse collapse" aria-labelledby="headingGeneral" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="generalAccordion">
+                            <!-- FAQ 1 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingGeneral1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGeneral1" aria-expanded="false" aria-controls="collapseGeneral1">
+                                        Apa yang menyebabkan gigi berlubang?
+                                    </button>
+                                </h2>
+                                <div id="collapseGeneral1" class="accordion-collapse collapse" aria-labelledby="headingGeneral1" data-bs-parent="#generalAccordion">
+                                    <div class="accordion-body">
+                                        Gigi berlubang disebabkan oleh kombinasi plak, bakteri, gula, dan asam. Plak adalah lapisan lengket yang terbentuk di gigi dan mengandung bakteri yang memproduksi asam yang dapat mengikis enamel gigi, menyebabkan lubang.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 2 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingGeneral2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGeneral2" aria-expanded="false" aria-controls="collapseGeneral2">
+                                        Berapa sering sebaiknya saya pergi ke dokter gigi?
+                                    </button>
+                                </h2>
+                                <div id="collapseGeneral2" class="accordion-collapse collapse" aria-labelledby="headingGeneral2" data-bs-parent="#generalAccordion">
+                                    <div class="accordion-body">
+                                        Sebaiknya Anda mengunjungi dokter gigi setidaknya dua kali setahun untuk pemeriksaan rutin dan pembersihan profesional. Namun, frekuensi kunjungan dapat disesuaikan berdasarkan kondisi kesehatan mulut Anda.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 3 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingGeneral3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGeneral3" aria-expanded="false" aria-controls="collapseGeneral3">
+                                        Apa tanda-tanda awal penyakit gusi?
+                                    </button>
+                                </h2>
+                                <div id="collapseGeneral3" class="accordion-collapse collapse" aria-labelledby="headingGeneral3" data-bs-parent="#generalAccordion">
+                                    <div class="accordion-body">
+                                        Tanda-tanda awal penyakit gusi meliputi gusi yang merah, bengkak, mudah berdarah saat menyikat atau flossing, bau mulut yang tidak sedap, dan gusi yang menarik diri dari gigi. Jika Anda mengalami gejala-gejala ini, segera konsultasikan dengan dokter gigi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 4 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingGeneral4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGeneral4" aria-expanded="false" aria-controls="collapseGeneral4">
+                                        Bagaimana cara menjaga kesehatan gigi dan gusi?
+                                    </button>
+                                </h2>
+                                <div id="collapseGeneral4" class="accordion-collapse collapse" aria-labelledby="headingGeneral4" data-bs-parent="#generalAccordion">
+                                    <div class="accordion-body">
+                                        Untuk menjaga kesehatan gigi dan gusi, Anda perlu menyikat gigi dua kali sehari dengan pasta gigi berfluoride, menggunakan benang gigi secara rutin, menghindari makanan dan minuman manis atau asam, serta melakukan pemeriksaan gigi secara berkala.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 5 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingGeneral5">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGeneral5" aria-expanded="false" aria-controls="collapseGeneral5">
+                                        Apa peran fluoride dalam kesehatan gigi?
+                                    </button>
+                                </h2>
+                                <div id="collapseGeneral5" class="accordion-collapse collapse" aria-labelledby="headingGeneral5" data-bs-parent="#generalAccordion">
+                                    <div class="accordion-body">
+                                        Fluoride membantu memperkuat enamel gigi, membuatnya lebih tahan terhadap asam yang dihasilkan oleh bakteri plak. Penggunaan pasta gigi berfluoride dan minuman berfluoride dapat membantu mencegah gigi berlubang.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori 2: Prosedur & Perawatan -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingProcedures">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcedures" aria-expanded="false" aria-controls="collapseProcedures">
+                        Prosedur & Perawatan
+                    </button>
+                </h2>
+                <div id="collapseProcedures" class="accordion-collapse collapse" aria-labelledby="headingProcedures" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="proceduresAccordion">
+                            <!-- FAQ 6 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingProcedures1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcedures1" aria-expanded="false" aria-controls="collapseProcedures1">
+                                        Apa itu scaling dan bagaimana prosedurnya?
+                                    </button>
+                                </h2>
+                                <div id="collapseProcedures1" class="accordion-collapse collapse" aria-labelledby="headingProcedures1" data-bs-parent="#proceduresAccordion">
+                                    <div class="accordion-body">
+                                        Scaling adalah prosedur pembersihan profesional yang dilakukan oleh dokter gigi atau higienis gigi untuk menghilangkan plak dan karang gigi yang tidak dapat dihilangkan dengan menyikat gigi biasa. Prosedur ini melibatkan penggunaan alat manual atau ultrasonik untuk membersihkan permukaan gigi dan di bawah garis gusi, diikuti dengan polishing untuk menghaluskan permukaan gigi dan mencegah penumpukan plak baru.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 7 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingProcedures2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcedures2" aria-expanded="false" aria-controls="collapseProcedures2">
+                                        Bagaimana cara kerja tambalan gigi?
+                                    </button>
+                                </h2>
+                                <div id="collapseProcedures2" class="accordion-collapse collapse" aria-labelledby="headingProcedures2" data-bs-parent="#proceduresAccordion">
+                                    <div class="accordion-body">
+                                        Tambalan gigi dilakukan untuk memperbaiki bagian gigi yang rusak akibat gigi berlubang. Dokter gigi akan membersihkan area yang berlubang, menghilangkan jaringan gigi yang rusak, dan kemudian mengisi lubang tersebut dengan bahan tambal seperti amalgam, komposit, atau keramik. Tambalan ini mengembalikan bentuk dan fungsi gigi serta mencegah kerusakan lebih lanjut.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 8 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingProcedures3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcedures3" aria-expanded="false" aria-controls="collapseProcedures3">
+                                        Apa itu perawatan saluran akar dan kapan dibutuhkan?
+                                    </button>
+                                </h2>
+                                <div id="collapseProcedures3" class="accordion-collapse collapse" aria-labelledby="headingProcedures3" data-bs-parent="#proceduresAccordion">
+                                    <div class="accordion-body">
+                                        Perawatan saluran akar (root canal treatment) adalah prosedur yang dilakukan untuk mengobati infeksi atau peradangan pada jaringan pulpa gigi yang terletak di dalam akar gigi. Prosedur ini diperlukan ketika jaringan pulpa gigi terinfeksi atau rusak akibat trauma, gigi berlubang yang parah, atau penyakit gusi. Selama prosedur, dokter gigi akan membersihkan dan mengisi saluran akar dengan bahan pengisi khusus untuk mencegah infeksi kembali.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 9 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingProcedures4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcedures4" aria-expanded="false" aria-controls="collapseProcedures4">
+                                        Bagaimana proses pemasangan implan gigi?
+                                    </button>
+                                </h2>
+                                <div id="collapseProcedures4" class="accordion-collapse collapse" aria-labelledby="headingProcedures4" data-bs-parent="#proceduresAccordion">
+                                    <div class="accordion-body">
+                                        Pemasangan implan gigi melibatkan beberapa tahap. Pertama, dokter gigi akan melakukan evaluasi kesehatan mulut dan tulang rahang Anda. Kemudian, implan yang terbuat dari titanium akan ditanamkan ke dalam tulang rahang melalui prosedur bedah minor. Setelah itu, diperlukan periode penyembuhan sekitar 3-6 bulan agar implan dapat berintegrasi dengan tulang. Setelah penyembuhan, prostetik gigi seperti mahkota akan dipasang di atas implan untuk menggantikan gigi yang hilang.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 10 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingProcedures5">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcedures5" aria-expanded="false" aria-controls="collapseProcedures5">
+                                        Apa itu veneer gigi dan bagaimana prosedurnya?
+                                    </button>
+                                </h2>
+                                <div id="collapseProcedures5" class="accordion-collapse collapse" aria-labelledby="headingProcedures5" data-bs-parent="#proceduresAccordion">
+                                    <div class="accordion-body">
+                                        Veneer gigi adalah lapisan tipis yang ditempatkan di permukaan depan gigi untuk memperbaiki estetika gigi yang rusak, retak, atau tidak rata. Prosedur pemasangan veneer melibatkan pengikisan sedikit enamel gigi, pengambilan cetakan gigi untuk pembuatan veneer khusus, dan pemasangan veneer dengan menggunakan cement khusus. Veneer memberikan tampilan senyum yang lebih cerah dan seragam.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 11 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingProcedures6">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProcedures6" aria-expanded="false" aria-controls="collapseProcedures6">
+                                        Bagaimana cara merawat kawat gigi agar tetap bersih?
+                                    </button>
+                                </h2>
+                                <div id="collapseProcedures6" class="accordion-collapse collapse" aria-labelledby="headingProcedures6" data-bs-parent="#proceduresAccordion">
+                                    <div class="accordion-body">
+                                        Merawat kawat gigi memerlukan perhatian ekstra dalam menjaga kebersihan mulut. Anda perlu menyikat gigi setelah setiap makan dengan sikat gigi khusus kawat gigi, menggunakan benang gigi atau pembersih kawat gigi untuk membersihkan sela-sela kawat, dan menghindari makanan yang keras atau lengket yang dapat merusak kawat. Selain itu, kunjungi dokter gigi secara rutin untuk penyesuaian dan pembersihan kawat gigi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori 3: Kecelakaan dan Darurat -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingEmergency">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergency" aria-expanded="false" aria-controls="collapseEmergency">
+                        Kecelakaan dan Darurat
+                    </button>
+                </h2>
+                <div id="collapseEmergency" class="accordion-collapse collapse" aria-labelledby="headingEmergency" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="emergencyAccordion">
+                            <!-- FAQ 12 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingEmergency1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergency1" aria-expanded="false" aria-controls="collapseEmergency1">
+                                        Apa yang harus dilakukan jika gigi terlepas?
+                                    </button>
+                                </h2>
+                                <div id="collapseEmergency1" class="accordion-collapse collapse" aria-labelledby="headingEmergency1" data-bs-parent="#emergencyAccordion">
+                                    <div class="accordion-body">
+                                        Jika gigi Anda terlepas, segera ambil gigi tersebut dan bilas dengan air bersih tanpa menggosoknya. Jangan meremas akar gigi. Tempatkan gigi dalam air susu atau larutan saline untuk menjaga kelembabannya. Segera kunjungi dokter gigi dalam waktu 30 menit untuk peluang pemulihan terbaik.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 13 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingEmergency2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergency2" aria-expanded="false" aria-controls="collapseEmergency2">
+                                        Bagaimana cara mengatasi nyeri gigi akut?
+                                    </button>
+                                </h2>
+                                <div id="collapseEmergency2" class="accordion-collapse collapse" aria-labelledby="headingEmergency2" data-bs-parent="#emergencyAccordion">
+                                    <div class="accordion-body">
+                                        Untuk mengatasi nyeri gigi akut, Anda bisa mengompres area yang sakit dengan es selama 15 menit setiap jam. Hindari konsumsi makanan dan minuman panas atau dingin yang dapat memperburuk nyeri. Gunakan obat pereda nyeri yang dijual bebas seperti ibuprofen atau paracetamol sesuai petunjuk dosis. Namun, penting untuk segera berkonsultasi dengan dokter gigi untuk penanganan lebih lanjut.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 14 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingEmergency3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergency3" aria-expanded="false" aria-controls="collapseEmergency3">
+                                        Apa yang harus dilakukan jika gigi patah atau retak?
+                                    </button>
+                                </h2>
+                                <div id="collapseEmergency3" class="accordion-collapse collapse" aria-labelledby="headingEmergency3" data-bs-parent="#emergencyAccordion">
+                                    <div class="accordion-body">
+                                        Jika gigi patah atau retak, segera bilas mulut dengan air bersih dan hindari menyentuh atau memindahkan bagian yang patah. Tempatkan potongan gigi di air susu atau larutan saline. Hindari makan atau minum dengan sisi gigi yang terkena. Segera kunjungi dokter gigi untuk evaluasi dan penanganan lebih lanjut.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 15 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingEmergency4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergency4" aria-expanded="false" aria-controls="collapseEmergency4">
+                                        Bagaimana cara menghentikan pendarahan dari mulut?
+                                    </button>
+                                </h2>
+                                <div id="collapseEmergency4" class="accordion-collapse collapse" aria-labelledby="headingEmergency4" data-bs-parent="#emergencyAccordion">
+                                    <div class="accordion-body">
+                                        Untuk menghentikan pendarahan dari mulut, ikatkan kain bersih atau kasa steril ke area yang berdarah dan tekan dengan lembut selama 10-15 menit tanpa melepaskannya untuk memeriksa apakah pendarahan berhenti. Hindari berkumur atau mengunyah di area tersebut. Jika pendarahan tidak berhenti setelah 15 menit, segera cari bantuan medis.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori 4: Estetika Gigi -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCosmetic">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCosmetic" aria-expanded="false" aria-controls="collapseCosmetic">
+                        Estetika Gigi
+                    </button>
+                </h2>
+                <div id="collapseCosmetic" class="accordion-collapse collapse" aria-labelledby="headingCosmetic" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="cosmeticAccordion">
+                            <!-- FAQ 16 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCosmetic1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCosmetic1" aria-expanded="false" aria-controls="collapseCosmetic1">
+                                        Apa itu pemutihan gigi dan bagaimana prosedurnya?
+                                    </button>
+                                </h2>
+                                <div id="collapseCosmetic1" class="accordion-collapse collapse" aria-labelledby="headingCosmetic1" data-bs-parent="#cosmeticAccordion">
+                                    <div class="accordion-body">
+                                        Pemutihan gigi adalah prosedur estetika yang bertujuan untuk mencerahkan warna gigi dan menghilangkan noda atau warna yang tidak diinginkan. Prosedur ini dapat dilakukan secara profesional di klinik gigi dengan penggunaan agen pemutih seperti hydrogen peroxide atau carbamide peroxide. Ada juga metode pemutihan di rumah yang dilakukan dengan kit pemutih yang disediakan oleh dokter gigi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 17 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCosmetic2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCosmetic2" aria-expanded="false" aria-controls="collapseCosmetic2">
+                                        Bagaimana veneer gigi dapat meningkatkan estetika senyum saya?
+                                    </button>
+                                </h2>
+                                <div id="collapseCosmetic2" class="accordion-collapse collapse" aria-labelledby="headingCosmetic2" data-bs-parent="#cosmeticAccordion">
+                                    <div class="accordion-body">
+                                        Veneer gigi adalah lapisan tipis yang ditempatkan di permukaan depan gigi untuk memperbaiki estetika gigi yang rusak, retak, atau tidak rata. Dengan veneer, Anda dapat mencapai tampilan gigi yang lebih cerah, seragam, dan indah. Prosedur ini juga dapat memperbaiki bentuk dan ukuran gigi, memberikan senyum yang lebih percaya diri.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 18 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCosmetic3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCosmetic3" aria-expanded="false" aria-controls="collapseCosmetic3">
+                                        Apakah Invisalign cocok untuk semua orang?
+                                    </button>
+                                </h2>
+                                <div id="collapseCosmetic3" class="accordion-collapse collapse" aria-labelledby="headingCosmetic3" data-bs-parent="#cosmeticAccordion">
+                                    <div class="accordion-body">
+                                        Invisalign adalah sistem ortodontik yang menggunakan serangkaian tray transparan yang dapat dilepas untuk merapikan gigi. Setiap tray dirancang khusus untuk mendorong gigi ke posisi yang diinginkan secara bertahap. Invisalign populer karena tampilannya yang hampir tidak terlihat dan kemudahan dalam pemakaian dan perawatan.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 19 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCosmetic4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCosmetic4" aria-expanded="false" aria-controls="collapseCosmetic4">
+                                        Apa itu bonding gigi dan bagaimana prosesnya?
+                                    </button>
+                                </h2>
+                                <div id="collapseCosmetic4" class="accordion-collapse collapse" aria-labelledby="headingCosmetic4" data-bs-parent="#cosmeticAccordion">
+                                    <div class="accordion-body">
+                                        Bonding gigi adalah prosedur kosmetik di mana bahan resin komposit digunakan untuk memperbaiki gigi yang rusak, retak, atau tidak rata. Prosedur ini melibatkan pengikisan sedikit enamel gigi, pengaplikasian resin, dan pemadatan bahan tersebut dengan cahaya khusus untuk mengerasinya. Bonding gigi dapat meningkatkan tampilan gigi dengan cepat dan efektif.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 20 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCosmetic5">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCosmetic5" aria-expanded="false" aria-controls="collapseCosmetic5">
+                                        Apakah whitening gigi permanen?
+                                    </button>
+                                </h2>
+                                <div id="collapseCosmetic5" class="accordion-collapse collapse" aria-labelledby="headingCosmetic5" data-bs-parent="#cosmeticAccordion">
+                                    <div class="accordion-body">
+                                        Whitening gigi dapat memberikan hasil yang bertahan antara 6 bulan hingga 2 tahun, tergantung pada perawatan dan kebiasaan sehari-hari Anda. Untuk hasil yang lebih tahan lama, pemutihan gigi harus dilakukan secara berkala dan dengan pengawasan dokter gigi. Faktor seperti konsumsi makanan dan minuman berwarna juga mempengaruhi durasi hasil whitening.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori 5: Kebersihan Mulut -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingHygiene">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHygiene" aria-expanded="false" aria-controls="collapseHygiene">
+                        Kebersihan Mulut
+                    </button>
+                </h2>
+                <div id="collapseHygiene" class="accordion-collapse collapse" aria-labelledby="headingHygiene" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="hygieneAccordion">
+                            <!-- FAQ 21 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingHygiene1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHygiene1" aria-expanded="false" aria-controls="collapseHygiene1">
+                                        Bagaimana teknik menyikat gigi yang benar?
+                                    </button>
+                                </h2>
+                                <div id="collapseHygiene1" class="accordion-collapse collapse" aria-labelledby="headingHygiene1" data-bs-parent="#hygieneAccordion">
+                                    <div class="accordion-body">
+                                        Teknik menyikat gigi yang benar meliputi:
+                                        <ul>
+                                            <li>Gunakan sikat gigi berukuran kecil dengan bulu lembut.</li>
+                                            <li>Menyikat gigi dengan gerakan melingkar dan lembut, tidak terlalu keras.</li>
+                                            <li>Menyikat bagian depan, belakang, dan permukaan kunyah gigi.</li>
+                                            <li>Menyikat lidah untuk mengurangi bakteri dan bau mulut.</li>
+                                            <li>Waktu menyikat gigi minimal 2 menit setiap kali menyikat.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 22 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingHygiene2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHygiene2" aria-expanded="false" aria-controls="collapseHygiene2">
+                                        Mengapa flossing penting dan bagaimana cara melakukannya?
+                                    </button>
+                                </h2>
+                                <div id="collapseHygiene2" class="accordion-collapse collapse" aria-labelledby="headingHygiene2" data-bs-parent="#hygieneAccordion">
+                                    <div class="accordion-body">
+                                        Flossing penting karena membantu menghilangkan plak dan sisa makanan yang tidak bisa dijangkau oleh sikat gigi, terutama di antara gigi. Berikut cara melakukannya:
+                                        <ul>
+                                            <li>Ambil sekitar 45 cm benang gigi dan ikatkan di tengah jari.</li>
+                                            <li>Tarik benang gigi ke atas dan ke bawah di antara dua gigi dengan gerakan lembut.</li>
+                                            <li>Gunakan bagian benang gigi yang bersih untuk setiap ruang gigi.</li>
+                                            <li>Hindari meremas benang gigi agar tidak merusak jaringan gusi.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 23 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingHygiene3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHygiene3" aria-expanded="false" aria-controls="collapseHygiene3">
+                                        Apakah penggunaan obat kumur antiseptik diperlukan setiap hari?
+                                    </button>
+                                </h2>
+                                <div id="collapseHygiene3" class="accordion-collapse collapse" aria-labelledby="headingHygiene3" data-bs-parent="#hygieneAccordion">
+                                    <div class="accordion-body">
+                                        Penggunaan obat kumur antiseptik dapat membantu mengurangi bakteri di mulut dan mencegah penyakit gusi. Namun, penggunaannya sebaiknya tidak berlebihan. Sebaiknya gunakan obat kumur antiseptik sekali atau dua kali sehari setelah menyikat gigi, sesuai dengan petunjuk dokter gigi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 24 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingHygiene4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHygiene4" aria-expanded="false" aria-controls="collapseHygiene4">
+                                        Apa itu interdental brushes dan kapan harus digunakan?
+                                    </button>
+                                </h2>
+                                <div id="collapseHygiene4" class="accordion-collapse collapse" aria-labelledby="headingHygiene4" data-bs-parent="#hygieneAccordion">
+                                    <div class="accordion-body">
+                                        Interdental brushes adalah sikat kecil yang dirancang khusus untuk membersihkan sela-sela gigi yang sulit dijangkau oleh sikat gigi biasa. Mereka sangat berguna untuk orang yang memiliki kawat gigi, gigi rapat, atau masalah gusi. Gunakan interdental brushes setiap hari untuk menjaga kebersihan sela-sela gigi dan mencegah penumpukan plak.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 25 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingHygiene5">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHygiene5" aria-expanded="false" aria-controls="collapseHygiene5">
+                                        Bagaimana cara menggunakan mouthwash yang efektif?
+                                    </button>
+                                </h2>
+                                <div id="collapseHygiene5" class="accordion-collapse collapse" aria-labelledby="headingHygiene5" data-bs-parent="#hygieneAccordion">
+                                    <div class="accordion-body">
+                                        Untuk menggunakan mouthwash yang efektif:
+                                        <ul>
+                                            <li>Gunakan mouthwash yang direkomendasikan oleh dokter gigi.</li>
+                                            <li>Takar sesuai petunjuk dosis pada kemasan.</li>
+                                            <li>Berkumur selama 30 detik hingga 1 menit, pastikan seluruh mulut terjangkau.</li>
+                                            <li>Hindari makan atau minum setidaknya 30 menit setelah menggunakan mouthwash untuk hasil terbaik.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori 6: Penyakit & Infeksi Gigi -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingInfection">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfection" aria-expanded="false" aria-controls="collapseInfection">
+                        Penyakit & Infeksi Gigi
+                    </button>
+                </h2>
+                <div id="collapseInfection" class="accordion-collapse collapse" aria-labelledby="headingInfection" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="infectionAccordion">
+                            <!-- FAQ 36 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingInfection1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfection1" aria-expanded="false" aria-controls="collapseInfection1">
+                                        Apa itu abses gigi dan bagaimana penanganannya?
+                                    </button>
+                                </h2>
+                                <div id="collapseInfection1" class="accordion-collapse collapse" aria-labelledby="headingInfection1" data-bs-parent="#infectionAccordion">
+                                    <div class="accordion-body">
+                                        Abses gigi adalah infeksi bakteri yang menyebabkan pembengkakan dan nanah di jaringan gigi dan tulang rahang sekitar. Penanganannya meliputi:
+                                        <ul>
+                                            <li>Penggunaan antibiotik untuk mengatasi infeksi.</li>
+                                            <li>Perawatan gigi yang terkena abses, seperti drainage atau root canal.</li>
+                                            <li>Pengelolaan nyeri dan pembengkakan dengan obat pereda nyeri dan kompres es.</li>
+                                        </ul>
+                                        Penting untuk segera mencari bantuan medis jika Anda mengalami gejala abses gigi untuk mencegah penyebaran infeksi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 37 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingInfection2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfection2" aria-expanded="false" aria-controls="collapseInfection2">
+                                        Apa itu kista gigi dan bagaimana cara mengatasinya?
+                                    </button>
+                                </h2>
+                                <div id="collapseInfection2" class="accordion-collapse collapse" aria-labelledby="headingInfection2" data-bs-parent="#infectionAccordion">
+                                    <div class="accordion-body">
+                                        Kista gigi adalah kantong berisi cairan yang terbentuk di sekitar akar gigi, biasanya akibat infeksi atau cedera. Cara mengatasinya meliputi:
+                                        <ul>
+                                            <li>Prosedur bedah untuk mengangkat kista.</li>
+                                            <li>Perawatan gigi yang terkena untuk mencegah infeksi kembali.</li>
+                                        </ul>
+                                        Setelah prosedur, penting untuk menjaga kebersihan mulut dan mengikuti instruksi perawatan dari dokter gigi untuk memastikan pemulihan yang optimal.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 38 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingInfection3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfection3" aria-expanded="false" aria-controls="collapseInfection3">
+                                        Bagaimana cara mencegah infeksi mulut dan tenggorokan?
+                                    </button>
+                                </h2>
+                                <div id="collapseInfection3" class="accordion-collapse collapse" aria-labelledby="headingInfection3" data-bs-parent="#infectionAccordion">
+                                    <div class="accordion-body">
+                                        Untuk mencegah infeksi mulut dan tenggorokan, lakukan hal berikut:
+                                        <ul>
+                                            <li>Jaga kebersihan mulut dengan menyikat gigi dua kali sehari dan menggunakan benang gigi.</li>
+                                            <li>Hindari berbagi alat makan atau minum dengan orang lain.</li>
+                                            <li>Menghindari kebiasaan merokok yang dapat merusak jaringan mulut.</li>
+                                            <li>Rutin melakukan pemeriksaan gigi untuk deteksi dini masalah kesehatan mulut.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 39 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingInfection4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfection4" aria-expanded="false" aria-controls="collapseInfection4">
+                                        Apakah infeksi mulut dapat menyebar ke bagian tubuh lain?
+                                    </button>
+                                </h2>
+                                <div id="collapseInfection4" class="accordion-collapse collapse" aria-labelledby="headingInfection4" data-bs-parent="#infectionAccordion">
+                                    <div class="accordion-body">
+                                        Ya, infeksi mulut yang tidak diobati dapat menyebar ke bagian tubuh lain melalui aliran darah. Ini dapat menyebabkan komplikasi serius seperti sepsis, yang dapat mengancam nyawa. Oleh karena itu, penting untuk segera menangani infeksi mulut dan berkonsultasi dengan dokter gigi jika Anda mengalami gejala infeksi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 40 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingInfection5">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfection5" aria-expanded="false" aria-controls="collapseInfection5">
+                                        Bagaimana cara mengatasi bau mulut akibat infeksi gigi?
+                                    </button>
+                                </h2>
+                                <div id="collapseInfection5" class="accordion-collapse collapse" aria-labelledby="headingInfection5" data-bs-parent="#infectionAccordion">
+                                    <div class="accordion-body">
+                                        Untuk mengatasi bau mulut akibat infeksi gigi:
+                                        <ul>
+                                            <li>Segera kunjungi dokter gigi untuk penanganan infeksi.</li>
+                                            <li>Jaga kebersihan mulut dengan menyikat gigi dua kali sehari dan menggunakan benang gigi.</li>
+                                            <li>Gunakan obat kumur antiseptik untuk mengurangi bakteri penyebab bau mulut.</li>
+                                            <li>Hindari makanan dan minuman yang dapat memperburuk bau mulut.</li>
+                                        </ul>
+                                        Penanganan infeksi gigi secara tepat akan membantu menghilangkan bau mulut yang disebabkan oleh infeksi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori 7: Pemulihan dan Perawatan Pasca Perawatan -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingRecovery">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRecovery" aria-expanded="false" aria-controls="collapseRecovery">
+                        Pemulihan dan Perawatan Pasca Perawatan
+                    </button>
+                </h2>
+                <div id="collapseRecovery" class="accordion-collapse collapse" aria-labelledby="headingRecovery" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="recoveryAccordion">
+                            <!-- FAQ 41 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingRecovery1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRecovery1" aria-expanded="false" aria-controls="collapseRecovery1">
+                                        Apa yang harus saya lakukan setelah prosedur perawatan saluran akar?
+                                    </button>
+                                </h2>
+                                <div id="collapseRecovery1" class="accordion-collapse collapse" aria-labelledby="headingRecovery1" data-bs-parent="#recoveryAccordion">
+                                    <div class="accordion-body">
+                                        Setelah prosedur perawatan saluran akar, Anda harus:
+                                        <ul>
+                                            <li>Menjaga kebersihan mulut dengan menyikat gigi secara lembut.</li>
+                                            <li>Hindari mengunyah pada sisi gigi yang dirawat untuk beberapa hari.</li>
+                                            <li>Gunakan obat pereda nyeri yang direkomendasikan dokter gigi jika diperlukan.</li>
+                                            <li>Menghindari makanan dan minuman yang terlalu panas atau dingin.</li>
+                                            <li>Kunjungi dokter gigi untuk pemasangan tambalan atau mahkota sesuai jadwal yang ditentukan.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 42 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingRecovery2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRecovery2" aria-expanded="false" aria-controls="collapseRecovery2">
+                                        Bagaimana cara merawat implan gigi setelah pemasangan?
+                                    </button>
+                                </h2>
+                                <div id="collapseRecovery2" class="accordion-collapse collapse" aria-labelledby="headingRecovery2" data-bs-parent="#recoveryAccordion">
+                                    <div class="accordion-body">
+                                        Untuk merawat implan gigi setelah pemasangan:
+                                        <ul>
+                                            <li>Jaga kebersihan mulut dengan rutin menyikat gigi dan flossing.</li>
+                                            <li>Hindari kebiasaan merokok yang dapat mempengaruhi penyembuhan implan.</li>
+                                            <li>Rutin melakukan pemeriksaan gigi untuk memastikan kondisi implan tetap baik.</li>
+                                            <li>Menggunakan obat kumur antiseptik sesuai anjuran dokter gigi.</li>
+                                        </ul>
+                                        Dengan perawatan yang baik, implan gigi dapat bertahan seumur hidup dan menjaga kesehatan mulut Anda.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 43 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingRecovery3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRecovery3" aria-expanded="false" aria-controls="collapseRecovery3">
+                                        Apa yang harus saya lakukan jika tambalan gigi saya terasa longgar?
+                                    </button>
+                                </h2>
+                                <div id="collapseRecovery3" class="accordion-collapse collapse" aria-labelledby="headingRecovery3" data-bs-parent="#recoveryAccordion">
+                                    <div class="accordion-body">
+                                        Jika tambalan gigi Anda terasa longgar, sebaiknya:
+                                        <ul>
+                                            <li>Hindari mengunyah pada sisi gigi yang ditambal.</li>
+                                            <li>Hindari makanan keras atau lengket yang dapat merusak tambalan.</li>
+                                            <li>Segera hubungi dokter gigi untuk evaluasi dan perbaikan tambalan.</li>
+                                        </ul>
+                                        Menjaga tambalan gigi tetap aman penting untuk mencegah kerusakan lebih lanjut dan menjaga kesehatan mulut Anda.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 44 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingRecovery4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRecovery4" aria-expanded="false" aria-controls="collapseRecovery4">
+                                        Bagaimana cara merawat veneer gigi agar tetap tahan lama?
+                                    </button>
+                                </h2>
+                                <div id="collapseRecovery4" class="accordion-collapse collapse" aria-labelledby="headingRecovery4" data-bs-parent="#recoveryAccordion">
+                                    <div class="accordion-body">
+                                        Untuk merawat veneer gigi agar tetap tahan lama:
+                                        <ul>
+                                            <li>Jaga kebersihan mulut dengan menyikat gigi dua kali sehari dan menggunakan benang gigi.</li>
+                                            <li>Hindari mengunyah benda keras seperti pensil atau es yang dapat merusak veneer.</li>
+                                            <li>Gunakan obat kumur yang diformulasikan untuk gigi sensitif jika diperlukan.</li>
+                                            <li>Kunjungi dokter gigi secara rutin untuk pemeriksaan dan perawatan veneer.</li>
+                                        </ul>
+                                        Perawatan yang baik akan memastikan veneer gigi Anda tetap indah dan berfungsi dengan baik selama bertahun-tahun.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori 8: Pertanyaan Lainnya -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOthers">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOthers" aria-expanded="false" aria-controls="collapseOthers">
+                        Pertanyaan Lainnya
+                    </button>
+                </h2>
+                <div id="collapseOthers" class="accordion-collapse collapse" aria-labelledby="headingOthers" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <div class="accordion" id="othersAccordion">
+                            <!-- FAQ 31 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOthers1">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOthers1" aria-expanded="false" aria-controls="collapseOthers1">
+                                        Apakah cangkok gigi aman untuk digunakan?
+                                    </button>
+                                </h2>
+                                <div id="collapseOthers1" class="accordion-collapse collapse" aria-labelledby="headingOthers1" data-bs-parent="#othersAccordion">
+                                    <div class="accordion-body">
+                                        Cangkok gigi merupakan prosedur restorasi yang aman dan efektif untuk menggantikan gigi yang hilang. Cangkok gigi biasanya terbuat dari bahan akrilik atau metal dan dipasang di gigi yang sehat di sekitarnya. Dengan perawatan yang baik, cangkok gigi dapat bertahan lama dan meningkatkan estetika serta fungsi mulut Anda.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 32 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOthers2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOthers2" aria-expanded="false" aria-controls="collapseOthers2">
+                                        Apa yang harus saya lakukan jika mengalami gigi sensitif?
+                                    </button>
+                                </h2>
+                                <div id="collapseOthers2" class="accordion-collapse collapse" aria-labelledby="headingOthers2" data-bs-parent="#othersAccordion">
+                                    <div class="accordion-body">
+                                        Jika Anda mengalami gigi sensitif, berikut beberapa langkah yang dapat Anda lakukan:
+                                        <ul>
+                                            <li>Gunakan pasta gigi khusus untuk gigi sensitif.</li>
+                                            <li>Hindari makanan dan minuman yang terlalu panas atau dingin.</li>
+                                            <li>Hindari menggosok gigi terlalu keras.</li>
+                                            <li>Gunakan obat kumur yang mengandung fluoride untuk membantu mengurangi sensitivitas.</li>
+                                            <li>Konsultasikan dengan dokter gigi untuk evaluasi lebih lanjut dan penanganan yang tepat.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 33 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOthers3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOthers3" aria-expanded="false" aria-controls="collapseOthers3">
+                                        Apakah diet mempengaruhi kesehatan gigi?
+                                    </button>
+                                </h2>
+                                <div id="collapseOthers3" class="accordion-collapse collapse" aria-labelledby="headingOthers3" data-bs-parent="#othersAccordion">
+                                    <div class="accordion-body">
+                                        Ya, diet memiliki pengaruh besar terhadap kesehatan gigi. Konsumsi makanan dan minuman manis atau asam dapat meningkatkan risiko gigi berlubang dan erosi enamel. Sebaliknya, mengonsumsi makanan kaya kalsium, vitamin D, dan fosfor dapat membantu menjaga kekuatan gigi dan tulang rahang.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 34 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOthers4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOthers4" aria-expanded="false" aria-controls="collapseOthers4">
+                                        Bagaimana cara memilih sikat gigi yang tepat?
+                                    </button>
+                                </h2>
+                                <div id="collapseOthers4" class="accordion-collapse collapse" aria-labelledby="headingOthers4" data-bs-parent="#othersAccordion">
+                                    <div class="accordion-body">
+                                        Memilih sikat gigi yang tepat meliputi beberapa pertimbangan berikut:
+                                        <ul>
+                                            <li>Pilih sikat gigi dengan bulu lembut untuk mencegah kerusakan enamel dan iritasi gusi.</li>
+                                            <li>Gunakan sikat gigi dengan kepala kecil agar mudah menjangkau semua area mulut.</li>
+                                            <li>Ganti sikat gigi setiap 3 bulan atau ketika bulu sikat sudah aus.</li>
+                                            <li>Pertimbangkan sikat gigi elektrik jika Anda membutuhkan pembersihan yang lebih efektif.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ 35 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOthers5">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOthers5" aria-expanded="false" aria-controls="collapseOthers5">
+                                        Apakah rokok mempengaruhi kesehatan gigi dan mulut?
+                                    </button>
+                                </h2>
+                                <div id="collapseOthers5" class="accordion-collapse collapse" aria-labelledby="headingOthers5" data-bs-parent="#othersAccordion">
+                                    <div class="accordion-body">
+                                        Ya, merokok memiliki dampak negatif yang signifikan terhadap kesehatan gigi dan mulut. Rokok dapat menyebabkan penyakit gusi, kehilangan gigi, bau mulut yang tidak sedap, dan meningkatkan risiko kanker mulut. Selain itu, merokok juga dapat mempengaruhi proses penyembuhan setelah prosedur perawatan gigi.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tambahkan lebih banyak FAQ di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Footer (Optional) -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies (Minified) dengan defer untuk non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS dengan Async untuk non-blocking -->
+    <script>
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Cek preferensi mode dari localStorage saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+        });
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Scroll ke kategori saat badge diklik dengan animasi halus
+        document.querySelectorAll('.badge-category').forEach(function(badge) {
+            badge.addEventListener('click', function() {
+                const target = this.getAttribute('data-bs-target');
+                const targetElement = document.querySelector(target);
+                if(targetElement) {
+                    // Tambahkan kelas active pada badge yang diklik dan hapus dari yang lain
+                    document.querySelectorAll('.badge-category').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Collapse semua kategori terlebih dahulu
+                    document.querySelectorAll('.accordion-collapse').forEach(function(collapse) {
+                        if(collapse !== targetElement) {
+                            const bsCollapse = bootstrap.Collapse.getInstance(collapse);
+                            if(bsCollapse) {
+                                bsCollapse.hide();
+                            }
+                        }
+                    });
+                    // Toggle kategori yang dipilih
+                    const bsCollapse = new bootstrap.Collapse(targetElement, {
+                        toggle: true
+                    });
+
+                    // Setelah kategori terbuka, scroll ke kategori tersebut
+                    targetElement.addEventListener('shown.bs.collapse', function () {
+                        // Menggunakan scrollIntoView dengan opsi smooth
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, { once: true });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

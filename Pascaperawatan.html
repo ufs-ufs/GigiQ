@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasca Perawatan - GigiQ</title>
+    <!-- Bootstrap CSS (Minified) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Minified) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Optimized) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --back-button-bg: #007bff;
+            --back-button-text: #fff;
+            --back-button-hover-bg: #0056b3;
+            --section-bg: #fff;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --back-button-bg: #ffc107;
+            --back-button-text: #212529;
+            --back-button-hover-bg: #e6ac00;
+            --section-bg: #1f1f1f;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107;
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px 60px 20px;
+            min-height: calc(100vh - 140px);
+            transition: opacity 0.5s ease;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Menu Button */
+        .menu-button {
+            background-color: var(--button-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            text-decoration: none;
+            color: var(--button-text);
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .menu-button i {
+            font-size: 2rem;
+            color: inherit;
+            margin-bottom: 10px;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .menu-button:hover i {
+            transform: rotate(10deg);
+        }
+
+        .menu-button span {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .menu-button:hover span {
+            color: var(--button-hover-text);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: var(--back-button-bg);
+            color: var(--back-button-text);
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: var(--back-button-hover-bg);
+            color: var(--back-button-hover-text);
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .back-button span {
+            font-size: 1rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        /* Poin Penting untuk Petugas Medis */
+        .important-points {
+            background-color: #fffae6;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .important-points h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        .important-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .important-points ul li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .important-points ul li i {
+            margin-right: 10px;
+            color: #856404;
+            margin-top: 5px;
+        }
+
+        /* Dark Mode Adjustments for Poin Penting */
+        .dark-mode .important-points {
+            background-color: #2c2c2c;
+            border-left-color: #ffc107;
+            color: #e0e0e0;
+        }
+
+        .dark-mode .important-points h3 {
+            color: #ffc107;
+        }
+
+        .dark-mode .important-points ul li i {
+            color: #ffc107;
+        }
+
+        /* Footer (Optional) */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .menu-button {
+                padding: 20px 10px;
+            }
+
+            .menu-button i {
+                font-size: 1.5rem;
+            }
+
+            .menu-button span {
+                font-size: 0.9rem;
+            }
+
+            .back-button i {
+                font-size: 1rem;
+            }
+
+            .back-button span {
+                font-size: 0.9rem;
+            }
+
+            .important-points {
+                padding: 10px 15px;
+            }
+
+            .important-points h3 {
+                font-size: 1.1rem;
+            }
+
+            .important-points ul li {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>GigiQ</h2>
+        <div class="d-flex align-items-center">
+            <!-- Toggle Switch for Dark Mode -->
+            <div class="dark-mode-toggle form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                <label class="form-check-label" for="darkModeToggle">
+                    <i class="fas fa-sun" id="sunIcon"></i>
+                    <i class="fas fa-moon" id="moonIcon"></i>
+                </label>
+            </div>
+            <!-- Back Button to index.html -->
+            <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left me-1"></i> Kembali
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Menu Section -->
+        <div id="menu-section" class="content-section active-section">
+            <h2>Pasca Perawatan</h2>
+            <div class="menu-grid">
+                <!-- Menu Items -->
+                <div class="menu-button" onclick="showSection('pasca-pemeriksaan-section')">
+                    <i class="fas fa-stethoscope"></i>
+                    <span>Pasca Pemeriksaan Gigi Rutin</span>
+                </div>
+                <div class="menu-button" onclick="showSection('pasca-scaling-section')">
+                    <i class="fas fa-bolt"></i>
+                    <span>Pasca Scaling</span>
+                </div>
+                <div class="menu-button" onclick="showSection('pasca-penambalan-section')">
+                    <i class="fas fa-tooth"></i>
+                    <span>Pasca Penambalan Gigi</span>
+                </div>
+                <div class="menu-button" onclick="showSection('pasca-pencabutan-section')">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Pasca Pencabutan Gigi Bungsu</span>
+                </div>
+                <div class="menu-button" onclick="showSection('pasca-pemasangan-section')">
+                    <i class="fas fa-denture"></i>
+                    <span>Pasca Pemasangan Gigi Tiruan</span>
+                </div>
+                <div class="menu-button" onclick="showSection('pasca-perawatan-gusi-section')">
+                    <i class="fas fa-teeth"></i>
+                    <span>Pasca Perawatan Gusi</span>
+                </div>
+                <div class="menu-button" onclick="showSection('pasca-perawatan-sensitif-section')">
+                    <i class="fas fa-toothbrush"></i>
+                    <span>Pasca Perawatan untuk Gigi Sensitif</span>
+                </div>
+                <div class="menu-button" onclick="showSection('pasca-ortodontik-section')">
+                    <i class="fas fa-align-left"></i>
+                    <span>Pasca Perawatan Ortodontik</span>
+                </div>
+                <div class="menu-button" onclick="showSection('panduan-darurat-section')">
+                    <i class="fas fa-ambulance"></i>
+                    <span>Panduan Darurat Setelah Perawatan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pasca Pemeriksaan Gigi Rutin Section -->
+        <div id="pasca-pemeriksaan-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Pemeriksaan Gigi Rutin</h2>
+            <p>“Setelah pemeriksaan gigi rutin hari ini, Anda tidak perlu khawatir tentang tindakan lanjutan kecuali kami menemukan sesuatu yang perlu diikuti. Saya sarankan untuk tetap menjaga kebersihan gigi dan mulut Anda seperti biasa. Sikat gigi dua kali sehari dan lakukan flossing. Jika kami merekomendasikan scaling atau tindakan lain, pastikan untuk kembali sesuai jadwal. Kontrol rutin ke klinik minimal dua kali dalam setahun sangat penting untuk memantau kesehatan gigi dan mencegah permasalahan kecil menjadi besar. Jika ada keluhan atau perubahan pada kondisi gigi Anda, jangan ragu untuk segera datang kembali.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien memahami pentingnya menjaga kebersihan gigi dan mulut secara rutin.</li>
+                    <li><i class="fas fa-check-circle"></i> Informasikan jadwal kontrol berikutnya dan tindakan lanjutan jika diperlukan.</li>
+                    <li><i class="fas fa-check-circle"></i> Berikan tips tambahan untuk mencegah permasalahan gigi di masa mendatang.</li>
+                    <li><i class="fas fa-check-circle"></i> Tanyakan apakah pasien memiliki pertanyaan atau kekhawatiran terkait kesehatan gigi mereka.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pasca Scaling Section -->
+        <div id="pasca-scaling-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Scaling</h2>
+            <p>“Setelah menjalani scaling hari ini, mungkin Anda akan merasakan sedikit sensitivitas, terutama pada makanan dan minuman yang panas atau dingin. Ini normal dan akan mereda dalam beberapa hari. Selama beberapa hari ke depan, usahakan untuk menghindari makanan atau minuman yang sangat panas atau dingin. Kami juga menganjurkan agar Anda tidak merokok dan menghindari makanan yang lengket atau keras, yang bisa menimbulkan masalah pada gusi yang masih dalam tahap penyembuhan. Jagalah kebersihan gigi dengan sikat gigi lembut, dan Anda boleh menggunakan pasta gigi untuk gigi sensitif jika merasa nyeri. Jangan lupa untuk tetap flossing dengan lembut. Jika rasa sakit atau sensitivitas berlanjut lebih dari seminggu, segera datang ke klinik untuk konsultasi.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Jelaskan kepada pasien mengenai kemungkinan sensitivitas setelah scaling dan cara mengatasinya.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan pasien untuk menghindari merokok dan makanan keras atau lengket.</li>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien memahami pentingnya menjaga kebersihan gigi dengan sikat lembut dan flossing.</li>
+                    <li><i class="fas fa-check-circle"></i> Tanyakan apakah pasien mengalami ketidaknyamanan yang signifikan dan beri tahu kapan harus kembali untuk konsultasi.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pasca Penambalan Gigi Section -->
+        <div id="pasca-penambalan-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Penambalan Gigi</h2>
+            <p>“Setelah tambalan gigi hari ini, harap diingat untuk tidak mengunyah pada sisi gigi yang ditambal selama beberapa jam agar tambalan bisa mengeras dengan baik. Hindari makanan yang keras, lengket, atau terlalu panas setidaknya selama 24 jam. Jika tambalan terasa terlalu tinggi atau Anda merasa tidak nyaman saat mengunyah, segera informasikan kami untuk penyesuaian. Dalam beberapa hari ke depan, pastikan menyikat gigi dengan lembut di area tersebut dan hindari menekan atau menggigit terlalu keras pada gigi yang ditambal. Jika ada rasa sakit atau sensitivitas yang berlanjut, konsultasikan kembali ke klinik. Rasa sedikit ngilu kadang normal, namun sebaiknya tidak berlangsung lama.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien mengerti pentingnya menghindari mengunyah pada sisi yang ditambal untuk mencegah tambalan terlepas.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan pasien untuk menghindari makanan keras, lengket, atau panas selama 24 jam setelah penambalan.</li>
+                    <li><i class="fas fa-check-circle"></i> Informasikan tentang kemungkinan rasa ngilu dan sensitivitas, serta kapan harus kembali untuk penyesuaian.</li>
+                    <li><i class="fas fa-check-circle"></i> Tanyakan apakah pasien merasa tambalan terlalu tinggi atau tidak nyaman saat mengunyah.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pasca Pencabutan Gigi Bungsu Section -->
+        <div id="pasca-pencabutan-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Pencabutan Gigi Bungsu</h2>
+            <p>“Pencabutan gigi bungsu memerlukan perhatian lebih dalam beberapa hari pertama setelah prosedur. Biasanya, Anda akan diberikan kain kasa di area pencabutan; gigitlah kain kasa tersebut selama 30–60 menit untuk membantu menghentikan perdarahan. Setelah itu, hindari berkumur kuat-kuat, merokok, atau menggunakan sedotan karena dapat mengganggu pembentukan bekuan darah di area pencabutan, yang penting untuk penyembuhan. Kompres dingin pada pipi bisa membantu mengurangi pembengkakan. Selain itu, pilih makanan lunak dan hindari mengunyah di area bekas pencabutan selama beberapa hari. Jaga kebersihan mulut, tapi hindari menyikat langsung di area tersebut hingga benar-benar sembuh. Jika ada demam, nyeri berlebih, atau perdarahan yang tidak berhenti, segera hubungi klinik untuk bantuan lebih lanjut.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Instruksikan pasien untuk menggigit kain kasa selama 30–60 menit setelah pencabutan.</li>
+                    <li><i class="fas fa-check-circle"></i> Beri tahu pasien untuk menghindari berkumur kuat-kuat, merokok, atau menggunakan sedotan.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan penggunaan kompres dingin untuk mengurangi pembengkakan.</li>
+                    <li><i class="fas fa-check-circle"></i> Saranakan makanan lunak dan hindari mengunyah di area bekas pencabutan.</li>
+                    <li><i class="fas fa-check-circle"></i> Berikan informasi kontak darurat jika pasien mengalami demam, nyeri berlebih, atau perdarahan yang tidak berhenti.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pasca Pemasangan Gigi Tiruan Section -->
+        <div id="pasca-pemasangan-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Pemasangan Gigi Tiruan</h2>
+            <p>“Setelah pemasangan gigi tiruan, mungkin Anda butuh sedikit waktu untuk terbiasa. Pastikan untuk membersihkannya setiap hari dengan sikat khusus dan pasta non-abrasif, agar gigi tiruan tetap bersih tanpa merusak permukaannya. Jika gigi tiruan terasa longgar atau ada area yang menimbulkan luka pada gusi, segera kembali ke klinik untuk penyesuaian. Kami juga menyarankan agar Anda tidak tidur dengan gigi tiruan, kecuali dokter menyarankan sebaliknya. Ini penting untuk menjaga kesehatan jaringan mulut. Minum banyak air untuk menjaga mulut tetap lembab dan hindari makanan yang keras atau lengket untuk sementara waktu.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien mengetahui cara membersihkan gigi tiruan dengan benar.</li>
+                    <li><i class="fas fa-check-circle"></i> Instruksikan pasien untuk tidak tidur dengan gigi tiruan kecuali direkomendasikan.</li>
+                    <li><i class="fas fa-check-circle"></i> Saranakan penggunaan sikat dan pasta gigi yang sesuai untuk menjaga kebersihan gigi tiruan.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan pasien untuk kembali jika merasa gigi tiruan terasa longgar atau menyebabkan luka.</li>
+                    <li><i class="fas fa-check-circle"></i> Ingatkan pentingnya hidrasi dan menghindari makanan keras atau lengket.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pasca Perawatan Gusi Section -->
+        <div id="pasca-perawatan-gusi-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Perawatan Gusi</h2>
+            <p>“Setelah perawatan gusi, penting sekali untuk tidak merokok atau mengonsumsi makanan yang terlalu keras atau pedas, karena gusi Anda masih dalam tahap penyembuhan. Gunakan sikat gigi dengan bulu lembut dan pastikan Anda menyikat dengan hati-hati di area yang dirawat. Mungkin akan ada sedikit pembengkakan atau perdarahan ringan, namun jika ini berlangsung lebih dari beberapa hari, segera informasikan kepada kami. Jangan lupa untuk berkumur dengan larutan air garam hangat beberapa kali sehari untuk membantu penyembuhan. Pastikan untuk tetap mengikuti jadwal kontrol yang telah kami berikan agar kami bisa memastikan gusi Anda pulih dengan baik.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Instruksikan pasien untuk tidak merokok dan mengonsumsi makanan keras atau pedas.</li>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien menggunakan sikat gigi dengan bulu lembut dan menyikat dengan hati-hati di area yang dirawat.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan penggunaan larutan air garam hangat untuk membantu penyembuhan.</li>
+                    <li><i class="fas fa-check-circle"></i> Informasikan pasien untuk mengikuti jadwal kontrol guna memastikan penyembuhan yang optimal.</li>
+                    <li><i class="fas fa-check-circle"></i> Tanyakan apakah pasien mengalami pembengkakan atau perdarahan yang tidak kunjung reda.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pasca Perawatan untuk Gigi Sensitif Section -->
+        <div id="pasca-perawatan-sensitif-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Perawatan untuk Gigi Sensitif</h2>
+            <p>“Setelah perawatan untuk mengurangi sensitivitas gigi, hindari makanan yang sangat asam, manis, atau terlalu panas dan dingin. Gigi Anda mungkin masih sedikit sensitif selama beberapa hari ke depan. Gunakan pasta gigi khusus untuk gigi sensitif dan sikat dengan lembut. Hindari tekanan berlebih saat menyikat dan pastikan tetap menjaga kebersihan mulut dengan flossing. Jika sensitivitas terus berlangsung atau semakin parah, hubungi kami untuk pemeriksaan lebih lanjut. Sensitivitas gigi biasanya berkurang dalam beberapa hari hingga seminggu.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan pasien untuk menghindari makanan yang sangat asam, manis, atau suhu ekstrem.</li>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien menggunakan pasta gigi khusus untuk gigi sensitif dan menyikat dengan lembut.</li>
+                    <li><i class="fas fa-check-circle"></i> Instruksikan pasien untuk tidak memberikan tekanan berlebih saat menyikat gigi.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan flossing dengan lembut untuk menjaga kebersihan mulut.</li>
+                    <li><i class="fas fa-check-circle"></i> Informasikan kapan pasien harus kembali untuk pemeriksaan jika sensitivitas berlanjut atau memburuk.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pasca Perawatan Ortodontik (Kawat Gigi) Section -->
+        <div id="pasca-ortodontik-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pasca Perawatan Ortodontik (Kawat Gigi)</h2>
+            <p>“Setelah pemasangan atau penyesuaian kawat gigi, mungkin Anda akan merasa sedikit tidak nyaman atau nyeri selama beberapa hari. Ini normal, dan kami sarankan untuk mengonsumsi makanan lunak hingga rasa nyeri mereda. Hindari makanan keras, lengket, atau kenyal yang bisa merusak kawat gigi. Bersihkan gigi dengan sikat khusus ortodontik agar kawat tetap bersih dari sisa makanan, dan gunakan benang khusus atau alat pembersih lainnya yang direkomendasikan. Jika ada kawat yang menusuk atau menyebabkan luka di pipi, gunakan lilin ortodontik atau hubungi klinik untuk penyesuaian. Tetap datang ke kontrol sesuai jadwal untuk memastikan perawatan ortodontik Anda berjalan dengan baik.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Informasikan pasien mengenai kemungkinan rasa tidak nyaman setelah pemasangan atau penyesuaian kawat gigi.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan pasien untuk mengonsumsi makanan lunak dan menghindari makanan keras, lengket, atau kenyal.</li>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien menggunakan sikat khusus ortodontik dan benang gigi yang direkomendasikan untuk menjaga kebersihan kawat gigi.</li>
+                    <li><i class="fas fa-check-circle"></i> Instruksikan penggunaan lilin ortodontik jika kawat menusuk atau menyebabkan luka pada pipi.</li>
+                    <li><i class="fas fa-check-circle"></i> Tekankan pentingnya datang ke kontrol sesuai jadwal untuk memastikan perawatan ortodontik berjalan dengan baik.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Panduan Darurat Setelah Perawatan Section -->
+        <div id="panduan-darurat-section" class="content-section">
+            <button class="back-button" onclick="showSection('menu-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Panduan Darurat Setelah Perawatan</h2>
+            <p>“Jika setelah perawatan hari ini Anda mengalami gejala seperti nyeri yang tidak kunjung reda, pembengkakan yang berlebihan, perdarahan yang tidak berhenti, atau bahkan demam, segera hubungi kami. Kami ingin memastikan bahwa kondisi tersebut mendapatkan perhatian medis secepat mungkin. Biasanya, kami siap membantu di luar jam kerja untuk masalah darurat, jadi jangan ragu untuk menghubungi jika Anda merasa ada yang tidak beres. Simpan informasi kontak darurat klinik kami, dan pastikan untuk mengikuti semua petunjuk yang telah diberikan setelah perawatan. Kesehatan mulut Anda adalah prioritas kami, dan kami ingin Anda pulih dengan cepat dan nyaman.”</p>
+            <!-- Poin Penting untuk Petugas Medis -->
+            <div class="important-points">
+                <h3>Poin Penting untuk Petugas Medis</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien mengetahui tanda-tanda darurat yang perlu segera dihubungi.</li>
+                    <li><i class="fas fa-check-circle"></i> Berikan informasi kontak darurat klinik yang mudah diakses.</li>
+                    <li><i class="fas fa-check-circle"></i> Instruksikan pasien untuk tidak menunda-nunda menghubungi klinik jika mengalami gejala darurat.</li>
+                    <li><i class="fas fa-check-circle"></i> Pastikan pasien memahami pentingnya mengikuti petunjuk pasca perawatan untuk mencegah komplikasi.</li>
+                    <li><i class="fas fa-check-circle"></i> Anjurkan pasien untuk menyimpan informasi kontak darurat di tempat yang mudah dijangkau.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (Optional) -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies (Minified) dengan defer untuk non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS dengan Async untuk non-blocking -->
+    <script>
+        // Fungsi untuk menampilkan section yang dipilih dan menyembunyikan lainnya
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                if(section.id === sectionId) {
+                    section.classList.add('active-section');
+                } else {
+                    section.classList.remove('active-section');
+                }
+            });
+        }
+
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Cek preferensi mode dari localStorage saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+        });
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Edukasi Gigi</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .header {
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .section {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        body.dark-mode .options li {
+            background-color: #0056b3;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .options li:hover {
+            background-color: #004494;
+        }
+
+        body.dark-mode .timer {
+            background-color: #b71c1c;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .timer.warning {
+            background-color: #ffa000;
+            color: #212529;
+        }
+
+        body.dark-mode .progress-bar {
+            background-color: #2e7d32;
+        }
+
+        body.dark-mode .footer {
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Header */
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #e0e0e0;
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 70px; /* To prevent overlap with fixed header */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sections */
+        .section {
+            width: 90%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .section.active {
+            display: flex;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        /* Quiz Section */
+        .quiz-container {
+            width: 100%;
+            position: relative;
+        }
+
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .options {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        .options li {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+
+        .options li:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            height: 1.2rem; /* Reserve space */
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            height: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #28a745;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Timer */
+        .timer {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #dc3545;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .timer.warning {
+            background-color: #ffc107;
+            color: #212529;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Final Result */
+        .final-result-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .final-result-section p {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        /* Back to Home Button */
+        .home-button {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .question {
+                font-size: 1rem;
+            }
+
+            .options li {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+
+            .timer {
+                font-size: 0.9rem;
+                padding: 4px 8px;
+            }
+
+            .final-result-section h3 {
+                font-size: 1.3rem;
+            }
+
+            .final-result-section p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .question {
+                font-size: 0.9rem;
+            }
+
+            .options li {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+
+            .timer {
+                font-size: 0.8rem;
+                padding: 3px 6px;
+            }
+
+            .final-result-section h3 {
+                font-size: 1.2rem;
+            }
+
+            .final-result-section p {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        body.dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        body.dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>Kuis Edukasi Gigi</h2>
+        <!-- Dark Mode Toggle -->
+        <div class="dark-mode-toggle form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">
+                <i class="fas fa-sun" id="sunIcon"></i>
+                <i class="fas fa-moon" id="moonIcon"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Level Selection -->
+        <div class="section active" id="levelSelection">
+            <h3>Pilih Level Kesulitan</h3>
+            <button class="btn btn-success btn-custom" onclick="startQuiz('mudah')">Mudah</button>
+            <button class="btn btn-success btn-custom" onclick="startQuiz('sedang')">Sedang</button>
+            <button class="btn btn-success btn-custom" onclick="startQuiz('susah')">Susah</button>
+            <button class="btn btn-success btn-custom" onclick="startQuiz('Ekspert')">Ekspert</button>
+            <a href="index.html" class="btn btn-secondary btn-custom home-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="section" id="quizSection">
+            <div class="back-button" onclick="goToLevelSelection()">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali ke Level</span>
+            </div>
+            <div class="quiz-container">
+                <!-- Timer -->
+                <div class="timer" id="timer">Waktu: 10 Detik</div>
+
+                <!-- Progress Bar -->
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <!-- Question -->
+                <div class="question" id="question">Loading...</div>
+
+                <!-- Options -->
+                <ul class="options" id="options">
+                    <!-- Pilihan jawaban akan ditambahkan secara dinamis -->
+                </ul>
+
+                <!-- Result -->
+                <div class="result" id="result"></div>
+            </div>
+            <a href="index.html" class="btn btn-secondary btn-custom home-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a>
+        </div>
+
+        <!-- Final Result Section -->
+        <div class="section" id="finalResultSection">
+            <h3>Hasil Akhir</h3>
+            <p id="finalScore">Nilai Anda: 0</p>
+            <p id="finalMessage">Pesan akan muncul di sini.</p>
+            <button class="btn btn-primary btn-custom" onclick="restartQuiz()">Ulangi Kuis</button>
+            <button class="btn btn-secondary btn-custom" onclick="goToLevelSelection()">Pilih Level Baru</button>
+            <a href="index.html" class="btn btn-secondary btn-custom home-button"><i class="fas fa-home"></i> Kembali ke Halaman Utama</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">© 2024 Kuis Edukasi Gigi. GigiQ By: UFS.</div>
+
+    <!-- Bootstrap JS dan Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS -->
+    <script>
+        // Daftar Pertanyaan
+const questions = {
+            mudah: [
+        {
+            "question": "Berapa jumlah gigi permanen pada manusia Dewasa?",
+            "options": ["28", "30", "32", "34"],
+            "answer": "32"
+        },
+        {
+            "question": "Berapa jumlah gigi susu pada anak-anak?",
+            "options": ["20", "18", "22", "24"],
+            "answer": "20"
+        },
+        {
+            "question": "Apa nama gigi depan yang terletak di tengah atas?",
+            "options": ["Insisivus Tengah", "Premolar", "Molar", "Taring"],
+            "answer": "Insisivus Tengah"
+        },
+        {
+            "question": "Fungsi utama gigi insisivus adalah...",
+            "options": ["Menggiling makanan", "Memotong makanan", "Mengoyak makanan", "Menahan makanan"],
+            "answer": "Memotong makanan"
+        },
+        {
+            "question": "Gigi geraham pertama disebut...",
+            "options": ["Molar Pertama", "Premolar", "Taring", "Insisivus"],
+            "answer": "Molar Pertama"
+        },
+        {
+            "question": "Apa nama lapisan pelindung gigi yang keras?",
+            "options": ["Dentin", "Gusi", "Enamel", "Pulp"],
+            "answer": "Enamel"
+        },
+        {
+            "question": "Bagian tengah gigi yang mengandung saraf disebut...",
+            "options": ["Enamel", "Dentin", "Pulp", "Cementum"],
+            "answer": "Pulp"
+        },
+        {
+            "question": "Apa nama penyakit gusi yang ditandai oleh peradangan dan pendarahan?",
+            "options": ["Gingivitis", "Periodontitis", "Karies", "Halitosis"],
+            "answer": "Gingivitis"
+        },
+        {
+            "question": "Apa penyebab utama karies gigi?",
+            "options": ["Kurang sikat gigi", "Mengonsumsi makanan manis", "Infeksi bakteri", "Semua jawaban benar"],
+            "answer": "Semua jawaban benar"
+        },
+        {
+            "question": "Berapa frekuensi yang direkomendasikan untuk menyikat gigi setiap hari?",
+            "options": ["1 kali", "2 kali", "3 kali", "4 kali"],
+            "answer": "2 kali"
+        },
+        {
+            "question": "Apa alat yang digunakan untuk membersihkan sela-sela gigi?",
+            "options": ["Dental floss", "Sikat gigi", "Mouthwash", "Implantasi"],
+            "answer": "Dental floss"
+        },
+        {
+            "question": "Apa nama prosedur penghilangan karies gigi?",
+            "options": ["Filling", "Implantasi", "Scaling", "Whitening"],
+            "answer": "Filling"
+        },
+        {
+            "question": "Apa nama bahan yang sering digunakan untuk menambal gigi setelah karies dihilangkan?",
+            "options": ["Composite", "Amalgam", "Keramik", "Gips"],
+            "answer": "Composite"
+        },
+        {
+            "question": "Berapa kali sehari disarankan untuk menyikat gigi?",
+            "options": ["1 kali", "2 kali", "3 kali", "4 kali"],
+            "answer": "2 kali"
+        },
+        {
+            "question": "Apa nama alat yang digunakan dokter gigi untuk memeriksa gigi?",
+            "options": ["Dental mirror", "Explorer", "Scaler", "Dental probe"],
+            "answer": "Dental mirror"
+        },
+        {
+            "question": "Apa nama bahan keras yang melapisi mahkota gigi?",
+            "options": ["Enamel", "Dentin", "Cementum", "Pulp"],
+            "answer": "Enamel"
+        },
+        {
+            "question": "Gusi yang mengalami peradangan dan mudah berdarah disebut...",
+            "options": ["Gingivitis", "Periodontitis", "Karies", "Halitosis"],
+            "answer": "Gingivitis"
+        },
+        {
+            "question": "Kapan waktu yang tepat untuk mengganti sikat gigi?",
+            "options": ["Setiap 3 bulan", "Setiap 6 bulan", "Setiap 1 tahun", "Setiap 2 bulan"],
+            "answer": "Setiap 3 bulan"
+        },
+        {
+            "question": "Apa istilah medis untuk kondisi gigi berlubang?",
+            "options": ["Karies", "Gingivitis", "Periodontitis", "Halitosis"],
+            "answer": "Karies"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk menghilangkan plak dari gigi?",
+            "options": ["Scaler", "Dental drill", "Explorer", "Dental mirror"],
+            "answer": "Scaler"
+        },
+        {
+            "question": "Apa nama jenis kawat yang digunakan dalam perawatan ortodontik?",
+            "options": ["Nickel-titanium", "Stainless steel", "Gold alloy", "Aluminium"],
+            "answer": "Nickel-titanium"
+        },
+        {
+            "question": "Apa fungsi utama gigi molar?",
+            "options": ["Menggiling makanan", "Memotong makanan", "Mengunyah makanan", "Menahan makanan"],
+            "answer": "Menggiling makanan"
+        },
+        {
+            "question": "Berapa jumlah gigi taring pada manusia Dewasa?",
+            "options": ["4", "6", "8", "2"],
+            "answer": "4"
+        },
+        {
+            "question": "Apa nama zat yang digunakan untuk memperkuat gigi terhadap kerusakan karies?",
+            "options": ["Fluorida", "Kalsium", "Kalium", "Zink"],
+            "answer": "Fluorida"
+        },
+        {
+            "question": "Apa nama penyakit gigi yang ditandai dengan pembentukan karang gigi?",
+            "options": ["Karies", "Gingivitis", "Periodontitis", "Tartar"],
+            "answer": "Tartar"
+        },
+        {
+            "question": "Berapa jumlah gigi insisivus pada manusia Dewasa?",
+            "options": ["8", "4", "6", "2"],
+            "answer": "8"
+        },
+        {
+            "question": "Apa yang dimaksud dengan maloklusi?",
+            "options": ["Pertumbuhan gigi yang tidak sejajar", "Karies", "Plak", "Peradangan gusi"],
+            "answer": "Pertumbuhan gigi yang tidak sejajar"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk memeriksa rongga mulut?",
+            "options": ["Dental mirror", "Explorer", "Scaler", "Dental drill"],
+            "answer": "Dental mirror"
+        },
+        {
+            "question": "Gigi premolar terletak di mana?",
+            "options": ["Antara gigi taring dan molar", "Di depan insisivus", "Di belakang molar", "Di belakang taring"],
+            "answer": "Antara gigi taring dan molar"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk mengukur tekanan gigitan?",
+            "options": ["Occlusal force gauge", "Explorer", "Scaler", "Dental mirror"],
+            "answer": "Occlusal force gauge"
+        },
+            ],
+            sedang: [
+{
+"question": "Apa istilah untuk penambahan material ke permukaan gigi untuk memperbaiki estetika atau fungsi gigi?",
+"options": ["Bonding", "Crowning", "Veneering", "Inlay"],
+"answer": "Bonding"
+},
+        {
+            "question": "Apa nama prosedur pembuatan cetakan gigi untuk pembuatan mahkota?",
+            "options": ["Impression", "Scaling", "Root Canal", "Extraction"],
+            "answer": "Impression"
+        },
+        {
+            "question": "Apa nama jenis kawat yang digunakan dalam perawatan ortodontik untuk fleksibilitas?",
+            "options": ["Stainless steel", "Nickel-titanium", "Gold alloy", "Copper"],
+            "answer": "Nickel-titanium"
+        },
+        {
+            "question": "Apa nama proses pengisian rongga gigi dengan bahan resin?",
+            "options": ["Amalgam filling", "Composite filling", "Gold filling", "Glass ionomer filling"],
+            "answer": "Composite filling"
+        },
+        {
+            "question": "Apa nama lapisan yang melapisi permukaan akar gigi?",
+            "options": ["Enamel", "Dentin", "Cementum", "Pulp"],
+            "answer": "Cementum"
+        },
+        {
+            "question": "Apa nama kondisi dimana terdapat infeksi di sekitar akar gigi yang dapat menyebabkan pembengkakan?",
+            "options": ["Periapical abscess", "Gingivitis", "Periodontitis", "Halitosis"],
+            "answer": "Periapical abscess"
+        },
+        {
+            "question": "Apa nama prosedur pembuangan gigi yang tidak bisa dipertahankan?",
+            "options": ["Extraction", "Filling", "Scaling", "Root Canal"],
+            "answer": "Extraction"
+        },
+        {
+            "question": "Apa nama kondisi dimana gigi tumbuh tidak pada posisi yang benar?",
+            "options": ["Malocclusion", "Gingivitis", "Halitosis", "Periodontitis"],
+            "answer": "Malocclusion"
+        },
+        {
+            "question": "Apa nama prosedur untuk memperbaiki kerusakan pada struktur gigi?",
+            "options": ["Filling", "Whitening", "Scaling", "Crowning"],
+            "answer": "Filling"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk mengukur tekanan gigitan?",
+            "options": ["Occlusal force gauge", "Dental mirror", "Scaler", "Probe"],
+            "answer": "Occlusal force gauge"
+        },
+        {
+            "question": "Apa nama proses penguatan enamel dengan menggunakan bahan tertentu?",
+            "options": ["Fluoridation", "Scaling", "Root Canal", "Extraction"],
+            "answer": "Fluoridation"
+        },
+        {
+            "question": "Apa istilah medis untuk infeksi jaringan di sekitar gigi yang dapat menyebabkan abses?",
+            "options": ["Periodontitis", "Gingivitis", "Pulpitis", "Caries"],
+            "answer": "Periodontitis"
+        },
+        {
+            "question": "Apa nama prosedur pembersihan karang gigi di bawah gusi?",
+            "options": ["Scaling", "Whitening", "Crowning", "Filling"],
+            "answer": "Scaling"
+        },
+        {
+            "question": "Apa nama bakteri yang paling sering menyebabkan periodontitis?",
+            "options": ["Porphyromonas gingivalis", "Streptococcus mutans", "Lactobacillus", "Escherichia coli"],
+            "answer": "Porphyromonas gingivalis"
+        },
+        {
+            "question": "Apa nama jaringan lunak yang melapisi tulang rahang dan mendukung gigi?",
+            "options": ["Ligamentum periodontal", "Dentin", "Cementum", "Pulp"],
+            "answer": "Ligamentum periodontal"
+        },
+        {
+            "question": "Apa nama penyakit gusi yang jika tidak diobati dapat menyebabkan kehilangan gigi?",
+            "options": ["Periodontitis", "Caries", "Halitosis", "Pulpitis"],
+            "answer": "Periodontitis"
+        },
+        {
+            "question": "Apa nama proses penggantian gigi yang hilang dengan implan yang terbuat dari titanium?",
+            "options": ["Implantasi", "Prostetik", "Endodontik", "Eksodontik"],
+            "answer": "Implantasi"
+        },
+        {
+            "question": "Apa nama kondisi dimana gigi retak tanpa hilangnya sebagian besar gigi?",
+            "options": ["Craze lines", "Caries", "Bruxism", "Attrition"],
+            "answer": "Craze lines"
+        },
+        {
+            "question": "Apa istilah medis untuk pengikisan gigi akibat kebiasaan menggesekkan gigi?",
+            "options": ["Attrition", "Erosion", "Abrasion", "Demineralisasi"],
+            "answer": "Attrition"
+        },
+        {
+            "question": "Apa nama proses pembersihan mendalam pada gigi yang mengalami infeksi di bawah garis gusi?",
+            "options": ["Scaling and Root Planing", "Whitening", "Filling", "Crowning"],
+            "answer": "Scaling and Root Planing"
+        },
+        {
+            "question": "Apa nama alat yang digunakan dokter gigi untuk memperbesar saluran akar selama prosedur endodontik?",
+            "options": ["Reamer", "Scaler", "Explorer", "Dental probe"],
+            "answer": "Reamer"
+        },
+        {
+            "question": "Apa nama kondisi dimana gusi menurun dan menyebabkan akar gigi terlihat?",
+            "options": ["Recession gingiva", "Caries", "Bruxism", "Attrition"],
+            "answer": "Recession gingiva"
+        },
+        {
+            "question": "Apa nama bahan yang digunakan untuk melapisi gigi yang sudah dirawat dengan saluran akar?",
+            "options": ["Crowning", "Inlay", "Onlay", "Veneer"],
+            "answer": "Crowning"
+        },
+        {
+            "question": "Apa nama kondisi di mana gigi seseorang bergoyang akibat kerusakan pada jaringan pendukung?",
+            "options": ["Mobility", "Attrition", "Bruxism", "Ankylosis"],
+            "answer": "Mobility"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk memeriksa kondisi jaringan gusi selama pemeriksaan periodontal?",
+            "options": ["Periodontal probe", "Dental mirror", "Explorer", "Scaler"],
+            "answer": "Periodontal probe"
+        },
+        {
+            "question": "Apa istilah untuk proses peradangan di dalam jaringan pulpa gigi?",
+            "options": ["Pulpitis", "Periodontitis", "Gingivitis", "Endodontitis"],
+            "answer": "Pulpitis"
+        },
+        {
+            "question": "Apa nama metode pelapisan gigi yang digunakan untuk memperbaiki estetika dengan bahan komposit?",
+            "options": ["Bonding", "Veneer", "Crowning", "Implantasi"],
+            "answer": "Bonding"
+        },
+        {
+            "question": "Apa istilah medis untuk kondisi di mana ada infeksi yang menyebar di jaringan lunak wajah akibat infeksi gigi?",
+            "options": ["Cellulitis", "Abscess", "Pulpitis", "Halitosis"],
+            "answer": "Cellulitis"
+        },
+        {
+            "question": "Apa istilah untuk lapisan pelindung yang sering digunakan untuk menutupi gigi geraham untuk mencegah karies?",
+            "options": ["Sealant", "Veneer", "Crowning", "Inlay"],
+            "answer": "Sealant"
+        },
+        {
+            "question": "Apa istilah medis untuk proses penambalan gigi dengan bahan komposit atau amalgam?",
+            "options": ["Filling", "Bonding", "Crowning", "Scaling"],
+            "answer": "Filling"
+        },
+            ],
+            susah: [
+        {
+            "question": "Apa nama alat yang digunakan untuk mengukur kekuatan gigitan?",
+            "options": ["Dental explorer", "Occlusal force gauge", "Scaler", "Probe"],
+            "answer": "Occlusal force gauge"
+        },
+        {
+            "question": "Apa nama prosedur pengambilan jaringan lunak dari gusi yang sudah terinfeksi?",
+            "options": ["Gingivectomy", "Frenectomy", "Scaling", "Whitening"],
+            "answer": "Gingivectomy"
+        },
+        {
+            "question": "Apa nama kondisi dimana gigi tidak tumbuh atau hilang sejak lahir?",
+            "options": ["Anodontia", "Hypodontia", "Edentulism", "Hyperdontia"],
+            "answer": "Anodontia"
+        },
+        {
+            "question": "Apa nama teknik yang digunakan untuk menghilangkan plak keras dari permukaan gigi?",
+            "options": ["Scaling", "Whitening", "Prostetik", "Gingivectomy"],
+            "answer": "Scaling"
+        },
+        {
+            "question": "Apa nama bahan yang sering digunakan untuk menambal gigi setelah pengangkatan karies?",
+            "options": ["Composite resin", "Amalgam", "Porcelain", "Akrilik"],
+            "answer": "Composite resin"
+        },
+        {
+            "question": "Apa nama bakteri utama yang menyebabkan karies gigi?",
+            "options": ["Streptococcus mutans", "Escherichia coli", "Lactobacillus", "Helicobacter pylori"],
+            "answer": "Streptococcus mutans"
+        },
+        {
+            "question": "Apa istilah untuk kehilangan gigi akibat trauma atau penyakit periodontal?",
+            "options": ["Eksodontik", "Edentulous", "Periodontitis", "Endodontik"],
+            "answer": "Edentulous"
+        },
+        {
+            "question": "Apa istilah medis untuk gigi yang rusak oleh gesekan dari gigi lainnya?",
+            "options": ["Bruxism", "Attrition", "Erosion", "Abrasion"],
+            "answer": "Attrition"
+        },
+        {
+            "question": "Apa istilah medis untuk pengikisan jaringan gigi akibat konsumsi asam yang berlebihan?",
+            "options": ["Attrition", "Abrasion", "Erosion", "Demineralisasi"],
+            "answer": "Erosion"
+        },
+        {
+            "question": "Apa istilah untuk pembersihan jaringan yang terinfeksi di sekitar gigi dalam saluran akar?",
+            "options": ["Debridement", "Scaling", "Whitening", "Gingivectomy"],
+            "answer": "Debridement"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk membersihkan gigi dari karang gigi yang menempel di bawah gusi?",
+            "options": ["Scaler", "Curette", "Mirror", "Explorer"],
+            "answer": "Curette"
+        },
+        {
+            "question": "Apa istilah untuk proses inflamasi di gusi yang disebabkan oleh penumpukan plak?",
+            "options": ["Gingivitis", "Periodontitis", "Caries", "Halitosis"],
+            "answer": "Gingivitis"
+        },
+        {
+            "question": "Apa nama prosedur pembuatan mahkota gigi buatan untuk menggantikan gigi yang hilang?",
+            "options": ["Crowning", "Bonding", "Filling", "Whitening"],
+            "answer": "Crowning"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk memperbesar saluran akar selama prosedur endodontik?",
+            "options": ["Reamer", "Scaler", "Explorer", "Dental probe"],
+            "answer": "Reamer"
+        },
+        {
+            "question": "Apa nama prosedur pembuatan cetakan gigi untuk pembuatan mahkota?",
+            "options": ["Impression", "Scaling", "Root Canal", "Extraction"],
+            "answer": "Impression"
+        },
+        {
+            "question": "Apa istilah medis untuk kondisi dimana ada gigi yang tidak bisa keluar dari gusi karena terperangkap?",
+            "options": ["Impacted tooth", "Embedded tooth", "Retained tooth", "Supernumerary tooth"],
+            "answer": "Impacted tooth"
+        },
+        {
+            "question": "Apa nama teknik yang digunakan untuk mengganti jaringan periodontal yang hilang?",
+            "options": ["Grafting", "Root Planing", "Scaling", "Veneering"],
+            "answer": "Grafting"
+        },
+        {
+            "question": "Apa nama prosedur bedah yang digunakan untuk memperbaiki kerusakan gusi akibat periodontitis?",
+            "options": ["Flap surgery", "Whitening", "Bonding", "Crowning"],
+            "answer": "Flap surgery"
+        },
+        {
+            "question": "Apa nama alat yang digunakan untuk mengukur kedalaman kantong periodontal?",
+            "options": ["Periodontal probe", "Explorer", "Scaler", "Dental mirror"],
+            "answer": "Periodontal probe"
+        },
+        {
+            "question": "Apa nama prosedur yang digunakan untuk membersihkan akar gigi yang terinfeksi dan diisi ulang?",
+            "options": ["Root Canal", "Scaling", "Whitening", "Filling"],
+            "answer": "Root Canal"
+        },
+        {
+            "question": "Apa nama jaringan yang menempelkan gigi ke tulang rahang?",
+            "options": ["Ligamentum periodontium", "Cementum", "Dentin", "Enamel"],
+            "answer": "Ligamentum periodontium"
+        },
+        {
+            "question": "Apa nama lapisan yang melapisi akar gigi dan menempel pada ligamentum periodontal?",
+            "options": ["Cementum", "Dentin", "Enamel", "Pulp"],
+            "answer": "Cementum"
+        },
+        {
+            "question": "Apa istilah untuk prosedur pengangkatan sebagian atau seluruh jaringan pulpa gigi yang telah terinfeksi?",
+            "options": ["Pulpectomy", "Pulpotomy", "Endodontic therapy", "Extraction"],
+            "answer": "Pulpectomy"
+        },
+        {
+            "question": "Apa nama prosedur bedah yang dilakukan untuk menghilangkan jaringan yang sakit pada ujung akar gigi?",
+            "options": ["Apicoectomy", "Pulpectomy", "Root Planing", "Crowning"],
+            "answer": "Apicoectomy"
+        },
+        {
+            "question": "Apa istilah untuk hilangnya sebagian besar email gigi akibat gesekan terus-menerus dengan benda asing?",
+            "options": ["Abrasion", "Attrition", "Erosion", "Fracture"],
+            "answer": "Abrasion"
+        },
+        {
+            "question": "Apa nama kondisi dimana terdapat lapisan plak pada gigi yang tidak dapat dihilangkan dengan menyikat gigi biasa?",
+            "options": ["Calculus", "Caries", "Gingivitis", "Periodontitis"],
+            "answer": "Calculus"
+        },
+        {
+            "question": "Apa istilah medis untuk keadaan dimana gigi yang sudah tumbuh mengalami pergerakan atau goyah akibat penyakit periodontal?",
+            "options": ["Mobility", "Bruxism", "Ankylosis", "Hypodontia"],
+            "answer": "Mobility"
+        },
+        {
+            "question": "Apa nama proses peradangan pada gusi yang menyebabkan pendarahan saat menyikat gigi?",
+            "options": ["Gingivitis", "Periodontitis", "Endodontitis", "Halitosis"],
+            "answer": "Gingivitis"
+        },
+        {
+            "question": "Apa nama kondisi medis dimana jaringan periodontal mengalami kehilangan massa secara progresif?",
+            "options": ["Periodontitis", "Gingivitis", "Halitosis", "Caries"],
+            "answer": "Periodontitis"
+        },
+        {
+            "question": "Apa istilah medis untuk jaringan gigi yang mengandung saraf dan pembuluh darah?",
+            "options": ["Pulp", "Dentin", "Cementum", "Enamel"],
+            "answer": "Pulp"
+        },
+            ],
+            Ekspert: [
+    {
+"question": "Apa istilah medis untuk degenerasi jaringan periodontal secara parah akibat infeksi kronis?",
+"options": ["Periodontitis progresif", "Gingivitis akut", "Peri-implantitis", "Caries marginalis"],
+"answer": "Periodontitis progresif"
+},
+{
+"question": "Apa nama prosedur pembedahan yang digunakan untuk menggantikan jaringan tulang yang hilang akibat periodontitis berat?",
+"options": ["Bone grafting", "Crown lengthening", "Frenectomy", "Apicoectomy"],
+"answer": "Bone grafting"
+},
+{
+"question": "Apa nama perawatan endodontik yang melibatkan pengangkatan jaringan pulpa yang terinfeksi, tetapi mempertahankan sebagian dari pulpa vital?",
+"options": ["Pulpotomy", "Pulpectomy", "Root canal therapy", "Apicoectomy"],
+"answer": "Pulpotomy"
+},
+{
+"question": "Apa istilah medis untuk pengikisan permukaan gigi akibat gesekan mekanis berulang dengan benda asing?",
+"options": ["Abrasion", "Attrition", "Erosion", "Demineralisasi"],
+"answer": "Abrasion"
+},
+{
+"question": "Apa nama teknik pembedahan yang dilakukan untuk memperbaiki defek tulang pada rahang?",
+"options": ["Osteoplasty", "Gingivectomy", "Bone grafting", "Osseointegration"],
+"answer": "Osteoplasty"
+},
+{
+"question": "Apa istilah medis untuk gangguan sendi temporomandibular yang menyebabkan rasa sakit dan gangguan fungsi rahang?",
+"options": ["Temporomandibular disorder (TMD)", "Bruxism", "Periodontitis", "Gingivitis"],
+"answer": "Temporomandibular disorder (TMD)"
+},
+{
+"question": "Apa nama alat yang digunakan dalam prosedur periodontik untuk mengukur kedalaman kantong gusi?",
+"options": ["Periodontal probe", "Scaler", "Explorer", "Curette"],
+"answer": "Periodontal probe"
+},
+{
+"question": "Apa istilah medis untuk pengangkatan jaringan yang terinfeksi di sekitar gigi dan tulang rahang dalam kasus periodontitis berat?",
+"options": ["Flap surgery", "Root planing", "Scaling", "Curettage"],
+"answer": "Flap surgery"
+},
+{
+"question": "Apa nama teknik restoratif yang digunakan untuk mengembalikan fungsi dan estetika gigi dengan menggunakan mahkota buatan?",
+"options": ["Crowning", "Bonding", "Filling", "Veneering"],
+"answer": "Crowning"
+},
+{
+"question": "Apa nama kondisi medis di mana akar gigi tidak dapat bergerak karena fusi abnormal antara akar gigi dan tulang alveolar?",
+"options": ["Ankylosis", "Edentulism", "Hypercementosis", "Pulpitis"],
+"answer": "Ankylosis"
+},
+{
+"question": "Apa nama teknik pencangkokan jaringan lunak yang digunakan untuk memperbaiki resesi gusi?",
+"options": ["Connective tissue graft", "Free gingival graft", "Guided tissue regeneration", "Crown lengthening"],
+"answer": "Connective tissue graft"
+},
+{
+"question": "Apa nama prosedur yang melibatkan pengangkatan jaringan pulpa dan pengisian ulang saluran akar dengan bahan inert?",
+"options": ["Pulpectomy", "Root canal therapy", "Apicoectomy", "Endodontic retreatment"],
+"answer": "Root canal therapy"
+},
+{
+"question": "Apa istilah untuk kondisi yang menyebabkan peradangan kronis di jaringan sekitar implan gigi?",
+"options": ["Peri-implantitis", "Periodontitis", "Pericoronitis", "Gingivitis"],
+"answer": "Peri-implantitis"
+},
+{
+"question": "Apa istilah medis untuk infeksi berulang di ujung akar gigi setelah perawatan saluran akar?",
+"options": ["Apical periodontitis", "Recurrent caries", "Pulpitis", "Periapical abscess"],
+"answer": "Apical periodontitis"
+},
+{
+"question": "Apa nama alat bedah yang digunakan untuk menghaluskan dan meratakan permukaan akar gigi yang terinfeksi?",
+"options": ["Scaler", "Curette", "Periodontal probe", "Reamer"],
+"answer": "Curette"
+},
+{
+"question": "Apa nama kondisi yang menyebabkan pertumbuhan jaringan lunak berlebih di sekitar gigi akibat iritasi kronis?",
+"options": ["Gingival hyperplasia", "Gingivitis", "Leukoplakia", "Lichen planus"],
+"answer": "Gingival hyperplasia"
+},
+{
+"question": "Apa nama teknik bedah yang digunakan untuk memperbaiki fraktur pada rahang bawah?",
+"options": ["Mandibular osteotomy", "Maxillary osteotomy", "Apicoectomy", "Crown lengthening"],
+"answer": "Mandibular osteotomy"
+},
+{
+"question": "Apa nama kondisi medis di mana gigi baru tumbuh dalam posisi abnormal setelah kehilangan gigi susu?",
+"options": ["Ectopic eruption", "Hyperdontia", "Ankylosis", "Hypodontia"],
+"answer": "Ectopic eruption"
+},
+{
+"question": "Apa istilah medis untuk kerusakan tulang alveolar akibat infeksi gigi kronis?",
+"options": ["Osteomyelitis", "Osteoporosis", "Osteosarcoma", "Ankylosis"],
+"answer": "Osteomyelitis"
+},
+{
+"question": "Apa nama kondisi yang melibatkan pengikisan progresif jaringan periodontal tanpa adanya infeksi?",
+"options": ["Aggressive periodontitis", "Gingival recession", "Chronic periodontitis", "Pericoronitis"],
+"answer": "Aggressive periodontitis"
+},
+{
+"question": "Apa nama prosedur pembedahan yang dilakukan untuk menghilangkan jaringan tulang yang terinfeksi di ujung akar gigi?",
+"options": ["Apicoectomy", "Root canal therapy", "Pulpotomy", "Gingivectomy"],
+"answer": "Apicoectomy"
+},
+{
+"question": "Apa nama kondisi di mana terdapat kerusakan pada jaringan lunak yang menyelubungi mahkota gigi akibat infeksi berulang?",
+"options": ["Pericoronitis", "Pulpitis", "Gingivitis", "Periodontitis"],
+"answer": "Pericoronitis"
+},
+{
+"question": "Apa nama teknik bedah yang digunakan untuk memperbaiki patah tulang rahang atas?",
+"options": ["Maxillary osteotomy", "Mandibular osteotomy", "Le Fort fracture repair", "Crown lengthening"],
+"answer": "Maxillary osteotomy"
+},
+{
+"question": "Apa nama kondisi dimana terjadi penyempitan ruang pulpa yang menyebabkan kematian pulpa secara bertahap?",
+"options": ["Pulpal sclerosis", "Pulpitis", "Periapical abscess", "Endodontitis"],
+"answer": "Pulpal sclerosis"
+},
+{
+"question": "Apa istilah untuk kondisi di mana terdapat pertumbuhan tulang di rahang yang tidak diinginkan?",
+"options": ["Exostosis", "Osteonecrosis", "Osteomyelitis", "Osteosarcoma"],
+"answer": "Exostosis"
+},
+{
+"question": "Apa istilah medis untuk proses di mana tulang yang mengelilingi implan gigi menyatu dengan permukaan implan?",
+"options": ["Osseointegration", "Bone grafting", "Crown lengthening", "Periodontitis"],
+"answer": "Osseointegration"
+},
+{
+"question": "Apa istilah medis untuk kondisi di mana terdapat infeksi pada jaringan sekitar ujung akar gigi yang disertai pembentukan nanah?",
+"options": ["Periapical abscess", "Apical periodontitis", "Pulpitis", "Cellulitis"],
+"answer": "Periapical abscess"
+},
+{
+"question": "Apa nama kondisi dimana terjadi resorpsi internal gigi akibat aktivitas osteoklas dalam jaringan pulpa, seringkali tanpa gejala dan terdeteksi secara radiografis?",
+"options": ["Resorpsi internal", "Resorpsi eksternal", "Ankylosis", "Hypercementosis"],
+"answer": "Resorpsi internal"
+},
+{
+"question": "Apa nama prosedur bedah mikro yang digunakan untuk meregenerasi jaringan periodontal yang hilang dengan menggunakan protein matriks enamel?",
+"options": ["Guided Tissue Regeneration", "Enamel Matrix Derivative Application", "Bone Grafting", "Connective Tissue Graft"],
+"answer": "Enamel Matrix Derivative Application"
+},
+{
+"question": "Dalam perawatan endodontik, apa istilah untuk teknik preparasi saluran akar yang menggunakan gerakan berimbang untuk mengurangi risiko fraktur instrumen?",
+"options": ["Teknik Balanced Force", "Teknik Crown-Down", "Teknik Step-Back", "Teknik Step-Down"],
+"answer": "Teknik Balanced Force"
+},
+                // Tambahkan pertanyaan lainnya sesuai kebutuhan
+            ]
+        };
+
+        // Definisikan waktu untuk setiap level
+        const levelTime = {
+            'mudah': 10,
+            'sedang': 10,
+            'susah': 15,
+            'Ekspert': 20
+        };
+
+        let shuffledQuestions = [];
+        let correctCount = 0;
+        let wrongCount = 0;
+        let currentQuestionIndex = 0;
+        let selectedLevel = '';
+        let timer;
+        let timePerQuestion = 10; // Default waktu per soal
+        let timeLeft = 10; // Waktu yang tersisa
+        const warningThreshold = 3; // Detik sebelum waktu habis untuk memulai animasi
+
+        // Fungsi untuk mengacak array menggunakan Fisher-Yates Shuffle
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Fungsi untuk menampilkan section yang dipilih dan menyembunyikan lainnya
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                if(section.id === sectionId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+        }
+
+        // Fungsi untuk memulai kuis
+        function startQuiz(level) {
+            selectedLevel = level;
+            // Atur waktu per pertanyaan berdasarkan level
+            timePerQuestion = levelTime[level];
+            // Reset skor
+            correctCount = 0;
+            wrongCount = 0;
+            currentQuestionIndex = 0;
+            // Reset hasil akhir
+            document.getElementById('finalScore').innerText = `Nilai Anda: 0`;
+            document.getElementById('finalMessage').innerText = "Pesan akan muncul di sini.";
+            // Sembunyikan pilihan level dan tampilkan kuis
+            showSection('quizSection');
+            // Shuffle dan muat pertanyaan
+            shuffleQuestions(level);
+            loadQuestion();
+            updateProgressBar(); // Inisialisasi Progress Bar
+        }
+
+        // Fungsi untuk mengacak dan memilih pertanyaan
+        function shuffleQuestions(level) {
+            // Mengacak semua pertanyaan untuk level yang dipilih
+            shuffledQuestions = shuffleArray([...questions[level]]);
+            // Batasi jumlah pertanyaan jika diperlukan, misalnya 10
+            if (shuffledQuestions.length > 10) {
+                shuffledQuestions = shuffledQuestions.slice(0, 10);
+            }
+        }
+
+        // Fungsi untuk memuat pertanyaan
+        function loadQuestion() {
+            resetTimer();
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            document.getElementById("question").innerText = currentQuestion.question;
+            const optionsList = document.getElementById("options");
+            optionsList.innerHTML = "";
+
+            // Mengacak urutan pilihan jawaban
+            let shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+            shuffledOptions.forEach(option => {
+                const li = document.createElement("li");
+                li.innerText = option;
+                li.onclick = () => checkAnswer(option);
+                optionsList.appendChild(li);
+            });
+
+            // Perbarui tampilan timer
+            document.getElementById("timer").innerText = `Waktu: ${timePerQuestion} Detik`;
+            startTimer();
+        }
+
+        // Fungsi untuk memeriksa jawaban
+        function checkAnswer(selectedOption) {
+            clearInterval(timer); // Hentikan timer saat jawaban dipilih
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const resultDiv = document.getElementById("result");
+
+            if (selectedOption === currentQuestion.answer) {
+                resultDiv.innerText = "Jawaban Benar!";
+                resultDiv.className = "text-success";
+                correctCount++;
+            } else {
+                resultDiv.innerText = `Jawaban Salah! Jawaban benar: ${currentQuestion.answer}`;
+                resultDiv.className = "text-danger";
+                wrongCount++;
+            }
+            updateProgressBar(); // Perbarui Progress Bar setelah menjawab
+
+            // Lanjutkan ke pertanyaan berikutnya setelah delay
+            setTimeout(nextQuestion, 1500);
+        }
+
+        // Fungsi untuk melanjutkan ke pertanyaan berikutnya
+        function nextQuestion() {
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerText = "";
+            if (currentQuestionIndex < shuffledQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                // Selesai kuis, tampilkan hasil akhir
+                showFinalResult();
+            }
+        }
+
+        // Fungsi untuk kembali ke pilihan level
+        function goToLevelSelection() {
+            showSection('levelSelection');
+            // Reset skor dan pertanyaan
+            correctCount = 0;
+            wrongCount = 0;
+            currentQuestionIndex = 0;
+            // Reset hasil akhir
+            document.getElementById('finalScore').innerText = `Nilai Anda: 0`;
+            document.getElementById('finalMessage').innerText = "Pesan akan muncul di sini.";
+            // Reset Progress Bar
+            resetProgressBar();
+        }
+
+        // Fungsi untuk menampilkan hasil akhir
+        function showFinalResult() {
+            // Hitung total skor
+            const totalQuestions = shuffledQuestions.length;
+            const finalScore = Math.round((correctCount / totalQuestions) * 100);
+
+            // Tentukan pesan berdasarkan skor
+            let message = '';
+            if (finalScore === 100) {
+                message = "Luar Biasa! Anda mendapatkan nilai sempurna!";
+            } else if (finalScore >= 80) {
+                message = "Bagus! Anda memiliki pemahaman yang kuat.";
+            } else if (finalScore >= 50) {
+                message = "Cukup! Ada beberapa area yang perlu diperbaiki.";
+            } else {
+                message = "Perlu usaha lebih! Silakan belajar lagi.";
+            }
+
+            // Tampilkan hasil akhir
+            document.getElementById('finalScore').innerText = `Nilai Anda: ${finalScore}`;
+            document.getElementById('finalMessage').innerText = message;
+
+            // Tampilkan final result section
+            showSection('finalResultSection');
+        }
+
+        // Fungsi untuk mengulang kuis
+        function restartQuiz() {
+            showSection('levelSelection');
+            // Reset skor dan pertanyaan
+            correctCount = 0;
+            wrongCount = 0;
+            currentQuestionIndex = 0;
+            // Reset hasil akhir
+            document.getElementById('finalScore').innerText = `Nilai Anda: 0`;
+            document.getElementById('finalMessage').innerText = "Pesan akan muncul di sini.";
+            // Reset Progress Bar
+            resetProgressBar();
+        }
+
+        // Timer Functions
+        function startTimer() {
+            timeLeft = timePerQuestion;
+            updateTimerDisplay();
+
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= warningThreshold && timeLeft > 0) {
+                    document.getElementById("timer").classList.add('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    // Tandai jawaban sebagai salah dan lanjutkan ke soal berikutnya
+                    wrongCount++;
+                    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+                    const resultDiv = document.getElementById("result");
+                    resultDiv.innerText = `Waktu Habis! Jawaban benar: ${currentQuestion.answer}`;
+                    resultDiv.className = "text-danger";
+                    updateProgressBar();
+                    setTimeout(nextQuestion, 1500);
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            document.getElementById("timer").innerText = `Waktu: ${timePerQuestion} Detik`;
+            document.getElementById("timer").classList.remove('warning');
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById("timer").innerText = `Waktu: ${timeLeft} Detik`;
+        }
+
+        // Progress Bar Functions
+        function updateProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const totalQuestions = shuffledQuestions.length;
+            const currentProgress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            progressBar.style.width = `${currentProgress}%`;
+        }
+
+        function resetProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            progressBar.style.width = `0%`;
+        }
+
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        // Load dark mode preference from localStorage
+        if(localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+        }
+
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

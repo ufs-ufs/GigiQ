@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kondisi Umum - GigiQ</title>
+    <!-- Bootstrap CSS (Minified) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Minified) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Optimized) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --back-button-bg: #007bff; /* Warna dasar tombol "Kembali" di mode terang */
+            --back-button-text: #fff; /* Warna teks tombol "Kembali" di mode terang */
+            --back-button-hover-bg: #0056b3; /* Warna hover tombol "Kembali" di mode terang */
+            --section-bg: #fff;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --back-button-bg: #ffc107; /* Warna dasar tombol "Kembali" di mode gelap */
+            --back-button-text: #212529; /* Warna teks tombol "Kembali" di mode gelap */
+            --back-button-hover-bg: #e6ac00; /* Warna hover tombol "Kembali" di mode gelap */
+            --section-bg: #1f1f1f;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107; /* Warna aksen di mode terang */
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b; /* Warna aksen di mode gelap */
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px 60px 20px; /* Adjust padding-top and padding-bottom to prevent overlap with fixed header and footer */
+            min-height: calc(100vh - 140px); /* Adjust based on header and footer height */
+            transition: opacity 0.5s ease;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Menu Button */
+        .menu-button {
+            background-color: var(--button-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            text-decoration: none; /* Remove underline for <a> tags */
+            color: var(--button-text); /* Inherit text color */
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .menu-button i {
+            font-size: 2rem;
+            color: inherit;
+            margin-bottom: 10px;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .menu-button:hover i {
+            transform: rotate(10deg);
+        }
+
+        .menu-button span {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .menu-button:hover span {
+            color: var(--button-hover-text);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: var(--back-button-bg);
+            color: var(--back-button-text);
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: var(--back-button-hover-bg);
+            color: var(--back-button-hover-text);
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .back-button span {
+            font-size: 1rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        /* Footer (Optional) */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .menu-button {
+                padding: 20px 10px;
+            }
+
+            .menu-button i {
+                font-size: 1.5rem;
+            }
+
+            .menu-button span {
+                font-size: 0.9rem;
+            }
+
+            .back-button i {
+                font-size: 1rem;
+            }
+
+            .back-button span {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>GigiQ</h2>
+        <!-- Toggle Switch for Dark Mode -->
+        <div class="dark-mode-toggle form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">
+                <i class="fas fa-sun" id="sunIcon"></i>
+                <i class="fas fa-moon" id="moonIcon"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Kondisi Umum pada Gigi Section -->
+        <div id="kondisi-gigi-section" class="content-section active-section">
+            <button class="back-button" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Kondisi Umum pada Gigi</h2>
+            <div class="menu-grid">
+                <!-- Gigi Berlubang -->
+                <div class="menu-button" onclick="showSection('gigi-berlubang-section')">
+                    <i class="fas fa-tooth"></i>
+                    <span>Gigi Berlubang</span>
+                </div>
+                <!-- Sakit Gigi -->
+                <div class="menu-button" onclick="showSection('sakit-gigi-section')">
+                    <i class="fas fa-sad-teeth"></i>
+                    <span>Sakit Gigi</span>
+                </div>
+                <!-- Gigi Sensitif -->
+                <div class="menu-button" onclick="showSection('gigi-sensitif-section')">
+                    <i class="fas fa-eye-dropper"></i>
+                    <span>Gigi Sensitif</span>
+                </div>
+                <!-- Masalah Gusi -->
+                <div class="menu-button" onclick="showSection('masalah-gusi-section')">
+                    <i class="fas fa-teeth-open"></i>
+                    <span>Masalah Gusi</span>
+                </div>
+                <!-- Pendarahan Gusi -->
+                <div class="menu-button" onclick="showSection('pendarahan-gusi-section')">
+                    <i class="fas fa-blood-drop"></i>
+                    <span>Pendarahan Gusi</span>
+                </div>
+                <!-- Gigi Patah atau Retak -->
+                <div class="menu-button" onclick="showSection('gigi-patah-section')">
+                    <i class="fas fa-bone"></i>
+                    <span>Gigi Patah/Retak</span>
+                </div>
+                <!-- Gigi yang Tumbuh Tidak Rata -->
+                <div class="menu-button" onclick="showSection('gigi-tumbuh-tidak-rata-section')">
+                    <i class="fas fa-align-left"></i>
+                    <span>Gigi Tidak Rata</span>
+                </div>
+                <!-- Gigi Impaksi -->
+                <div class="menu-button" onclick="showSection('gigi-impaksi-section')">
+                    <i class="fas fa-teeth"></i>
+                    <span>Gigi Impaksi</span>
+                </div>
+                <!-- Protesa Gigi (Gigi Palsu) -->
+                <div class="menu-button" onclick="showSection('protesa-gigi-section')">
+                    <i class="fas fa-denture"></i>
+                    <span>Protesa Gigi</span>
+                </div>
+                <!-- Munculnya Sariawan -->
+                <div class="menu-button" onclick="showSection('sariawan-section')">
+                    <i class="fas fa-mouth"></i>
+                    <span>Munculnya Sariawan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gigi Berlubang Section -->
+        <div id="gigi-berlubang-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Gigi Berlubang</h2>
+            <h4>Penyebab Gigi Berlubang</h4>
+            <p>Gigi berlubang disebabkan oleh plak, bakteri, dan konsumsi gula yang berlebihan.</p>
+            
+            <h4>Dampak Gigi Berlubang</h4>
+            <p>Nyeri, infeksi, dan kerusakan lebih lanjut pada struktur gigi dapat terjadi jika tidak ditangani.</p>
+            
+            <h4>Cara Mencegah dan Mengatasi</h4>
+            <ul>
+                <li>Menjaga kebersihan gigi dengan menyikat minimal dua kali sehari.</li>
+                <li>Mengurangi konsumsi gula dan makanan manis.</li>
+                <li>Melakukan perawatan tambal gigi jika sudah berlubang.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="karies.gif" alt="Gigi Berlubang" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Sakit Gigi Section -->
+        <div id="sakit-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Sakit Gigi</h2>
+            <h4>Penyebab Sakit Gigi</h4>
+            <p>Sakit gigi dapat disebabkan oleh infeksi, abses, atau gigi sensitif.</p>
+            
+            <h4>Pertolongan Pertama untuk Sakit Gigi</h4>
+            <ul>
+                <li>Menjaga kebersihan gigi dan mulut.</li>
+                <li>Menggunakan obat pereda nyeri yang direkomendasikan.</li>
+            </ul>
+            
+            <h4>Pencegahan Sakit Gigi</h4>
+            <ul>
+                <li>Kebersihan gigi yang baik.</li>
+                <li>Diet sehat dan seimbang.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="sakitgigi.gif" alt="Sakit Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Gigi Sensitif Section -->
+        <div id="gigi-sensitif-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Gigi Sensitif</h2>
+            <h4>Apa Itu Gigi Sensitif?</h4>
+            <p>Gigi sensitif adalah kondisi di mana gigi merespons rangsangan tertentu seperti makanan atau minuman panas, dingin, manis, atau asam.</p>
+            
+            <h4>Penyebab Gigi Sensitif</h4>
+            <p>Gigi sensitif dapat disebabkan oleh erosi email, gusi surut, kebiasaan menyikat gigi terlalu keras, atau kerusakan gigi.</p>
+            
+            <h4>Cara Mengatasi dan Perawatan Gigi Sensitif</h4>
+            <ul>
+                <li>Menggunakan pasta gigi khusus untuk gigi sensitif.</li>
+                <li>Hindari makanan dan minuman yang dapat memicu sensitivitas.</li>
+                <li>Konsultasi dengan dokter gigi untuk perawatan lebih lanjut.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="gigisensitif.gif" alt="Gigi Sensitif" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Masalah Gusi Section -->
+        <div id="masalah-gusi-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Masalah Gusi</h2>
+            <h4>Gingivitis (Radang Gusi)</h4>
+            <p>Gingivitis adalah peradangan pada gusi yang disebabkan oleh plak dan bakteri. Gejala termasuk gusi merah, bengkak, dan mudah berdarah.</p>
+            
+            <h4>Periodontitis (Penyakit Gusi Lanjut)</h4>
+            <p>Periodontitis adalah tahap lanjut dari gingivitis yang dapat menyebabkan kerusakan pada jaringan pendukung gigi, termasuk tulang.</p>
+            
+            <h4>Pencegahan dan Perawatan Gusi</h4>
+            <ul>
+                <li>Kebersihan mulut yang baik dengan menyikat dan flossing rutin.</li>
+                <li>Scaling rutin oleh dokter gigi untuk menghilangkan plak dan karang gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="periodontitis.gif" alt="Masalah Gusi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pendarahan Gusi Section -->
+        <div id="pendarahan-gusi-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pendarahan Gusi</h2>
+            <h4>Apa Itu Pendarahan Gusi?</h4>
+            <p>Pendarahan gusi adalah kondisi di mana gusi mengalami perdarahan, sering kali terjadi saat menyikat gigi atau flossing.</p>
+            
+            <h4>Penyebab Pendarahan Gusi</h4>
+            <ul>
+                <li>Gingivitis atau radang gusi.</li>
+                <li>Fluorosis, yaitu konsumsi fluoride berlebih.</li>
+                <li>Kekurangan vitamin C dan K.</li>
+                <li>Perubahan hormonal, terutama pada wanita.</li>
+            </ul>
+            
+            <h4>Cara Mencegah dan Mengatasi Pendarahan Gusi</h4>
+            <ul>
+                <li>Menjaga kebersihan mulut dengan rutin menyikat dan flossing.</li>
+                <li>Menggunakan sikat gigi dengan bulu yang lembut.</li>
+                <li>Konsultasi dengan dokter gigi untuk perawatan lebih lanjut.</li>
+                <li>Mengonsumsi makanan kaya vitamin C dan K.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="pendarahan-gusi.gif" alt="Pendarahan Gusi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Gigi Patah atau Retak Section -->
+        <div id="gigi-patah-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Gigi Patah atau Retak</h2>
+            <h4>Penyebab Gigi Patah atau Retak</h4>
+            <p>Gigi patah atau retak dapat disebabkan oleh trauma, mengunyah makanan keras, atau kebiasaan menggigit benda keras seperti es.</p>
+            
+            <h4>Dampak Gigi Patah atau Retak</h4>
+            <p>Rasa sakit, sensitivitas, dan risiko infeksi dapat meningkat jika gigi patah atau retak tidak segera ditangani.</p>
+            
+            <h4>Cara Mencegah dan Mengatasi</h4>
+            <ul>
+                <li>Menghindari mengunyah makanan keras.</li>
+                <li>Memakai pelindung mulut saat berolahraga.</li>
+                <li>Konsultasi dengan dokter gigi untuk perbaikan atau penambalan gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="gigi-patah.gif" alt="Gigi Patah atau Retak" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Gigi yang Tumbuh Tidak Rata Section -->
+        <div id="gigi-tumbuh-tidak-rata-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Gigi yang Tumbuh Tidak Rata</h2>
+            <h4>Apa Itu Gigi yang Tumbuh Tidak Rata?</h4>
+            <p>Gigi yang tumbuh tidak rata adalah kondisi di mana posisi gigi tidak sejajar atau bergeser dari posisi normalnya.</p>
+            
+            <h4>Penyebab Gigi Tumbuh Tidak Rata</h4>
+            <ul>
+                <li>Faktor genetik.</li>
+                <li>Kehilangan gigi tanpa penggantian.</li>
+                <li>Permainan mulut yang salah atau kebiasaan buruk seperti menggigit kuku.</li>
+                <li>Perkembangan rahang yang tidak seimbang.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi dan Perawatan</h4>
+            <ul>
+                <li>Perawatan ortodontik seperti kawat gigi atau aligner transparan.</li>
+                <li>Penggunaan behel gigi untuk memperbaiki posisi gigi.</li>
+                <li>Konsultasi dengan dokter gigi spesialis ortodonti.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="gigi-tidak-rata.gif" alt="Gigi Tidak Rata" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Gigi Impaksi Section -->
+        <div id="gigi-impaksi-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Gigi Impaksi</h2>
+            <h4>Apa Itu Gigi Impaksi?</h4>
+            <p>Gigi impaksi adalah kondisi di mana gigi tumbuh terjebak di bawah gusi atau tulang rahang dan tidak muncul ke permukaan.</p>
+            
+            <h4>Penyebab Gigi Impaksi</h4>
+            <ul>
+                <li>Kurangnya ruang di rahang untuk gigi tumbuh.</li>
+                <li>Posisi gigi yang tidak normal.</li>
+                <li>Faktor genetik yang mempengaruhi pertumbuhan gigi.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Gigi Impaksi</h4>
+            <ul>
+                <li>Konsultasi dengan dokter gigi atau spesialis bedah mulut.</li>
+                <li>Prosedur pembedahan untuk mengeluarkan gigi impaksi.</li>
+                <li>Perawatan ortodontik untuk mengatur posisi gigi setelah pengeluaran gigi impaksi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="gigi-impaksi.gif" alt="Gigi Impaksi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Protesa Gigi (Gigi Palsu) Section -->
+        <div id="protesa-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Protesa Gigi (Gigi Palsu)</h2>
+            <h4>Apa Itu Protesa Gigi?</h4>
+            <p>Protesa gigi adalah alat pengganti gigi yang digunakan untuk menggantikan gigi yang hilang atau rusak.</p>
+            
+            <h4>Jenis-jenis Protesa Gigi</h4>
+            <ul>
+                <li><strong>Protesa Parsial:</strong> Digunakan ketika hanya sebagian gigi yang hilang.</li>
+                <li><strong>Protesa Lengkap:</strong> Digunakan ketika semua gigi di rahang atas atau bawah hilang.</li>
+                <li><strong>Protesa Implant:</strong> Menggunakan implan titanium sebagai dasar untuk menempelkan gigi palsu.</li>
+            </ul>
+            
+            <h4>Cara Merawat Protesa Gigi</h4>
+            <ul>
+                <li>Menjaga kebersihan protesa dengan menyikatnya setiap hari.</li>
+                <li>Menyimpan protesa di air atau larutan khusus saat tidak digunakan.</li>
+                <li>Rutin memeriksakan protesa ke dokter gigi untuk penyesuaian.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="protesa-gigi.gif" alt="Protesa Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Munculnya Sariawan Section -->
+        <div id="sariawan-section" class="content-section">
+            <button class="back-button" onclick="showSection('kondisi-gigi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Munculnya Sariawan</h2>
+            <h4>Apa Itu Sariawan?</h4>
+            <p>Sariawan adalah luka kecil yang muncul di dalam mulut, termasuk di bibir, pipi, lidah, atau gusi.</p>
+            
+            <h4>Penyebab Munculnya Sariawan</h4>
+            <ul>
+                <li>Trauma ringan pada mulut seperti menggigit lidah atau pipi.</li>
+                <li>Stres dan kelelahan.</li>
+                <li>Defisiensi vitamin B12, zat besi, atau folat.</li>
+                <li>Perubahan hormon.</li>
+                <li>Reaksi alergi terhadap makanan tertentu.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi dan Mencegah Sariawan</h4>
+            <ul>
+                <li>Menghindari makanan pedas atau asam yang dapat memperparah sariawan.</li>
+                <li>Menjaga kebersihan mulut dengan rutin menyikat gigi dan menggunakan obat kumur antiseptik.</li>
+                <li>Mengonsumsi suplemen vitamin jika diperlukan.</li>
+                <li>Mengelola stres dengan teknik relaksasi.</li>
+                <li>Konsultasi dengan dokter jika sariawan sering kambuh atau tidak kunjung sembuh.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="sariawan.gif" alt="Munculnya Sariawan" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (Optional) -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies (Minified) dengan defer untuk non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS dengan Async untuk non-blocking -->
+    <script>
+        // Fungsi untuk menampilkan section yang dipilih dan menyembunyikan lainnya
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                if(section.id === sectionId) {
+                    section.classList.add('active-section');
+                } else {
+                    section.classList.remove('active-section');
+                    // Pause dan reset video di section yang disembunyikan
+                    const videos = section.querySelectorAll('video');
+                    videos.forEach(video => {
+                        video.pause();
+                        video.currentTime = 0;
+                    });
+                }
+            });
+        }
+
+        // Fungsi untuk menavigasi ke halaman HTML lokal yang berbeda
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Cek preferensi mode dari localStorage saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+        });
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    </script>
+</body>
+</html>

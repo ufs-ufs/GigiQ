@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <!-- Menonaktifkan cache browser -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri - GigiQ</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --back-button-bg: #007bff;
+            --back-button-text: #fff;
+            --back-button-hover-bg: #0056b3;
+            --section-bg: #fff;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+
+            /* Delete Button Colors */
+            --delete-btn-color: #000;
+            --delete-btn-hover-color: #555;
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --back-button-bg: #ffc107;
+            --back-button-text: #212529;
+            --back-button-hover-bg: #e6ac00;
+            --section-bg: #1f1f1f;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+
+            /* Delete Button Colors in Dark Mode */
+            --delete-btn-color: #fff;
+            --delete-btn-hover-color: #ccc;
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header-left,
+        .header-center,
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-center {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .header-center h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107;
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 100px 20px 80px 20px; /* Adjusted padding-top to accommodate fixed header */
+            min-height: calc(100vh - 180px); /* Adjusted to accommodate header and footer */
+            transition: opacity 0.5s ease;
+        }
+
+        /* Gallery Styles */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .gallery-item {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px var(--shadow-color);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            loading: lazy; /* Mengaktifkan lazy loading */
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            width: 100%;
+            text-align: center;
+            padding: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Add Image Button */
+        .add-image-btn {
+            margin-bottom: 20px;
+        }
+
+        /* Reset Gallery Button */
+        .reset-gallery-btn {
+            color: #dc3545; /* Warna merah untuk tombol reset */
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .reset-gallery-btn:hover {
+            color: #a71d2a;
+        }
+
+        .reset-gallery-btn i {
+            margin-right: 5px;
+        }
+
+        /* Delete Button */
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--delete-btn-color); /* Warna sesuai mode */
+            padding: 0;
+            cursor: pointer;
+            display: none; /* Disembunyikan secara default */
+            transition: color 0.3s ease;
+            z-index: 10;
+            font-size: 1.2rem;
+        }
+
+        .gallery-item.user-added .delete-btn {
+            display: block; /* Tampilkan tombol hapus untuk user-added images */
+        }
+
+        .delete-btn:hover {
+            color: var(--delete-btn-hover-color); /* Warna saat hover */
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Modal Fullscreen Image */
+        .modal-img-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            touch-action: none; /* Menghindari konflik gestur */
+        }
+
+        .modal-img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            transform: scale(1);
+            cursor: grab;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 1050;
+        }
+
+        .zoom-controls button {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .zoom-controls button:hover {
+            background: rgba(0,0,0,0.7);
+        }
+
+        /* Navigation Controls */
+        .nav-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            z-index: 1050;
+        }
+
+        .nav-controls button {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #fff;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background 0.3s ease;
+        }
+
+        .nav-controls button:hover {
+            background: rgba(0,0,0,0.7);
+        }
+
+        /* Logout Link */
+        .logout-link {
+            color: var(--header-text);
+            text-decoration: none;
+            font-size: 1rem;
+            margin-right: 20px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-link:hover {
+            color: var(--button-hover-text);
+        }
+
+        /* Title in Header */
+        .header-center h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <!-- Logout Link -->
+            <a href="index.html" class="logout-link"><i class="fas fa-sign-out-alt me-2"></i> Keluar</a>
+        </div>
+        <div class="header-center">
+            <!-- Judul Galeri -->
+            <h2>Galeri GigiQ</h2>
+        </div>
+        <div class="header-right">
+            <!-- Toggle Switch for Dark Mode -->
+            <div class="dark-mode-toggle form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                <label class="form-check-label" for="darkModeToggle">
+                    <i class="fas fa-sun" id="sunIcon"></i>
+                    <i class="fas fa-moon" id="moonIcon"></i>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Tombol Tambah Gambar -->
+        <button class="btn btn-primary add-image-btn" data-bs-toggle="modal" data-bs-target="#addImageModal">
+            <i class="fas fa-plus"></i> Tambah Gambar
+        </button>
+
+        <!-- Galeri Gambar -->
+        <div class="gallery" id="gallery">
+            <!-- Gambar-gambar akan diisi secara dinamis oleh JavaScript -->
+        </div>
+
+        <!-- Tombol Reset Galeri -->
+        <button class="reset-gallery-btn" id="resetGalleryBtn">
+            <i class="fas fa-redo"></i> Reset Galeri
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Modal untuk Menampilkan Gambar Layar Penuh -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+        <div class="modal-content bg-transparent border-0">
+          <div class="modal-header border-0">
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0">
+            <div class="modal-img-container">
+                <!-- Zoom Controls for Desktop -->
+                <div class="zoom-controls d-none d-md-flex">
+                    <button id="zoomInBtn"><i class="fas fa-search-plus"></i></button>
+                    <button id="zoomOutBtn"><i class="fas fa-search-minus"></i></button>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="nav-controls">
+                    <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                    <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+
+                <img src="" alt="Gambar" class="modal-img" id="modalImage">
+            </div>
+            <p class="mt-2 text-white text-center" id="modalCaption"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal untuk Menambah Gambar -->
+    <div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addImageModalLabel">Tambah Gambar Baru</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addImageForm">
+              <div class="mb-3">
+                <label for="imageFile" class="form-label">Pilih Gambar</label>
+                <input type="file" class="form-control" id="imageFile" accept="image/*" required>
+                <div id="fileHelp" class="form-text">Maksimal ukuran file: 1MB.</div>
+              </div>
+              <div class="mb-3">
+                <label for="imageCaption" class="form-label">Keterangan</label>
+                <input type="text" class="form-control" id="imageCaption" required placeholder="Masukkan keterangan">
+              </div>
+              <button type="submit" class="btn btn-primary">Tambah Gambar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Variabel global untuk menyimpan data galeri dan indeks saat ini
+        let galleryDataGlobal = [];
+        let currentIndex = 0;
+        let translateX = 0;
+        let translateY = 0;
+
+        // Inisialisasi IndexedDB
+        let db;
+        const request = indexedDB.open('GalleryDB', 1);
+
+        request.onerror = function(event) {
+            console.error('Database error:', event.target.errorCode);
+        };
+
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            const objectStore = db.createObjectStore('images', { keyPath: 'id', autoIncrement: true });
+            objectStore.createIndex('id', 'id', { unique: true });
+        };
+
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            // Cek preferensi mode dari localStorage saat halaman dimuat
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+
+            // Cek apakah ada galeri yang disimpan di IndexedDB
+            loadGallery();
+        };
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Fungsi untuk memuat galeri dari IndexedDB dan default
+        async function loadGallery() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            // Tampilkan default images
+            const defaultImages = [
+                { id: 'default1', url: 'penampanggigi.jpg', caption: 'Penampang Gigi', isDefault: true },
+                { id: 'default2', url: 'impaksigigi1.jpg', caption: 'Impaksi', isDefault: true },
+                { id: 'default3', url: 'granuloma.jpg', caption: 'Granuloma', isDefault: true },
+                { id: 'default4', url: 'impaksi2.jpg', caption: 'Impaksi', isDefault: true },
+                { id: 'default5', url: 'jadwaltanggalgigianak.jpg', caption: 'Jadwal Lepas Gigi Anak', isDefault: true },
+                { id: 'default6', url: 'erupsigigidewasa.png', caption: 'Erupsi Gigi Dewasa', isDefault: true },
+                { id: 'default7', url: 'abses.webp', caption: 'Abses Gigi', isDefault: true },
+                { id: 'default8', url: 'periodontitis.gif', caption: 'Periodontitis', isDefault: true },
+                { id: 'default9', url: 'karies.gif', caption: 'Karies', isDefault: true },
+                { id: 'default10', url: 'kawatgigi.gif', caption: 'Kawat Gigi', isDefault: true },
+                { id: 'default11', url: 'psa.gif', caption: 'Perawatan Saluran Akar', isDefault: true },
+                { id: 'default12', url: 'implan.gif', caption: 'Implant', isDefault: true },
+                { id: 'default13', url: 'scaling.gif', caption: 'Scaling', isDefault: true },
+                { id: 'default14', url: 'Veneers.gif', caption: 'Veneers', isDefault: true },
+                { id: 'default15', url: 'impeksimulut.jpg', caption: 'Infeksi Mulut', isDefault: true },
+            ];
+
+            defaultImages.forEach((item, index) => {
+                const galleryItem = createGalleryItem(item, index, true);
+                gallery.appendChild(galleryItem);
+            });
+
+            // Ambil gambar dari IndexedDB
+            const transaction = db.transaction(['images'], 'readonly');
+            const objectStore = transaction.objectStore('images');
+            const request = objectStore.getAll();
+
+            request.onsuccess = function(event) {
+                const userImages = event.target.result;
+                userImages.forEach((item, index) => {
+                    const adjustedIndex = defaultImages.length + index;
+                    const galleryItem = createGalleryItem(item, adjustedIndex, false);
+                    gallery.appendChild(galleryItem);
+                });
+
+                // Simpan data ke variabel global
+                galleryDataGlobal = defaultImages.concat(userImages);
+            };
+
+            request.onerror = function(event) {
+                console.error('Error fetching images from IndexedDB:', event.target.errorCode);
+            };
+        }
+
+        // Fungsi untuk membuat elemen gallery item
+        function createGalleryItem(item, index, isDefault) {
+            const galleryItem = document.createElement('div');
+            galleryItem.classList.add('gallery-item');
+            if(!isDefault) {
+                galleryItem.classList.add('user-added');
+            }
+
+            // Membuat elemen gambar dengan atribut loading="lazy"
+            const img = document.createElement('img');
+            img.src = item.url;
+            img.alt = item.caption;
+            img.setAttribute('data-url', item.url);
+            img.setAttribute('data-caption', item.caption);
+            img.setAttribute('data-index', index); // Menyimpan indeks gambar
+            img.loading = 'lazy'; // Memastikan lazy loading
+
+            // Membuat elemen caption
+            const caption = document.createElement('div');
+            caption.classList.add('caption');
+            caption.textContent = item.caption;
+
+            // Membuat tombol hapus
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.title = 'Hapus Gambar';
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; // Ikon hapus
+
+            if(isDefault) {
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Mencegah pemicu klik gambar
+                    hapusGambarDefault(item.id);
+                });
+            } else {
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Mencegah pemicu klik gambar
+                    hapusGambarUser(item.id);
+                });
+            }
+
+            galleryItem.appendChild(img);
+            galleryItem.appendChild(caption);
+            galleryItem.appendChild(deleteBtn);
+
+            // Event Listener untuk gambar
+            img.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                const captionText = this.getAttribute('data-caption');
+                const index = parseInt(this.getAttribute('data-index'));
+                openModal(url, captionText, index);
+            });
+
+            return galleryItem;
+        }
+
+        // Fungsi untuk menambahkan gambar baru
+        const addImageForm = document.getElementById('addImageForm');
+        addImageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const imageFile = document.getElementById('imageFile').files[0];
+            const imageCaption = document.getElementById('imageCaption').value.trim();
+
+            if(imageFile && imageCaption) {
+                // Membatasi ukuran gambar maksimal 1MB
+                const maxSize = 1 * 1024 * 1024; // 1MB
+                if(imageFile.size > maxSize) {
+                    alert('Ukuran file terlalu besar. Maksimal 1MB.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imageDataURL = event.target.result;
+
+                    // Kompresi Gambar sebelum menyimpannya (opsional)
+                    compressImage(imageDataURL, 0.7, function(compressedDataURL) {
+                        // Simpan gambar ke IndexedDB
+                        const transaction = db.transaction(['images'], 'readwrite');
+                        const objectStore = transaction.objectStore('images');
+                        const request = objectStore.add({
+                            url: compressedDataURL,
+                            caption: imageCaption,
+                            isDefault: false
+                        });
+
+                        request.onsuccess = function(event) {
+                            // Reload galeri setelah gambar ditambahkan
+                            loadGallery();
+
+                            // Reset form dan tutup modal
+                            addImageForm.reset();
+                            const addImageModal = bootstrap.Modal.getInstance(document.getElementById('addImageModal'));
+                            addImageModal.hide();
+                        };
+
+                        request.onerror = function(event) {
+                            console.error('Error adding image to IndexedDB:', event.target.errorCode);
+                            alert('Gagal menambahkan gambar. Silakan coba lagi.');
+                        };
+                    });
+                }
+                reader.readAsDataURL(imageFile);
+            }
+        });
+
+        // Fungsi untuk mengompresi gambar
+        function compressImage(dataUrl, quality, callback) {
+            const img = new Image();
+            img.src = dataUrl;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const maxWidth = 800; // Lebar maksimal gambar
+                const scaleSize = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scaleSize;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                // Menggunakan format WebP untuk kompresi yang lebih baik
+                const compressedDataUrl = canvas.toDataURL('image/webp', quality);
+                callback(compressedDataUrl);
+            }
+        }
+
+        // Fungsi untuk menghapus gambar user-added
+        function hapusGambarUser(id) {
+            if(confirm('Apakah Anda yakin ingin menghapus gambar ini?')) {
+                const transaction = db.transaction(['images'], 'readwrite');
+                const objectStore = transaction.objectStore('images');
+                const request = objectStore.delete(id);
+
+                request.onsuccess = function(event) {
+                    // Reload galeri setelah gambar dihapus
+                    loadGallery();
+                };
+
+                request.onerror = function(event) {
+                    console.error('Error deleting image from IndexedDB:', event.target.errorCode);
+                    alert('Gagal menghapus gambar. Silakan coba lagi.');
+                };
+            }
+        }
+
+        // Fungsi untuk menghapus gambar default dengan verifikasi kata sandi
+        function hapusGambarDefault(id) {
+            const password = prompt('Masukkan kata sandi untuk menghapus gambar ini:');
+            if(password === 'sakitgigi') {
+                // Jika default images disimpan dalam objek atau database, tambahkan logika penghapusan di sini.
+                // Namun, karena default images berasal dari array statis, Anda bisa menghilangkan atau mengaburkan gambar.
+
+                alert('Gambar default tidak dapat dihapus secara permanen.');
+            } else {
+                alert('Kata sandi salah. Gambar tidak dihapus.');
+            }
+        }
+
+        // Fungsi untuk menghasilkan ID unik
+        function generateUniqueId() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Menambahkan Event Listener untuk Reset Gallery
+        const resetGalleryBtn = document.getElementById('resetGalleryBtn');
+        resetGalleryBtn.addEventListener('click', function() {
+            if(confirm('Apakah Anda yakin ingin mereset galeri ke data default? Semua gambar yang ditambahkan akan dihapus.')) {
+                // Menghapus semua gambar dari IndexedDB
+                const transaction = db.transaction(['images'], 'readwrite');
+                const objectStore = transaction.objectStore('images');
+                const clearRequest = objectStore.clear();
+
+                clearRequest.onsuccess = function(event) {
+                    // Reload galeri dengan hanya default images
+                    loadGallery();
+                    alert('Galeri telah direset ke data default.');
+                };
+
+                clearRequest.onerror = function(event) {
+                    console.error('Error clearing images from IndexedDB:', event.target.errorCode);
+                    alert('Gagal mereset galeri. Silakan coba lagi.');
+                };
+            }
+        });
+
+        // Fungsi untuk membuka modal dengan indeks gambar
+        function openModal(url, caption, index) {
+            currentIndex = index;
+            document.getElementById('modalImage').src = url;
+            document.getElementById('modalCaption').textContent = caption;
+            resetZoom(); // Reset zoom saat membuka gambar baru
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
+        }
+
+        // Event Listeners untuk Next dan Previous
+        document.getElementById('nextBtn').addEventListener('click', function(e) {
+            e.stopPropagation(); // Mencegah event bubbling
+            navigateImage(1);
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', function(e) {
+            e.stopPropagation(); // Mencegah event bubbling
+            navigateImage(-1);
+        });
+
+        function navigateImage(direction) {
+            currentIndex += direction;
+            if(currentIndex < 0) {
+                currentIndex = galleryDataGlobal.length - 1; // Kembali ke gambar terakhir
+            } else if(currentIndex >= galleryDataGlobal.length) {
+                currentIndex = 0; // Kembali ke gambar pertama
+            }
+            const newImage = galleryDataGlobal[currentIndex];
+            document.getElementById('modalImage').src = newImage.url;
+            document.getElementById('modalCaption').textContent = newImage.caption;
+            resetZoom(); // Reset zoom saat navigasi
+        }
+
+        // Zoom Functionality
+        const modalImage = document.getElementById('modalImage');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+
+        let currentScale = 1;
+        const scaleStep = 0.1;
+        const maxScale = 3;
+        const minScale = 1;
+
+        zoomInBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if(currentScale < maxScale) {
+                currentScale += scaleStep;
+                updateZoom();
+            }
+        });
+
+        zoomOutBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if(currentScale > minScale) {
+                currentScale -= scaleStep;
+                updateZoom();
+            }
+        });
+
+        function updateZoom() {
+            modalImage.style.transform = `scale(${currentScale}) translate(${translateX}px, ${translateY}px)`;
+        }
+
+        function resetZoom() {
+            currentScale = 1;
+            translateX = 0;
+            translateY = 0;
+            updateZoom();
+        }
+
+        // Implementasi Pinch-to-Zoom untuk Mobile
+        let initialDistance = null;
+        let initialScale = 1;
+
+        modalImage.addEventListener('touchstart', function(e) {
+            if(e.touches.length === 2) {
+                initialDistance = getDistance(e.touches[0], e.touches[1]);
+                initialScale = currentScale;
+            }
+        }, { passive: false });
+
+        modalImage.addEventListener('touchmove', function(e) {
+            if(e.touches.length === 2 && initialDistance) {
+                e.preventDefault(); // Mencegah zoom default browser
+                const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                const scaleChange = currentDistance / initialDistance;
+                let newScale = initialScale * scaleChange;
+                newScale = Math.max(minScale, Math.min(newScale, maxScale));
+                currentScale = newScale;
+                updateZoom();
+            }
+        }, { passive: false });
+
+        modalImage.addEventListener('touchend', function(e) {
+            if(e.touches.length < 2) {
+                initialDistance = null;
+            }
+        });
+
+        function getDistance(touch1, touch2) {
+            const dx = touch2.clientX - touch1.clientX;
+            const dy = touch2.clientY - touch1.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // Optional: Panning saat di-zoom
+        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
+
+        modalImage.addEventListener('mousedown', function(e) {
+            if(currentScale > 1) {
+                isPanning = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                modalImage.style.cursor = 'grabbing';
+            }
+        });
+
+        modalImage.addEventListener('mousemove', function(e) {
+            if(isPanning) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                modalImage.style.transform = `scale(${currentScale}) translate(${translateX}px, ${translateY}px)`;
+            }
+        });
+
+        modalImage.addEventListener('mouseup', function(e) {
+            isPanning = false;
+            modalImage.style.cursor = 'grab';
+        });
+
+        modalImage.addEventListener('mouseleave', function(e) {
+            isPanning = false;
+            modalImage.style.cursor = 'grab';
+        });
+
+        // Reset transform when modal is closed
+        const imageModalElement = document.getElementById('imageModal');
+        imageModalElement.addEventListener('hidden.bs.modal', function () {
+            resetZoom();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GigiQ - Aplikasi Edukasi Gigi</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --back-button-bg: #007bff;
+            --back-button-text: #fff;
+            --back-button-hover-bg: #0056b3;
+            --section-bg: #fff;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --back-button-bg: #ffc107;
+            --back-button-text: #212529;
+            --back-button-hover-bg: #e6ac00;
+            --section-bg: #1f1f1f;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107;
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px 60px 20px;
+            min-height: calc(100vh - 140px);
+            transition: opacity 0.5s ease;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Menu Button */
+        .menu-button {
+            background-color: var(--button-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            text-decoration: none;
+            color: var(--button-text);
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .menu-button i {
+            font-size: 2rem;
+            color: inherit;
+            margin-bottom: 10px;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .menu-button:hover i {
+            transform: rotate(10deg);
+        }
+
+        .menu-button span {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .menu-button:hover span {
+            color: var(--button-hover-text);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: var(--back-button-bg);
+            color: var(--back-button-text);
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: var(--back-button-hover-bg);
+            color: var(--back-button-hover-text);
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .back-button span {
+            font-size: 1rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        /* Footer (Optional) */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .menu-button {
+                padding: 20px 10px;
+            }
+
+            .menu-button i {
+                font-size: 1.5rem;
+            }
+
+            .menu-button span {
+                font-size: 0.9rem;
+            }
+
+            .back-button i {
+                font-size: 1rem;
+            }
+
+            .back-button span {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animasi Berkedip Halus */
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .blink {
+            animation: blink 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>GigiQ</h2>
+        <!-- Toggle Switch for Dark Mode -->
+        <div class="dark-mode-toggle form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">
+                <i class="fas fa-sun" id="sunIcon"></i>
+                <i class="fas fa-moon" id="moonIcon"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Main Menu Section -->
+        <div id="beranda-section" class="content-section active-section">
+            <div class="menu-grid" id="menuGrid">
+                <!-- Konten akan diisi secara dinamis oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (Optional) -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS -->
+    <script>
+        // Ganti dengan URL ke menu.json di GitHub Pages Anda
+        const MENU_JSON_URL = 'https://ufs-ufs.github.io/gigiq-menu/menu.json'; // <--- GANTI DENGAN URL menu.json ANDA
+
+        // Fungsi untuk menavigasi ke halaman lain
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Cek preferensi mode dari localStorage saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+
+            // Fetch dan tampilkan menu dari menu.json
+            fetchMenuItems();
+        });
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Fungsi untuk mengambil dan menampilkan menu dari menu.json
+        async function fetchMenuItems() {
+            const menuGrid = document.getElementById('menuGrid');
+
+            // Menu yang tetap ada, ditambahkan "Galeri" sebagai menu pertama
+            const staticMenus = [
+                {
+                    name: 'Galeri',
+                    icon: 'fas fa-images',
+                    link: 'galeri.html' // Pastikan Anda memiliki file galeri.html
+                },
+                {
+                    name: 'Keluhan Umum',
+                    icon: 'fas fa-tooth',
+                    link: 'KondisiUmum.html'
+                },
+                {
+                    name: 'Prosedur & Perawatan',
+                    icon: 'fas fa-syringe',
+                    link: 'ProsedurPerawatan.html'
+                },
+                {
+                    name: 'Pascaperawatan',
+                    icon: 'fas fa-heartbeat',
+                    link: 'Pascaperawatan.html'
+                },
+                {
+                    name: 'Pencegahan & Kebiasaan',
+                    icon: 'fas fa-apple-alt',
+                    link: 'PencegahanKebiasaan.html'
+                },
+                {
+                    name: 'Penyakit & Infeksi',
+                    icon: 'fas fa-virus',
+                    link: 'PenyakitInfeksi.html'
+                },
+                {
+                    name: 'Video Edukasi',
+                    icon: 'fas fa-film',
+                    link: 'EdukasiVisual.html'
+                },
+                {
+                    name: 'FAQ',
+                    icon: 'fas fa-question-circle',
+                    link: 'FAQ.html'
+                },
+                {
+                    name: 'ChatBot',
+                    icon: 'fas fa-robot',
+                    link: 'chatbot.html'
+                },
+                {
+                    name: 'Game Quiz',
+                    icon: 'fas fa-gamepad',
+                    link: 'quiz.html'
+                }
+            ];
+
+            // Tambahkan menu statis terlebih dahulu
+            staticMenus.forEach(menu => {
+                const fileButton = document.createElement('div');
+                fileButton.classList.add('menu-button');
+                fileButton.innerHTML = `
+                    <i class="${menu.icon}"></i>
+                    <span>${menu.name}</span>
+                `;
+                fileButton.addEventListener('click', () => navigateTo(menu.link));
+                menuGrid.appendChild(fileButton);
+            });
+
+            // Tambahkan menu dinamis dari menu.json
+            try {
+                const response = await fetch(MENU_JSON_URL);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const menuData = await response.json();
+                
+                // Periksa apakah Survey Kuisioner ada
+                if(menuData.surveyKuisioner) {
+                    const surveyButton = document.createElement('div');
+                    surveyButton.classList.add('menu-button', 'blink'); // Menambahkan kelas 'blink' di sini
+                    surveyButton.innerHTML = `
+                        <i class="${menuData.surveyKuisioner.icon}"></i>
+                        <span>${menuData.surveyKuisioner.name}</span>
+                    `;
+                    surveyButton.addEventListener('click', () => {
+                        // Buka file HTML di tab baru
+                        window.open(menuData.surveyKuisioner.link, '_blank');
+                    });
+                    menuGrid.appendChild(surveyButton);
+                }
+            } catch (error) {
+                console.error('Error fetching menu items:', error);
+                // Anda dapat menampilkan pesan atau tindakan lain di sini jika diperlukan
+            }
+        }
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

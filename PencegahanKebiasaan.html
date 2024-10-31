@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencegahan & Kebiasaan Sehari-hari - GigiQ</title>
+    <!-- Bootstrap CSS (Minified) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Minified) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Optimized) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --back-button-bg: #007bff; /* Warna dasar tombol "Kembali" di mode terang */
+            --back-button-text: #fff; /* Warna teks tombol "Kembali" di mode terang */
+            --back-button-hover-bg: #0056b3; /* Warna hover tombol "Kembali" di mode terang */
+            --section-bg: #fff;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --back-button-bg: #ffc107; /* Warna dasar tombol "Kembali" di mode gelap */
+            --back-button-text: #212529; /* Warna teks tombol "Kembali" di mode gelap */
+            --back-button-hover-bg: #e6ac00; /* Warna hover tombol "Kembali" di mode gelap */
+            --section-bg: #1f1f1f;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107; /* Warna aksen di mode terang */
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b; /* Warna aksen di mode gelap */
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px 60px 20px; /* Adjust padding-top and padding-bottom to prevent overlap with fixed header and footer */
+            min-height: calc(100vh - 140px); /* Adjust based on header and footer height */
+            transition: opacity 0.5s ease;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Menu Button */
+        .menu-button {
+            background-color: var(--button-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            text-decoration: none; /* Remove underline for <a> tags */
+            color: var(--button-text); /* Inherit text color */
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .menu-button i {
+            font-size: 2rem;
+            color: inherit;
+            margin-bottom: 10px;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .menu-button:hover i {
+            transform: rotate(10deg);
+        }
+
+        .menu-button span {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .menu-button:hover span {
+            color: var(--button-hover-text);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: var(--back-button-bg);
+            color: var(--back-button-text);
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: var(--back-button-hover-bg);
+            color: var(--back-button-hover-text);
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .back-button span {
+            font-size: 1rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        /* Footer (Optional) */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .menu-button {
+                padding: 20px 10px;
+            }
+
+            .menu-button i {
+                font-size: 1.5rem;
+            }
+
+            .menu-button span {
+                font-size: 0.9rem;
+            }
+
+            .back-button i {
+                font-size: 1rem;
+            }
+
+            .back-button span {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>GigiQ</h2>
+        <!-- Toggle Switch for Dark Mode -->
+        <div class="dark-mode-toggle form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">
+                <i class="fas fa-sun" id="sunIcon"></i>
+                <i class="fas fa-moon" id="moonIcon"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Pencegahan & Kebiasaan Sehari-hari Section -->
+        <div id="pencegahan-section" class="content-section active-section">
+            <button class="back-button" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pencegahan & Kebiasaan Sehari-hari</h2>
+            <div class="menu-grid">
+                <!-- Menyikat Gigi dengan Teknik yang Benar -->
+                <div class="menu-button" onclick="showSection('menyikat-gigi-section')">
+                    <i class="fas fa-toothbrush"></i>
+                    <span>Menyikat Gigi</span>
+                </div>
+                <!-- Penggunaan Benang Gigi -->
+                <div class="menu-button" onclick="showSection('penggunaan-benang-gigi-section')">
+                    <i class="fas fa-thread"></i>
+                    <span>Benang Gigi</span>
+                </div>
+                <!-- Kebiasaan Buruk yang Merusak Gigi -->
+                <div class="menu-button" onclick="showSection('kebiasaan-buruk-section')">
+                    <i class="fas fa-ban"></i>
+                    <span>Kebiasaan Buruk</span>
+                </div>
+                <!-- Pemeriksaan Gigi Rutin -->
+                <div class="menu-button" onclick="showSection('pemeriksaan-rutin-section')">
+                    <i class="fas fa-tooth"></i>
+                    <span>Pemeriksaan Rutin</span>
+                </div>
+                <!-- Pola Makan yang Mendukung Kesehatan Gigi -->
+                <div class="menu-button" onclick="showSection('pola-makan-section')">
+                    <i class="fas fa-apple-alt"></i>
+                    <span>Pola Makan</span>
+                </div>
+                <!-- Penggunaan Obat Kumur yang Tepat -->
+                <div class="menu-button" onclick="showSection('penggunaan-obat-kumur-section')">
+                    <i class="fas fa-spray-can"></i>
+                    <span>Obat Kumur</span>
+                </div>
+                <!-- Panduan Menyikat Gigi pada Anak-Anak -->
+                <div class="menu-button" onclick="showSection('panduan-anak-section')">
+                    <i class="fas fa-child"></i>
+                    <span>Menyikat gigi Anak</span>
+                </div>
+                <!-- Cara Mengatasi Bau Mulut Secara Efektif -->
+                <div class="menu-button" onclick="showSection('mengatasi-bau-mulut-section')">
+                    <i class="fas fa-smile"></i>
+                    <span>Mengatasi Bau</span>
+                </div>
+                <!-- Pemilihan Produk Gigi -->
+                <div class="menu-button" onclick="showSection('pemilihan-produk-section')">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Pemilihan Produk</span>
+                </div>
+                <!-- Pentingnya Membersihkan Lidah -->
+                <div class="menu-button" onclick="showSection('membersihkan-lidah-section')">
+                    <i class="fas fa-lungs"></i>
+                    <span>Membersihkan Lidah</span>
+                </div>
+                <!-- Tips Menjaga Kelembapan Mulut -->
+                <div class="menu-button" onclick="showSection('jaga-kelembapan-section')">
+                    <i class="fas fa-water"></i>
+                    <span>Kelembapan Mulut</span>
+                </div>
+                <!-- Menghindari Seringnya Konsumsi Minuman Bersoda dan Manis -->
+                <div class="menu-button" onclick="showSection('hindari-minuman-section')">
+                    <i class="fas fa-soda"></i>
+                    <span>Hindari Minuman Bersoda</span>
+                </div>
+                <!-- Perawatan Gigi saat Menggunakan Alat Ortodontik (Kawat Gigi) -->
+                <div class="menu-button" onclick="showSection('perawatan-ortodontik-section')">
+                    <i class="fas fa-braces"></i>
+                    <span>Perawatan Ortodontik</span>
+                </div>
+                <!-- Latihan untuk Menguatkan Gigi dan Rahang -->
+                <div class="menu-button" onclick="showSection('latihan-gigi-section')">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Latihan Gigi</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menyikat Gigi Section -->
+        <div id="menyikat-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Menyikat Gigi dengan Teknik yang Benar</h2>
+            <h4>Pentingnya Menyikat Gigi</h4>
+            <p>Menyikat gigi secara teratur membantu menghilangkan plak dan mencegah kerusakan gigi serta penyakit gusi.</p>
+            
+            <h4>Teknik Menyikat Gigi yang Benar</h4>
+            <ul>
+                <li>Gunakan sikat gigi yang sesuai dan ganti setiap 3 bulan.</li>
+                <li>Sikat dengan gerakan melingkar dan lembut.</li>
+                <li>Sikat bagian depan, belakang, dan permukaan kunyah gigi.</li>
+                <li>Jangan lupa menyikat lidah untuk mengurangi bakteri.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="menyikatgigi.jpeg" alt="Menyikat Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Penggunaan Benang Gigi Section -->
+        <div id="penggunaan-benang-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Penggunaan Benang Gigi</h2>
+            <h4>Mengapa Benang Gigi Penting?</h4>
+            <p>Benang gigi membantu menghilangkan plak dan sisa makanan yang tidak bisa dijangkau oleh sikat gigi, terutama di antara gigi.</p>
+            
+            <h4>Cara Menggunakan Benang Gigi dengan Benar</h4>
+            <ul>
+                <li>Ambil sekitar 45 cm benang gigi dan ikatkan di tengah jari.</li>
+                <li>Tarik benang gigi ke atas dan ke bawah di antara dua gigi.</li>
+                <li>Gunakan gerakan lembut untuk membersihkan permukaan gigi dan di bawah garis gusi.</li>
+                <li>Ganti bagian benang gigi setelah membersihkan setiap ruang gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="benanggigi.jpeg" alt="Penggunaan Benang Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Kebiasaan Buruk Section -->
+        <div id="kebiasaan-buruk-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Kebiasaan Buruk yang Merusak Gigi</h2>
+            <h4>Jenis Kebiasaan Buruk</h4>
+            <ul>
+                <li>Menyikat gigi terlalu keras.</li>
+                <li>Mengunyah benda keras seperti es atau pensil.</li>
+                <li>Sering mengonsumsi makanan dan minuman manis atau asam.</li>
+                <li>Merokok atau menggunakan produk tembakau.</li>
+            </ul>
+            
+            <h4>Dampak Kebiasaan Buruk pada Gigi</h4>
+            <ul>
+                <li>Kerusakan email gigi.</li>
+                <li>Gigi berlubang dan penyakit gusi.</li>
+                <li>Gigi patah atau retak.</li>
+                <li>Penurunan estetika senyum.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="kebiasaanburuk.jpeg" alt="Kebiasaan Buruk yang Merusak Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pemeriksaan Gigi Rutin Section -->
+        <div id="pemeriksaan-rutin-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pemeriksaan Gigi Rutin</h2>
+            <h4>Pentingnya Pemeriksaan Rutin</h4>
+            <p>Pemeriksaan gigi secara rutin membantu mendeteksi masalah kesehatan mulut sejak dini dan mencegah perkembangan penyakit gigi dan gusi.</p>
+            
+            <h4>Frekuensi Pemeriksaan Gigi</h4>
+            <ul>
+                <li>Setidaknya dua kali setahun sekali.</li>
+                <li>Lebih sering jika memiliki risiko tinggi penyakit gigi.</li>
+            </ul>
+            
+            <h4>Apa yang Dilakukan Saat Pemeriksaan Rutin</h4>
+            <ul>
+                <li>Pemeriksaan kondisi gigi dan gusi.</li>
+                <li>Membersihkan plak dan karang gigi (scaling).</li>
+                <li>Menyusun rencana perawatan jika diperlukan.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="pemeriksaangigi.jpeg" alt="Pemeriksaan Gigi Rutin" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pola Makan yang Mendukung Kesehatan Gigi Section -->
+        <div id="pola-makan-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pola Makan yang Mendukung Kesehatan Gigi</h2>
+            <h4>Makanan yang Baik untuk Kesehatan Gigi</h4>
+            <p>Pola makan yang sehat sangat penting untuk menjaga kesehatan gigi. Berikut adalah beberapa jenis makanan yang baik untuk gigi Anda:</p>
+            <ul>
+                <li><strong>Sayuran Hijau:</strong> Kaya akan kalsium dan vitamin C yang membantu memperkuat gigi dan gusi.</li>
+                <li><strong>Buah-buahan:</strong> Mengandung air dan serat yang membantu membersihkan gigi secara alami.</li>
+                <li><strong>Kacang-Kacangan:</strong> Sumber protein dan mineral yang baik untuk kesehatan mulut.</li>
+                <li><strong>Produk Susu:</strong> Mengandung kalsium dan fosfat yang membantu menguatkan enamel gigi.</li>
+            </ul>
+            
+            <h4>Makanan yang Sebaiknya Dihindari</h4>
+            <p>Beberapa makanan dapat merusak kesehatan gigi jika dikonsumsi secara berlebihan:</p>
+            <ul>
+                <li><strong>Makanan Manis:</strong> Gula dapat menyebabkan pertumbuhan bakteri yang menghasilkan asam, yang merusak enamel gigi.</li>
+                <li><strong>Makanan Asam:</strong> Buah-buahan asam dan minuman bersoda dapat mengikis enamel gigi.</li>
+                <li><strong>Makanan Keras:</strong> Mengunyah benda keras seperti es atau permen keras dapat menyebabkan gigi patah atau retak.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="polamakan.jpeg" alt="Pola Makan yang Mendukung Kesehatan Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Penggunaan Obat Kumur yang Tepat Section -->
+        <div id="penggunaan-obat-kumur-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Penggunaan Obat Kumur yang Tepat</h2>
+            <h4>Manfaat Obat Kumur</h4>
+            <p>Obat kumur memiliki berbagai manfaat dalam menjaga kesehatan mulut, termasuk:</p>
+            <ul>
+                <li>Membunuh bakteri penyebab plak dan bau mulut.</li>
+                <li>Menyegarkan napas dan memberikan rasa segar.</li>
+                <li>Membantu mengurangi risiko penyakit gusi.</li>
+            </ul>
+            
+            <h4>Cara Memilih Produk yang Sesuai</h4>
+            <p>Memilih obat kumur yang tepat sesuai dengan kebutuhan Anda sangat penting. Berikut adalah beberapa hal yang perlu dipertimbangkan:</p>
+            <ul>
+                <li><strong>Dengan Fluoride:</strong> Membantu memperkuat enamel gigi dan mencegah gigi berlubang.</li>
+                <li><strong>Tanpa Alkohol:</strong> Cocok untuk orang yang memiliki mulut sensitif atau sedang menggunakan alat ortodontik.</li>
+                <li><strong>Antibakteri:</strong> Efektif dalam mengurangi bakteri penyebab penyakit gusi dan bau mulut.</li>
+            </ul>
+            
+            <h4>Cara Penggunaan yang Benar</h4>
+            <ul>
+                <li>Gunakan obat kumur setelah menyikat gigi.</li>
+                <li>Ambil takaran yang direkomendasikan pada label produk.</li>
+                <li>Kumur selama 30 detik hingga 1 menit.</li>
+                <li>Jangan berkumur terlalu lama agar bahan aktif tidak terlalu lama berada di mulut.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="obatkumur.jpeg" alt="Penggunaan Obat Kumur yang Tepat" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Panduan Menyikat Gigi pada Anak-Anak Section -->
+        <div id="panduan-anak-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Panduan Menyikat Gigi pada Anak-Anak</h2>
+            <h4>Tips Menyikat Gigi untuk Anak-Anak</h4>
+            <ul>
+                <li>Mulailah menyikat gigi anak-anak sejak mereka mulai tumbuh gigi pertama.</li>
+                <li>Gunakan pasta gigi khusus anak yang rendah fluoride.</li>
+                <li>Pilih sikat gigi dengan bulu yang lembut dan ukuran yang sesuai dengan mulut anak.</li>
+                <li>Ajarkan gerakan menyikat yang benar, seperti gerakan melingkar dan lembut.</li>
+                <li>Libatkan orang tua dalam rutinitas menyikat gigi untuk memastikan kebiasaan baik terbentuk.</li>
+            </ul>
+            
+            <h4>Teknik Menyikat Gigi yang Sesuai untuk Anak</h4>
+            <p>Berikut adalah langkah-langkah menyikat gigi yang benar untuk anak-anak:</p>
+            <ol>
+                <li>Basahi sikat gigi dan aplikasikan pasta gigi seukuran biji jagung.</li>
+                <li>Sikat gigi bagian depan dengan gerakan melingkar lembut selama 2 menit.</li>
+                <li>Sikat gigi bagian belakang dan permukaan kunyah dengan hati-hati.</li>
+                <li>Sikat lidah dan langit-langit mulut untuk menghilangkan bakteri.</li>
+                <li>Setelah menyikat, biarkan anak berkumur dengan air putih.</li>
+            </ol>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="panduananak.jpeg" alt="Panduan Menyikat Gigi pada Anak-Anak" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Cara Mengatasi Bau Mulut Secara Efektif Section -->
+        <div id="mengatasi-bau-mulut-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Cara Mengatasi Bau Mulut Secara Efektif</h2>
+            <h4>Langkah-Langkah Pencegahan</h4>
+            <p>Bau mulut dapat diatasi dengan beberapa langkah pencegahan berikut:</p>
+            <ul>
+                <li>Menyikat gigi dan benang gigi secara teratur untuk menghilangkan plak dan sisa makanan.</li>
+                <li>Menyikat lidah atau menggunakan pembersih lidah untuk mengurangi bakteri.</li>
+                <li>Minum air putih yang cukup untuk menjaga kelembapan mulut.</li>
+                <li>Hindari makanan yang dapat menyebabkan bau mulut, seperti bawang putih dan bawang merah.</li>
+            </ul>
+            
+            <h4>Solusi untuk Mengatasi Bau Mulut</h4>
+            <p>Jika bau mulut sudah muncul, berikut adalah beberapa solusi yang dapat membantu:</p>
+            <ul>
+                <li>Gunakan obat kumur antibakteri untuk membunuh bakteri penyebab bau mulut.</li>
+                <li>Chewing gum tanpa gula untuk merangsang produksi air liur.</li>
+                <li>Mengunyah daun mint atau parsley untuk menyegarkan napas.</li>
+                <li>Konsultasikan dengan dokter gigi jika bau mulut disebabkan oleh masalah kesehatan mulut yang mendasarinya.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="bau-mulut.jpeg" alt="Cara Mengatasi Bau Mulut Secara Efektif" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pemilihan Produk Gigi (Sikat, Pasta Gigi, dll.) Section -->
+        <div id="pemilihan-produk-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pemilihan Produk Gigi (Sikat, Pasta Gigi, dll.)</h2>
+            <h4>Pentingnya Memilih Produk yang Tepat</h4>
+            <p>Memilih produk perawatan gigi yang sesuai sangat penting untuk menjaga kesehatan mulut. Berikut adalah panduan memilih produk yang tepat:</p>
+            
+            <h4>Pilih Sikat Gigi yang Sesuai</h4>
+            <ul>
+                <li><strong>Bulu Sikat:</strong> Pilih sikat gigi dengan bulu yang lembut untuk menghindari kerusakan enamel dan gusi.</li>
+                <li><strong>Ukuran Kepala Sikat:</strong> Pilih kepala sikat yang sesuai dengan ukuran mulut Anda untuk menjangkau semua bagian gigi dengan mudah.</li>
+                <li><strong>Jenis Sikat:</strong> Pilih antara sikat manual atau elektrik sesuai dengan preferensi dan kebutuhan Anda.</li>
+            </ul>
+            
+            <h4>Memilih Pasta Gigi yang Tepat</h4>
+            <ul>
+                <li><strong>Dengan Fluoride:</strong> Membantu memperkuat enamel gigi dan mencegah gigi berlubang.</li>
+                <li><strong>Untuk Gigi Sensitif:</strong> Pasta gigi khusus untuk gigi sensitif dapat membantu mengurangi rasa sakit.</li>
+                <li><strong>Anti-Plak:</strong> Pasta gigi dengan formula anti-plak membantu mencegah penumpukan plak.</li>
+            </ul>
+            
+            <h4>Pemilihan Obat Kumur</h4>
+            <ul>
+                <li>Pilih obat kumur yang sesuai dengan kebutuhan Anda, seperti antibakteri atau dengan fluoride.</li>
+                <li>Hindari obat kumur yang mengandung alkohol jika Anda memiliki mulut sensitif atau sedang menggunakan alat ortodontik.</li>
+            </ul>
+            
+            <h4>Produk Tambahan</h4>
+            <ul>
+                <li><strong>Benang Gigi:</strong> Pilih benang gigi yang mudah digunakan dan sesuai dengan kebutuhan Anda.</li>
+                <li><strong>Alat Pembersih Lidah:</strong> Alat pembersih lidah membantu menghilangkan bakteri dan noda pada lidah.</li>
+                <li><strong>Pasta Gigi Whitening:</strong> Jika Anda ingin mencerahkan warna gigi, pilih pasta gigi whitening yang aman digunakan.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="pemilihanproduk.jpeg" alt="Pemilihan Produk Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pentingnya Membersihkan Lidah Section -->
+        <div id="membersihkan-lidah-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pentingnya Membersihkan Lidah</h2>
+            <h4>Manfaat Membersihkan Lidah</h4>
+            <p>Membersihkan lidah secara rutin memiliki berbagai manfaat, termasuk:</p>
+            <ul>
+                <li>Mengurangi bakteri yang dapat menyebabkan bau mulut.</li>
+                <li>Meningkatkan kebersihan mulut secara keseluruhan.</li>
+                <li>Membantu menjaga kesehatan gigi dan gusi.</li>
+            </ul>
+            
+            <h4>Teknik Membersihkan Lidah yang Efektif</h4>
+            <ul>
+                <li>Gunakan pembersih lidah atau sikat gigi dengan bagian khusus untuk lidah.</li>
+                <li>Sikat lidah dari belakang ke depan dengan gerakan lembut.</li>
+                <li>Pastikan untuk membersihkan seluruh permukaan lidah.</li>
+                <li>Kumur mulut dengan air bersih setelah membersihkan lidah.</li>
+            </ul>
+            
+            <h4>Dampak Positif dari Membersihkan Lidah</h4>
+            <ul>
+                <li>Mengurangi risiko penyakit gusi dan gigi berlubang.</li>
+                <li>Meningkatkan rasa dan aroma makanan.</li>
+                <li>Meningkatkan rasa segar pada napas.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="membersihkanlidah.jpeg" alt="Pentingnya Membersihkan Lidah" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Tips Menjaga Kelembapan Mulut Section -->
+        <div id="jaga-kelembapan-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Tips Menjaga Kelembapan Mulut</h2>
+            <h4>Alasan Penting Menjaga Kelembapan Mulut</h4>
+            <p>Kelembapan mulut yang cukup sangat penting untuk menjaga kesehatan mulut, karena air liur membantu:</p>
+            <ul>
+                <li>Menghilangkan sisa makanan dan plak.</li>
+                <li>Membantu pencernaan makanan.</li>
+                <li>Mencegah infeksi bakteri dan jamur.</li>
+            </ul>
+            
+            <h4>Tips untuk Mencegah Mulut Kering</h4>
+            <ul>
+                <li>Minum air putih yang cukup sepanjang hari.</li>
+                <li>Hindari konsumsi alkohol dan kafein yang dapat menyebabkan dehidrasi.</li>
+                <li>Mengunyah permen karet tanpa gula untuk merangsang produksi air liur.</li>
+                <li>Gunakan pelembap mulut atau spray khusus jika diperlukan.</li>
+                <li>Mengatur pernapasan melalui hidung, bukan mulut.</li>
+            </ul>
+            
+            <h4>Perawatan Harian untuk Menjaga Kelembapan Mulut</h4>
+            <ul>
+                <li>Hindari merokok dan penggunaan produk tembakau.</li>
+                <li>Gunakan humidifier di rumah jika udara kering.</li>
+                <li>Mengatur waktu menyikat gigi dan pembersihan mulut setelah makan.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="kelembapanmulut.jpeg" alt="Tips Menjaga Kelembapan Mulut" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Menghindari Seringnya Konsumsi Minuman Bersoda dan Manis Section -->
+        <div id="hindari-minuman-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Menghindari Seringnya Konsumsi Minuman Bersoda dan Manis</h2>
+            <h4>Dampak Negatif Konsumsi Minuman Bersoda dan Manis</h4>
+            <p>Minuman bersoda dan manis dapat memiliki dampak negatif yang signifikan pada kesehatan gigi Anda:</p>
+            <ul>
+                <li><strong>Asam:</strong> Soda mengandung asam fosfat dan asam sitrat yang dapat mengikis enamel gigi.</li>
+                <li><strong>Gula:</strong> Gula dalam minuman manis menyediakan makanan bagi bakteri di mulut yang menghasilkan asam, menyebabkan gigi berlubang.</li>
+                <li><strong>Bau Mulut:</strong> Konsumsi minuman manis dan bersoda dapat menyebabkan bau mulut yang tidak sedap.</li>
+            </ul>
+            
+            <h4>Alternatif yang Lebih Sehat</h4>
+            <ul>
+                <li><strong>Air Putih:</strong> Pilih air putih sebagai minuman utama untuk menjaga kelembapan mulut dan menghilangkan sisa makanan.</li>
+                <li><strong>Teh Herbal:</strong> Teh tanpa gula dapat menjadi alternatif yang baik dan membantu menyegarkan napas.</li>
+                <li><strong>Jus Buah Alami:</strong> Jika ingin minum jus, pilih yang tanpa tambahan gula dan konsumsi dalam jumlah terbatas.</li>
+                <li><strong>Smoothie Buah:</strong> Smoothie buatan sendiri dengan buah-buahan segar dapat menjadi pilihan yang sehat dan lezat.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="minumanbersoda.jpeg" alt="Menghindari Seringnya Konsumsi Minuman Bersoda dan Manis" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Perawatan Gigi saat Menggunakan Alat Ortodontik (Kawat Gigi) Section -->
+        <div id="perawatan-ortodontik-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Perawatan Gigi saat Menggunakan Alat Ortodontik (Kawat Gigi)</h2>
+            <h4>Pentingnya Perawatan Khusus</h4>
+            <p>Menggunakan alat ortodontik seperti kawat gigi memerlukan perawatan khusus untuk menjaga kesehatan gigi dan gusi. Berikut adalah beberapa alasan pentingnya perawatan khusus:</p>
+            <ul>
+                <li>Mencegah penumpukan plak dan bakteri di sekitar kawat gigi.</li>
+                <li>Mencegah kerusakan gigi dan gusi akibat penggunaan kawat yang tidak tepat.</li>
+                <li>Meningkatkan efektivitas perawatan ortodontik.</li>
+            </ul>
+            
+            <h4>Teknik Menyikat Gigi dengan Alat Ortodontik</h4>
+            <ul>
+                <li>Gunakan sikat gigi khusus ortodontik dengan bulu yang lebih lembut.</li>
+                <li>Sikat gigi secara menyeluruh di sekitar kawat gigi menggunakan gerakan melingkar.</li>
+                <li>Gunakan sikat interdental atau alat pembersih kawat gigi untuk menjangkau area yang sulit dijangkau.</li>
+            </ul>
+            
+            <h4>Pemakaian Benang Gigi yang Aman</h4>
+            <ul>
+                <li>Gunakan benang gigi yang dirancang khusus untuk ortodontik, seperti benang gigi berbentuk T atau U.</li>
+                <li>Hindari penggunaan benang gigi yang terlalu tebal atau keras yang dapat merusak kawat gigi.</li>
+                <li>Pastikan untuk membersihkan di antara kawat gigi dan gigi dengan hati-hati.</li>
+            </ul>
+            
+            <h4>Frekuensi Perawatan</h4>
+            <ul>
+                <li>Sikat gigi setidaknya dua kali sehari dan gunakan benang gigi setiap hari.</li>
+                <li>Kunjungi dokter gigi secara rutin untuk pemeriksaan dan pembersihan profesional.</li>
+                <li>Lakukan perawatan tambahan jika disarankan oleh ortodontis.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="perawatanortodontik.jpeg" alt="Perawatan Gigi saat Menggunakan Alat Ortodontik" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Latihan untuk Menguatkan Gigi dan Rahang Section -->
+        <div id="latihan-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('pencegahan-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Latihan untuk Menguatkan Gigi dan Rahang</h2>
+            <h4>Manfaat Latihan untuk Gigi dan Rahang</h4>
+            <p>Latihan sederhana dapat membantu menguatkan gigi dan rahang, serta menjaga kesehatan mulut secara keseluruhan. Berikut adalah beberapa manfaatnya:</p>
+            <ul>
+                <li>Meningkatkan kekuatan rahang dan otot-otot di sekitar mulut.</li>
+                <li>Mencegah kerusakan gigi akibat stres atau tekanan berlebih.</li>
+                <li>Meningkatkan aliran darah ke area mulut, membantu kesehatan jaringan gusi.</li>
+            </ul>
+            
+            <h4>Latihan Sederhana untuk Menguatkan Gigi dan Rahang</h4>
+            <ol>
+                <li><strong>Mengunyah Makanan Keras:</strong> Mengunyah apel atau sayuran mentah dapat membantu menguatkan otot rahang dan membersihkan gigi secara alami.</li>
+                <li><strong>Latihan Menahan Tekanan:</strong> Tempelkan telapak tangan di bawah dagu dan tekan rahang ke atas dengan lembut. Tahan selama beberapa detik dan ulangi beberapa kali.</li>
+                <li><strong>Menggerakkan Rahang Secara Bertahap:</strong> Buka dan tutup mulut perlahan sambil menjaga gerakan tetap lembut dan terkontrol.</li>
+                <li><strong>Latihan Membuka Mulut Lebar:</strong> Buka mulut sebisa mungkin tanpa menimbulkan rasa sakit dan tahan selama beberapa detik sebelum menutupnya kembali.</li>
+            </ol>
+            
+            <h4>Perhatian Saat Melakukan Latihan</h4>
+            <ul>
+                <li>Jangan melakukan latihan dengan tekanan yang berlebihan untuk menghindari cedera pada gigi dan rahang.</li>
+                <li>Jika merasakan nyeri atau ketidaknyamanan, hentikan latihan dan konsultasikan dengan dokter gigi.</li>
+                <li>Lakukan latihan secara teratur namun tetap sesuai dengan kemampuan tubuh Anda.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="latihangigi.jpeg" alt="Latihan untuk Menguatkan Gigi dan Rahang" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (Optional) -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies (Minified) dengan defer untuk non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS dengan Async untuk non-blocking -->
+    <script>
+        // Fungsi untuk menampilkan section yang dipilih dan menyembunyikan lainnya
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                if(section.id === sectionId) {
+                    section.classList.add('active-section');
+                } else {
+                    section.classList.remove('active-section');
+                    // Pause dan reset video di section yang disembunyikan (jika ada)
+                    const videos = section.querySelectorAll('video');
+                    videos.forEach(video => {
+                        video.pause();
+                        video.currentTime = 0;
+                    });
+                }
+            });
+        }
+
+        // Fungsi untuk menavigasi ke halaman HTML lokal yang berbeda (jika diperlukan)
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Cek preferensi mode dari localStorage saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+        });
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    </script>
+</body>
+</html>

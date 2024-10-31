@@ -1,0 +1,1084 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penyakit & Infeksi Gigi - GigiQ</title>
+    <!-- Bootstrap CSS (Minified) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Minified) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Optimized) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variabel untuk Mode Terang dan Gelap */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #fff;
+            --button-bg: #fff;
+            --button-text: #333;
+            --button-hover-bg: #e6f0ff;
+            --button-hover-text: #0056b3;
+            --back-button-bg: #007bff; /* Warna dasar tombol "Kembali" di mode terang */
+            --back-button-text: #fff; /* Warna teks tombol "Kembali" di mode terang */
+            --back-button-hover-bg: #0056b3; /* Warna hover tombol "Kembali" di mode terang */
+            --section-bg: #fff;
+            --footer-bg: #343a40;
+            --footer-text: #fff;
+            --spinner-color: #007bff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Mode Gelap */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1f1f1f;
+            --header-text: #e0e0e0;
+            --button-bg: #1f1f1f;
+            --button-text: #e0e0e0;
+            --button-hover-bg: #333;
+            --button-hover-text: #fff;
+            --back-button-bg: #ffc107; /* Warna dasar tombol "Kembali" di mode gelap */
+            --back-button-text: #212529; /* Warna teks tombol "Kembali" di mode gelap */
+            --back-button-hover-bg: #e6ac00; /* Warna hover tombol "Kembali" di mode gelap */
+            --section-bg: #1f1f1f;
+            --footer-bg: #1f1f1f;
+            --footer-text: #e0e0e0;
+            --spinner-color: #e0e0e0;
+            --shadow-color: rgba(255,255,255,0.1);
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--spinner-color);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Dark Mode Toggle Icons Visibility */
+        .dark-mode .dark-mode-toggle #sunIcon {
+            display: none;
+        }
+
+        .dark-mode .dark-mode-toggle #moonIcon {
+            display: inline;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #moonIcon {
+            display: none;
+        }
+
+        body:not(.dark-mode) .dark-mode-toggle #sunIcon {
+            display: inline;
+        }
+
+        /* Toggle Switch Styles */
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #ffc107; /* Warna aksen di mode terang */
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode-toggle i {
+            font-size: 1.2rem;
+            margin-left: 8px;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            color: #ffeb3b; /* Warna aksen di mode gelap */
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px 60px 20px; /* Adjust padding-top and padding-bottom to prevent overlap with fixed header and footer */
+            min-height: calc(100vh - 140px); /* Adjust based on header and footer height */
+            transition: opacity 0.5s ease;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Menu Button */
+        .menu-button {
+            background-color: var(--button-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            text-decoration: none; /* Remove underline for <a> tags */
+            color: var(--button-text); /* Inherit text color */
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px var(--shadow-color);
+            background-color: var(--button-hover-bg);
+            color: var(--button-hover-text);
+        }
+
+        .menu-button i {
+            font-size: 2rem;
+            color: inherit;
+            margin-bottom: 10px;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .menu-button:hover i {
+            transform: rotate(10deg);
+        }
+
+        .menu-button span {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .menu-button:hover span {
+            color: var(--button-hover-text);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: var(--back-button-bg);
+            color: var(--back-button-text);
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: var(--back-button-hover-bg);
+            color: var(--back-button-hover-text);
+        }
+
+        .back-button i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .back-button span {
+            font-size: 1rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        /* Footer (Optional) */
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .menu-button {
+                padding: 20px 10px;
+            }
+
+            .menu-button i {
+                font-size: 1.5rem;
+            }
+
+            .menu-button span {
+                font-size: 0.9rem;
+            }
+
+            .back-button i {
+                font-size: 1rem;
+            }
+
+            .back-button span {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>GigiQ</h2>
+        <!-- Toggle Switch for Dark Mode -->
+        <div class="dark-mode-toggle form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">
+                <i class="fas fa-sun" id="sunIcon"></i>
+                <i class="fas fa-moon" id="moonIcon"></i>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Penyakit & Infeksi Gigi Section -->
+        <div id="penyakit-infeksi-section" class="content-section active-section">
+            <button class="back-button" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Penyakit & Infeksi Gigi</h2>
+            <div class="menu-grid">
+                <!-- Abses Gigi -->
+                <div class="menu-button" onclick="showSection('abses-gigi-section')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Abses Gigi</span>
+                </div>
+                <!-- Kista Gigi -->
+                <div class="menu-button" onclick="showSection('kista-gigi-section')">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Kista Gigi</span>
+                </div>
+                <!-- Infeksi Mulut dan Tenggorokan -->
+                <div class="menu-button" onclick="showSection('infeksi-mulut-section')">
+                    <i class="fas fa-virus"></i>
+                    <span>Infeksi Mulut</span>
+                </div>
+                <!-- Karies (Gigi Berlubang) -->
+                <div class="menu-button" onclick="showSection('karies-section')">
+                    <i class="fas fa-tooth"></i>
+                    <span>Karies</span>
+                </div>
+                <!-- Gingivitis -->
+                <div class="menu-button" onclick="showSection('gingivitis-section')">
+                    <i class="fas fa-teeth-open"></i>
+                    <span>Gingivitis</span>
+                </div>
+                <!-- Periodontitis -->
+                <div class="menu-button" onclick="showSection('periodontitis-section')">
+                    <i class="fas fa-toothbrush"></i>
+                    <span>Periodontitis</span>
+                </div>
+                <!-- Nyeri Gigi -->
+                <div class="menu-button" onclick="showSection('nyeri-gigi-section')">
+                    <i class="fas fa-pain"></i>
+                    <span>Nyeri Gigi</span>
+                </div>
+                <!-- Sensitivitas Gigi -->
+                <div class="menu-button" onclick="showSection('sensitivitas-gigi-section')">
+                    <i class="fas fa-bolt"></i>
+                    <span>Sensitivitas Gigi</span>
+                </div>
+                <!-- Protesa Gigi yang Tidak Nyaman -->
+                <div class="menu-button" onclick="showSection('protesa-gigi-section')">
+                    <i class="fas fa-prosthesis"></i>
+                    <span>Protesa Gigi</span>
+                </div>
+                <!-- Sariawan (Oral Thrush) -->
+                <div class="menu-button" onclick="showSection('sariawan-section')">
+                    <i class="fas fa-mouth"></i>
+                    <span>Sariawan</span>
+                </div>
+                <!-- Penyakit Gusi -->
+                <div class="menu-button" onclick="showSection('penyakit-gusi-section')">
+                    <i class="fas fa-heart"></i>
+                    <span>Penyakit Gusi</span>
+                </div>
+                <!-- Patah Gigi -->
+                <div class="menu-button" onclick="showSection('patah-gigi-section')">
+                    <i class="fas fa-bone"></i>
+                    <span>Patah Gigi</span>
+                </div>
+                <!-- Pendarahan Gusi -->
+                <div class="menu-button" onclick="showSection('pendarahan-gusi-section')">
+                    <i class="fas fa-droplet"></i>
+                    <span>Pendarahan Gusi</span>
+                </div>
+                <!-- Gigi Impaksi -->
+                <div class="menu-button" onclick="showSection('gigi-impaksi-section')">
+                    <i class="fas fa-tooth"></i>
+                    <span>Gigi Impaksi</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Abses Gigi Section -->
+        <div id="abses-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Abses Gigi</h2>
+            <h4>Apa Itu Abses Gigi?</h4>
+            <p>Abses gigi adalah infeksi bakteri yang menyebabkan pembengkakan dan nanah pada jaringan gigi dan tulang di sekitarnya.</p>
+            
+            <h4>Penyebab dan Gejala Abses</h4>
+            <ul>
+                <li><strong>Penyebab:</strong> Gigi berlubang, cedera gigi, atau infeksi gusi.</li>
+                <li><strong>Gejala:</strong> Nyeri tajam, pembengkakan, demam, dan bau mulut tidak sedap.</li>
+            </ul>
+            
+            <h4>Pengobatan dan Pencegahan Abses</h4>
+            <ul>
+                <li><strong>Pengobatan:</strong> Antibiotik untuk mengatasi infeksi dan perawatan gigi yang terkena abses.</li>
+                <li><strong>Pencegahan:</strong> Menjaga kebersihan mulut dan menjalani pemeriksaan gigi secara rutin.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="abses.webp" alt="Abses Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Kista Gigi Section -->
+        <div id="kista-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Kista Gigi</h2>
+            <h4>Apa Itu Kista Gigi?</h4>
+            <p>Kista gigi adalah kantong berisi cairan yang terbentuk di sekitar akar gigi, seringkali akibat infeksi atau cedera.</p>
+            
+            <h4>Dampak Kista pada Gigi dan Mulut</h4>
+            <p>Kista dapat menyebabkan kerusakan pada jaringan gigi dan tulang rahang, serta mempengaruhi kesehatan mulut secara keseluruhan.</p>
+            
+            <h4>Perawatan untuk Menghilangkan Kista</h4>
+            <ul>
+                <li><strong>Prosedur Bedah:</strong> Mengangkat kista melalui prosedur bedah.</li>
+                <li><strong>Perawatan Gigi:</strong> Perawatan gigi yang terkena untuk mencegah infeksi kembali.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="kista.jpeg" alt="Kista Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Infeksi Mulut dan Tenggorokan Section -->
+        <div id="infeksi-mulut-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Infeksi Mulut dan Tenggorokan</h2>
+            <h4>Penyebab dan Gejala Infeksi</h4>
+            <ul>
+                <li><strong>Penyebab:</strong> Bakteri, virus, atau jamur yang menyerang jaringan mulut dan tenggorokan.</li>
+                <li><strong>Gejala:</strong> Pembengkakan, nyeri, kemerahan, dan demam.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Infeksi</h4>
+            <ul>
+                <li><strong>Penggunaan Obat:</strong> Antibiotik atau antijamur sesuai resep dokter.</li>
+                <li><strong>Kebersihan Mulut:</strong> Menjaga kebersihan mulut dengan rutin menyikat dan berkumur.</li>
+            </ul>
+            
+            <h4>Tips Mencegah Infeksi Mulut</h4>
+            <ul>
+                <li><strong>Kebersihan Mulut:</strong> Menyikat gigi dua kali sehari dan menggunakan benang gigi.</li>
+                <li><strong>Hindari Iritasi:</strong> Hindari makanan dan minuman yang dapat menyebabkan iritasi pada mulut.</li>
+                <li><strong>Perkuat Imunitas:</strong> Meningkatkan sistem imun tubuh dengan diet seimbang dan istirahat yang cukup.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="infeksi_mulut_tenggorokan.jpg" alt="Infeksi Mulut dan Tenggorokan" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- FAQ Penyakit Infeksi Section -->
+        <div id="faq-penyakit-infeksi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pertanyaan Seputar Penyakit & Infeksi Gigi</h2>
+            <h4>Apakah Abses Gigi Bisa Mengancam Nyawa?</h4>
+            <p>Ya, jika tidak diobati, abses gigi dapat menyebar ke bagian tubuh lain dan menyebabkan komplikasi serius, termasuk sepsis yang dapat mengancam nyawa.</p>
+            
+            <h4>Bagaimana Cara Mencegah Terjadinya Kista Gigi?</h4>
+            <p>Menjaga kebersihan mulut yang baik, menghindari trauma pada gigi, dan menjalani pemeriksaan gigi rutin dapat membantu mencegah terbentuknya kista gigi.</p>
+            
+            <h4>Apakah Infeksi Mulut Dapat Diobati dengan Obat Alami?</h4>
+            <p>Meskipun beberapa obat alami seperti berkumur dengan air garam hangat atau menggunakan minyak kelapa dapat membantu meredakan gejala, penting untuk tetap berkonsultasi dengan dokter gigi untuk pengobatan yang tepat.</p>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="https://source.unsplash.com/600x400/?dental,faq" alt="FAQ Penyakit Infeksi Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Karies (Gigi Berlubang) Section -->
+        <div id="karies-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Karies (Gigi Berlubang)</h2>
+            <h4>Apa Itu Karies Gigi?</h4>
+            <p>Karies gigi adalah kondisi di mana enamel gigi mengalami kerusakan akibat asam yang dihasilkan oleh bakteri yang memakan gula di mulut.</p>
+            
+            <h4>Penyebab Karies Gigi</h4>
+            <ul>
+                <li><strong>Pola Makan:</strong> Konsumsi makanan dan minuman manis atau asam secara berlebihan.</li>
+                <li><strong>Kebersihan Mulut:</strong> Menyikat gigi yang tidak teratur atau tidak efektif.</li>
+                <li><strong>Faktor Genetik:</strong> Beberapa orang mungkin lebih rentan terhadap karies gigi.</li>
+            </ul>
+            
+            <h4>Gejala Karies Gigi</h4>
+            <ul>
+                <li>Nyeri saat mengunyah atau menelan.</li>
+                <li>Perubahan warna pada gigi, seperti menjadi coklat atau hitam.</li>
+                <li>Luka atau lubang yang terlihat pada permukaan gigi.</li>
+                <li>Sensitivitas gigi terhadap suhu panas atau dingin.</li>
+            </ul>
+            
+            <h4>Pengobatan Karies Gigi</h4>
+            <ul>
+                <li><strong>Filling:</strong> Mengisi lubang pada gigi dengan bahan pengisi seperti komposit atau amalgam.</li>
+                <li><strong>Root Canal:</strong> Jika karies telah mencapai pulpa gigi, prosedur ini diperlukan untuk menyelamatkan gigi.</li>
+                <li><strong>Pencabutan:</strong> Dalam kasus karies yang parah, gigi mungkin perlu dicabut.</li>
+            </ul>
+            
+            <h4>Pencegahan Karies Gigi</h4>
+            <ul>
+                <li>Menyikat gigi setidaknya dua kali sehari dengan pasta gigi yang mengandung fluoride.</li>
+                <li>Menggunakan benang gigi untuk membersihkan sela-sela gigi.</li>
+                <li>Membatasi konsumsi makanan dan minuman manis atau asam.</li>
+                <li>Menjalani pemeriksaan gigi secara rutin untuk deteksi dini.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="karies.jpeg" alt="Karies Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Gingivitis Section -->
+        <div id="gingivitis-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Gingivitis</h2>
+            <h4>Apa Itu Gingivitis?</h4>
+            <p>Gingivitis adalah bentuk awal penyakit gusi yang ditandai oleh peradangan pada gusi tanpa kerusakan jaringan tulang atau jaringan lain yang mendukung gigi.</p>
+            
+            <h4>Penyebab Gingivitis</h4>
+            <ul>
+                <li>Kebersihan mulut yang buruk, menyebabkan penumpukan plak pada gigi.</li>
+                <li>Merokok atau menggunakan produk tembakau.</li>
+                <li>Faktor hormonal seperti kehamilan atau menstruasi.</li>
+                <li>Penyakit sistemik seperti diabetes.</li>
+            </ul>
+            
+            <h4>Gejala Gingivitis</h4>
+            <ul>
+                <li>Gusi merah, bengkak, atau terasa hangat.</li>
+                <li>Gusi mudah berdarah saat menyikat atau menggunakan benang gigi.</li>
+                <li>Napasan tidak segar.</li>
+                <li>Mengeluarkan bau mulut yang tidak sedap.</li>
+            </ul>
+            
+            <h4>Pengobatan Gingivitis</h4>
+            <ul>
+                <li>Meningkatkan kebersihan mulut dengan menyikat gigi dan menggunakan benang gigi secara rutin.</li>
+                <li>Pembersihan profesional oleh dokter gigi, seperti scaling dan polishing.</li>
+                <li>Hindari merokok dan penggunaan produk tembakau.</li>
+            </ul>
+            
+            <h4>Pencegahan Gingivitis</h4>
+            <ul>
+                <li>Menyikat gigi setidaknya dua kali sehari dengan pasta gigi yang mengandung fluoride.</li>
+                <li>Membersihkan sela-sela gigi dengan benang gigi atau alat interdental.</li>
+                <li>Menjalani pemeriksaan gigi secara rutin untuk deteksi dini.</li>
+                <li>Menghindari faktor risiko seperti merokok dan kontrol hormon yang tepat.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="gingivitis.jpeg" alt="Gingivitis" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Periodontitis Section -->
+        <div id="periodontitis-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Periodontitis</h2>
+            <h4>Apa Itu Periodontitis?</h4>
+            <p>Periodontitis adalah tahap lanjut dari penyakit gusi yang menyebabkan kerusakan pada jaringan pendukung gigi, termasuk tulang rahang.</p>
+            
+            <h4>Penyebab Periodontitis</h4>
+            <ul>
+                <li>Gingivitis yang tidak diobati.</li>
+                <li>Penumpukan plak dan tartar pada gigi.</li>
+                <li>Penyakit sistemik seperti diabetes.</li>
+                <li>Faktor genetik yang meningkatkan risiko penyakit gusi.</li>
+            </ul>
+            
+            <h4>Gejala Periodontitis</h4>
+            <ul>
+                <li>Gusi yang suram, retraksi (menyusut) dari gigi.</li>
+                <li>Kemerahan dan pembengkakan pada gusi.</li>
+                <li>Gusi mudah berdarah.</li>
+                <li>Gigi terasa goyang atau longgar.</li>
+                <li>Pengurangan jarak antara gusi dan gigi.</li>
+            </ul>
+            
+            <h4>Pengobatan Periodontitis</h4>
+            <ul>
+                <li><strong>Scaling dan Root Planing:</strong> Pembersihan mendalam dari plak dan tartar di bawah garis gusi.</li>
+                <li><strong>Penggunaan Antibiotik:</strong> Untuk mengatasi infeksi bakteri yang serius.</li>
+                <li><strong>Prosedur Bedah:</strong> Dalam kasus parah, prosedur bedah mungkin diperlukan untuk mengurangi ruang antara gusi dan gigi.</li>
+                <li><strong>Perawatan Jangka Panjang:</strong> Menjaga kebersihan mulut yang baik dan menjalani pemeriksaan gigi secara rutin.</li>
+            </ul>
+            
+            <h4>Pencegahan Periodontitis</h4>
+            <ul>
+                <li>Menyikat gigi setidaknya dua kali sehari dan menggunakan benang gigi secara rutin.</li>
+                <li>Menjaga kebersihan mulut dengan membersihkan sela-sela gigi.</li>
+                <li>Menjalani pemeriksaan gigi secara rutin untuk deteksi dini dan perawatan yang tepat.</li>
+                <li>Hindari faktor risiko seperti merokok dan kontrol kondisi medis yang mendasari.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="periodontitis.jpeg" alt="Periodontitis" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Nyeri Gigi Section -->
+        <div id="nyeri-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Nyeri Gigi</h2>
+            <h4>Penyebab Nyeri Gigi</h4>
+            <ul>
+                <li><strong>Karies:</strong> Kerusakan enamel gigi yang dapat menyebabkan lubang dan infeksi.</li>
+                <li><strong>Gingivitis atau Periodontitis:</strong> Infeksi pada gusi yang menyebabkan peradangan dan nyeri.</li>
+                <li><strong>Trauma atau Cedera:</strong> Kecelakaan atau cedera yang merusak gigi.</li>
+                <li><strong>Protesa yang Tidak Pas:</strong> Gigi palsu yang tidak sesuai dapat menyebabkan iritasi dan nyeri.</li>
+                <li><strong>Abscess Gigi:</strong> Infeksi bakteri yang menyebabkan pembengkakan dan nyeri tajam.</li>
+            </ul>
+            
+            <h4>Gejala Nyeri Gigi</h4>
+            <ul>
+                <li>Nyeri tajam atau tumpul pada salah satu atau beberapa gigi.</li>
+                <li>Sensitivitas gigi terhadap panas atau dingin.</li>
+                <li>Kesulitan mengunyah atau menelan.</li>
+                <li>Nyeri yang merambat ke wajah, telinga, atau rahang.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Nyeri Gigi</h4>
+            <ul>
+                <li><strong>Obat Pereda Nyeri:</strong> Menggunakan obat pereda nyeri seperti ibuprofen atau parasetamol sesuai dosis.</li>
+                <li><strong>Kumur dengan Air Garam Hangat:</strong> Membantu mengurangi peradangan dan membunuh bakteri.</li>
+                <li><strong>Kompress Dingin:</strong> Menempatkan kantong es di pipi dekat area yang sakit untuk mengurangi pembengkakan.</li>
+                <li><strong>Hindari Makanan dan Minuman yang Memicu Nyeri:</strong> Seperti makanan manis, asam, panas, atau dingin.</li>
+                <li><strong>Konsultasi dengan Dokter Gigi:</strong> Penting untuk mendapatkan diagnosis dan perawatan yang tepat.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="nyerigigi.jpeg" alt="Nyeri Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Sensitivitas Gigi Section -->
+        <div id="sensitivitas-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Sensitivitas Gigi</h2>
+            <h4>Apa Itu Sensitivitas Gigi?</h4>
+            <p>Sensitivitas gigi adalah kondisi di mana gigi merespons rangsangan eksternal seperti panas, dingin, manis, atau asam dengan rasa nyeri.</p>
+            
+            <h4>Penyebab Sensitivitas Gigi</h4>
+            <ul>
+                <li><strong>Kerusakan Enamel:</strong> Pengikisan enamel yang melindungi gigi.</li>
+                <li><strong>Gusi Menyusut:</strong> Membuka eksposur akar gigi yang sensitif.</li>
+                <li><strong>Karies Gigi:</strong> Kerusakan gigi yang menyebabkan lubang dan eksposur pulpa gigi.</li>
+                <li><strong>Penyakit Gusi:</strong> Infeksi yang menyebabkan peradangan dan kerusakan jaringan pendukung gigi.</li>
+                <li><strong>Prosedur Gigi:</strong> Pembersihan mendalam atau pengikisan gigi yang berlebihan.</li>
+            </ul>
+            
+            <h4>Gejala Sensitivitas Gigi</h4>
+            <ul>
+                <li>Nyeri tajam atau terbakar saat mengonsumsi makanan atau minuman panas, dingin, manis, atau asam.</li>
+                <li>Rasa nyeri saat menyikat gigi atau menggunakan benang gigi.</li>
+                <li>Nyeri yang muncul secara tiba-tiba setelah paparan rangsangan tertentu.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Sensitivitas Gigi</h4>
+            <ul>
+                <li><strong>Pasta Gigi Khusus:</strong> Menggunakan pasta gigi untuk gigi sensitif yang mengandung bahan seperti potassium nitrate atau strontium chloride.</li>
+                <li><strong>Obat Kumur:</strong> Menggunakan obat kumur yang diformulasikan untuk gigi sensitif.</li>
+                <li><strong>Perawatan Profesional:</strong> Fluoride topikal atau perawatan penghalang seperti sealant gigi.</li>
+                <li><strong>Menyikat Gigi dengan Bulu Lembut:</strong> Menghindari sikat gigi yang keras dan teknik menyikat yang lembut.</li>
+                <li><strong>Hindari Makanan dan Minuman Asam:</strong> Mengurangi konsumsi makanan dan minuman yang dapat mengikis enamel gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="sensitivitasgigi.jpeg" alt="Sensitivitas Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Protesa Gigi yang Tidak Nyaman Section -->
+        <div id="protesa-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Protesa Gigi yang Tidak Nyaman</h2>
+            <h4>Apa Itu Protesa Gigi?</h4>
+            <p>Protesa gigi adalah alat bantu yang digunakan untuk menggantikan gigi yang hilang atau rusak. Protesa dapat berupa gigi palsu, bridge, atau implan.</p>
+            
+            <h4>Alasan Protesa Gigi Tidak Nyaman</h4>
+            <ul>
+                <li><strong>Penyesuaian yang Tidak Tepat:</strong> Protesa yang tidak pas dapat menyebabkan iritasi pada gusi dan jaringan mulut.</li>
+                <li><strong>Kualitas Protesa:</strong> Material protesa yang berkualitas rendah dapat menyebabkan rasa tidak nyaman.</li>
+                <li><strong>Adaptasi Mental:</strong> Beberapa orang membutuhkan waktu untuk beradaptasi dengan keberadaan protesa di mulut.</li>
+                <li><strong>Masalah Teknis:</strong> Kerusakan atau keausan pada protesa dapat menyebabkan ketidaknyamanan.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Ketidaknyamanan Protesa Gigi</h4>
+            <ul>
+                <li><strong>Penyesuaian oleh Dokter Gigi:</strong> Kunjungi dokter gigi untuk penyesuaian agar protesa pas dan nyaman.</li>
+                <li><strong>Perawatan Rutin:</strong> Membersihkan protesa secara teratur sesuai petunjuk dokter gigi.</li>
+                <li><strong>Menggunakan Pelindung Gigi:</strong> Untuk protesa malam, gunakan pelindung gigi untuk mencegah kerusakan lebih lanjut.</li>
+                <li><strong>Mengadaptasi Kebiasaan:</strong> Beri waktu bagi diri Anda untuk beradaptasi dengan protesa melalui latihan berbicara dan makan.</li>
+                <li><strong>Penggantian Protesa:</strong> Jika protesa rusak atau sudah tidak nyaman lagi, segera ganti dengan yang baru.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="protesagigi.jpeg" alt="Protesa Gigi yang Tidak Nyaman" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Sariawan (Oral Thrush) Section -->
+        <div id="sariawan-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Sariawan (Oral Thrush)</h2>
+            <h4>Apa Itu Sariawan?</h4>
+            <p>Sariawan adalah infeksi jamur yang menyebabkan luka kecil, berwarna putih atau merah pada mulut dan bibir.</p>
+            
+            <h4>Penyebab Sariawan</h4>
+            <ul>
+                <li><strong>Infeksi Jamur:</strong> Biasanya disebabkan oleh jamur Candida.</li>
+                <li><strong>Kebersihan Mulut yang Buruk:</strong> Menyikat gigi yang tidak teratur atau penggunaan obat kumur yang tidak tepat.</li>
+                <li><strong>Sistem Imun:</strong> Sistem imun yang lemah membuat seseorang lebih rentan terhadap infeksi.</li>
+                <li><strong>Penyakit Sistemik:</strong> Diabetes atau HIV/AIDS dapat meningkatkan risiko sariawan.</li>
+                <li><strong>Penggunaan Antibiotik:</strong> Antibiotik dapat mengganggu keseimbangan flora bakteri di mulut.</li>
+            </ul>
+            
+            <h4>Gejala Sariawan</h4>
+            <ul>
+                <li>Luka kecil berwarna putih atau merah pada mulut, bibir, atau lidah.</li>
+                <li>Nyeri atau rasa terbakar di area yang terkena.</li>
+                <li>Bau mulut yang tidak sedap.</li>
+                <li>Kesulitan makan atau berbicara jika luka terasa sangat nyeri.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Sariawan</h4>
+            <ul>
+                <li><strong>Antijamur:</strong> Penggunaan obat antijamur yang diresepkan oleh dokter gigi atau dokter umum.</li>
+                <li><strong>Kebersihan Mulut:</strong> Menyikat gigi secara teratur dan berkumur dengan air garam hangat.</li>
+                <li><strong>Hindari Iritasi:</strong> Hindari makanan dan minuman yang dapat menyebabkan iritasi pada luka.</li>
+                <li><strong>Meningkatkan Sistem Imun:</strong> Konsumsi makanan bergizi dan istirahat yang cukup untuk membantu tubuh melawan infeksi.</li>
+                <li><strong>Penggunaan Produk Pelembap Mulut:</strong> Untuk menjaga kelembapan mulut dan mempercepat penyembuhan.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="sariawan.jpeg" alt="Sariawan (Oral Thrush)" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Penyakit Gusi Section -->
+        <div id="penyakit-gusi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Penyakit Gusi</h2>
+            <h4>Apa Itu Penyakit Gusi?</h4>
+            <p>Penyakit gusi adalah kondisi inflamasi pada jaringan gusi yang dapat menyebabkan kerusakan pada tulang rahang dan kehilangan gigi jika tidak diobati.</p>
+            
+            <h4>Penyebab Penyakit Gusi</h4>
+            <ul>
+                <li><strong>Penumpukan Plak:</strong> Plak adalah lapisan lengket yang mengandung bakteri yang terbentuk pada gigi.</li>
+                <li><strong>Kebersihan Mulut yang Buruk:</strong> Menyikat gigi yang tidak teratur atau tidak efektif.</li>
+                <li><strong>Merokok:</strong> Merokok meningkatkan risiko penyakit gusi.</li>
+                <li><strong>Penyakit Sistemik:</strong> Diabetes, HIV/AIDS, dan penyakit lain yang mempengaruhi sistem imun.</li>
+                <li><strong>Genetik:</strong> Faktor genetik dapat membuat seseorang lebih rentan terhadap penyakit gusi.</li>
+            </ul>
+            
+            <h4>Gejala Penyakit Gusi</h4>
+            <ul>
+                <li>Gusi merah, bengkak, atau terasa hangat.</li>
+                <li>Gusi mudah berdarah saat menyikat gigi atau menggunakan benang gigi.</li>
+                <li>Penarikan gusi dari gigi, menyebabkan gigi terlihat lebih panjang.</li>
+                <li>Nyeri saat mengunyah atau menelan.</li>
+                <li>Gigi terasa goyang atau bergerak.</li>
+            </ul>
+            
+            <h4>Pengobatan Penyakit Gusi</h4>
+            <ul>
+                <li><strong>Scaling dan Root Planing:</strong> Pembersihan mendalam dari plak dan tartar di bawah garis gusi.</li>
+                <li><strong>Obat Antibiotik:</strong> Untuk mengatasi infeksi bakteri yang parah.</li>
+                <li><strong>Prosedur Bedah:</strong> Dalam kasus parah, prosedur bedah mungkin diperlukan untuk mengurangi ruang antara gusi dan gigi.</li>
+                <li><strong>Perawatan Lanjutan:</strong> Menjaga kebersihan mulut yang baik dan menjalani pemeriksaan gigi secara rutin.</li>
+            </ul>
+            
+            <h4>Pencegahan Penyakit Gusi</h4>
+            <ul>
+                <li>Menyikat gigi setidaknya dua kali sehari dengan pasta gigi yang mengandung fluoride.</li>
+                <li>Menggunakan benang gigi atau alat interdental untuk membersihkan sela-sela gigi.</li>
+                <li>Menjaga kebersihan mulut yang baik dengan rutin berkumur.</li>
+                <li>Menjalani pemeriksaan gigi secara rutin untuk deteksi dini dan perawatan yang tepat.</li>
+                <li>Hindari faktor risiko seperti merokok dan kontrol kondisi medis yang mendasari.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="penyakitgusi.jpeg" alt="Penyakit Gusi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Patah Gigi Section -->
+        <div id="patah-gigi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Patah Gigi</h2>
+            <h4>Apa Itu Patah Gigi?</h4>
+            <p>Patah gigi adalah kondisi di mana bagian gigi patah atau retak akibat trauma, kecelakaan, atau tekanan berlebih.</p>
+            
+            <h4>Penyebab Patah Gigi</h4>
+            <ul>
+                <li><strong>Trauma atau Cedera:</strong> Kecelakaan atau benturan keras pada mulut.</li>
+                <li><strong>Mengunyah Benda Keras:</strong> Mengunyah es atau permen keras.</li>
+                <li><strong>Faktor Struktural:</strong> Gigi yang rapuh akibat karies atau penyakit gusi.</li>
+                <li><strong>Prosedur Gigi:</strong> Pengikisan gigi yang berlebihan atau penggunaan kawat gigi.</li>
+            </ul>
+            
+            <h4>Gejala Patah Gigi</h4>
+            <ul>
+                <li>Rasa nyeri tajam saat mengunyah atau menelan.</li>
+                <li>Gigi terlihat patah atau retak.</li>
+                <li>Sensitivitas gigi terhadap suhu panas atau dingin.</li>
+                <li>Gangguan estetika pada senyum.</li>
+            </ul>
+            
+            <h4>Pengobatan Patah Gigi</h4>
+            <ul>
+                <li><strong>Restorasi Gigi:</strong> Penggunaan filling, crown, atau bonding untuk memperbaiki gigi yang patah.</li>
+                <li><strong>Root Canal:</strong> Jika patah mencapai pulpa gigi, perawatan ini diperlukan untuk menyelamatkan gigi.</li>
+                <li><strong>Pencabutan:</strong> Dalam kasus parah, gigi mungkin perlu dicabut.</li>
+                <li><strong>Implan Gigi atau Bridge:</strong> Penggantian gigi yang hilang setelah pencabutan.</li>
+            </ul>
+            
+            <h4>Pencegahan Patah Gigi</h4>
+            <ul>
+                <li>Menyikat gigi dan menggunakan benang gigi secara rutin untuk mencegah karies dan penyakit gusi.</li>
+                <li>Hindari mengunyah benda keras seperti es atau permen keras.</li>
+                <li>Menggunakan pelindung mulut saat berolahraga untuk mencegah cedera.</li>
+                <li>Menjalani pemeriksaan gigi secara rutin untuk deteksi dini masalah struktural.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="patahgigi.jpeg" alt="Patah Gigi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Pendarahan Gusi Section -->
+        <div id="pendarahan-gusi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Pendarahan Gusi</h2>
+            <h4>Apa Itu Pendarahan Gusi?</h4>
+            <p>Pendarahan gusi adalah kondisi di mana gusi mudah berdarah saat menyikat gigi, menggunakan benang gigi, atau saat makan.</p>
+            
+            <h4>Penyebab Pendarahan Gusi</h4>
+            <ul>
+                <li><strong>Gingivitis atau Periodontitis:</strong> Infeksi gusi yang menyebabkan peradangan dan pendarahan.</li>
+                <li><strong>Kebersihan Mulut yang Buruk:</strong> Penumpukan plak dan tartar yang menyebabkan iritasi pada gusi.</li>
+                <li><strong>Penggunaan Obat-obatan:</strong> Beberapa obat dapat menyebabkan gusi menjadi kering atau sensitif.</li>
+                <li><strong>Defisiensi Nutrisi:</strong> Kekurangan vitamin C atau K dapat menyebabkan pendarahan gusi.</li>
+                <li><strong>Hormon:</strong> Perubahan hormonal selama kehamilan, menstruasi, atau pubertas dapat meningkatkan risiko pendarahan gusi.</li>
+            </ul>
+            
+            <h4>Gejala Pendarahan Gusi</h4>
+            <ul>
+                <li>Gusi merah dan bengkak.</li>
+                <li>Gusi mudah berdarah saat menyikat gigi atau menggunakan benang gigi.</li>
+                <li>Napasan tidak segar akibat infeksi gusi.</li>
+                <li>Rasa tidak nyaman atau nyeri di gusi.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Pendarahan Gusi</h4>
+            <ul>
+                <li><strong>Kebersihan Mulut yang Baik:</strong> Menyikat gigi dua kali sehari dan menggunakan benang gigi secara rutin.</li>
+                <li><strong>Pembersihan Profesional:</strong> Scaling dan polishing oleh dokter gigi untuk menghilangkan plak dan tartar.</li>
+                <li><strong>Penggunaan Obat Kumur Antibakteri:</strong> Untuk mengurangi infeksi bakteri.</li>
+                <li><strong>Konsumsi Nutrisi yang Cukup:</strong> Memastikan asupan vitamin C dan K yang cukup.</li>
+                <li><strong>Hindari Merokok:</strong> Merokok dapat memperparah kondisi gusi dan memperlambat penyembuhan.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="pendarahangusi.jpeg" alt="Pendarahan Gusi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Gigi Impaksi Section -->
+        <div id="gigi-impaksi-section" class="content-section">
+            <button class="back-button" onclick="showSection('penyakit-infeksi-section')">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </button>
+            <h2>Gigi Impaksi</h2>
+            <h4>Apa Itu Gigi Impaksi?</h4>
+            <p>Gigi impaksi adalah kondisi di mana gigi tumbuh ke dalam jaringan lunak, tulang rahang, atau gigi lain, sehingga tidak dapat keluar dengan normal.</p>
+            
+            <h4>Penyebab Gigi Impaksi</h4>
+            <ul>
+                <li><strong>Ruang yang Tidak Cukup:</strong> Tumbuhnya gigi tanpa ruang yang cukup di rahang.</li>
+                <li><strong>Keteraturan Pertumbuhan:</strong> Gigi tumbuh tidak dalam arah yang benar.</li>
+                <li><strong>Faktor Genetik:</strong> Beberapa orang memiliki kecenderungan genetik untuk mengalami gigi impaksi.</li>
+                <li><strong>Trauma Mulut:</strong> Cedera pada mulut yang mempengaruhi arah pertumbuhan gigi.</li>
+            </ul>
+            
+            <h4>Gejala Gigi Impaksi</h4>
+            <ul>
+                <li>Nyeri di daerah rahang atau gigi yang terkena.</li>
+                <li>Membengkak pada jaringan mulut.</li>
+                <li>Rasa tidak nyaman saat membuka mulut lebar.</li>
+                <li>Pendarahan atau infeksi di sekitar gigi impaksi.</li>
+                <li>Gigi lain tampak bergerak atau bergeser.</li>
+            </ul>
+            
+            <h4>Cara Mengatasi Gigi Impaksi</h4>
+            <ul>
+                <li><strong>Pemeriksaan Dokter Gigi:</strong> Rontgen gigi untuk menentukan posisi dan tingkat impaksi.</li>
+                <li><strong>Operasi Pencabutan:</strong> Prosedur bedah untuk mengangkat gigi impaksi.</li>
+                <li><strong>Perawatan Pasca Operasi:</strong> Penggunaan obat penghilang rasa sakit dan menjaga kebersihan mulut untuk mencegah infeksi.</li>
+                <li><strong>Perawatan Lanjutan:</strong> Penggunaan brace atau perawatan ortodontik untuk mengatur posisi gigi lainnya.</li>
+            </ul>
+            
+            <h4>Pencegahan Gigi Impaksi</h4>
+            <ul>
+                <li>Menjalani pemeriksaan gigi secara rutin untuk deteksi dini masalah pertumbuhan gigi.</li>
+                <li>Menyikat gigi dan menggunakan benang gigi secara teratur untuk menjaga kesehatan mulut.</li>
+                <li>Menjaga pola makan yang sehat dan menghindari kebiasaan buruk yang dapat mempengaruhi pertumbuhan gigi.</li>
+            </ul>
+            <!-- Gambar Placeholder dengan Lazy Loading -->
+            <div class="image-zoom my-3">
+                <img src="gigiimpaksi.jpeg" alt="Gigi Impaksi" class="img-fluid rounded shadow" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Karies (Gigi Berlubang) Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Gingivitis Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Periodontitis Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Nyeri Gigi Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Sensitivitas Gigi Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Protesa Gigi yang Tidak Nyaman Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Sariawan (Oral Thrush) Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Penyakit Gusi Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Patah Gigi Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Pendarahan Gusi Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+        <!-- Gigi Impaksi Section -->
+        <!-- ... (Section sudah ditambahkan di atas) -->
+
+    </div>
+
+    <!-- Footer (Optional) -->
+    <div class="footer">
+        &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Bootstrap JS dan Dependencies (Minified) dengan defer untuk non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom JS dengan Async untuk non-blocking -->
+    <script>
+        // Fungsi untuk menampilkan section yang dipilih dan menyembunyikan lainnya
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                if(section.id === sectionId) {
+                    section.classList.add('active-section');
+                } else {
+                    section.classList.remove('active-section');
+                    // Pause dan reset video di section yang disembunyikan (jika ada)
+                    const videos = section.querySelectorAll('video');
+                    videos.forEach(video => {
+                        video.pause();
+                        video.currentTime = 0;
+                    });
+                }
+            });
+        }
+
+        // Fungsi untuk menavigasi ke halaman HTML lokal yang berbeda (jika diperlukan)
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Menghilangkan loader setelah halaman selesai dimuat
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Cek preferensi mode dari localStorage saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const darkMode = localStorage.getItem('darkMode');
+            if(darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+        });
+
+        // Event Listener untuk toggle switch
+        darkModeToggle.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    </script>
+</body>
+</html>
