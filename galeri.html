@@ -199,11 +199,11 @@
 
         .gallery-item img {
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
             border-radius: 10px;
             transition: transform 0.3s;
-            loading: lazy; /* Mengaktifkan lazy loading */
+            object-fit: cover; /* Menjaga rasio gambar tanpa memotong */
         }
 
         .gallery-item:hover img {
@@ -252,15 +252,16 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: none;
+            background: rgba(0,0,0,0.5);
             border: none;
             color: var(--delete-btn-color); /* Warna sesuai mode */
-            padding: 0;
+            padding: 5px;
             cursor: pointer;
             display: none; /* Disembunyikan secara default */
-            transition: color 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
             z-index: 10;
-            font-size: 1.2rem;
+            font-size: 1rem;
+            border-radius: 50%;
         }
 
         .gallery-item.user-added .delete-btn {
@@ -268,6 +269,7 @@
         }
 
         .delete-btn:hover {
+            background: rgba(0,0,0,0.7);
             color: var(--delete-btn-hover-color); /* Warna saat hover */
         }
 
@@ -389,6 +391,11 @@
             font-size: 1.8rem;
             font-weight: bold;
         }
+
+        /* Hide the close button */
+        .modal-header {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -446,23 +453,22 @@
 
     <!-- Modal untuk Menampilkan Gambar Layar Penuh -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen"> <!-- Menambahkan kelas modal-fullscreen -->
         <div class="modal-content bg-transparent border-0">
-          <div class="modal-header border-0">
-            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+          <!-- Menghapus modal-header untuk menghilangkan tombol "x" -->
+          <!-- Modal Body -->
           <div class="modal-body p-0">
             <div class="modal-img-container">
                 <!-- Zoom Controls for Desktop -->
                 <div class="zoom-controls d-none d-md-flex">
-                    <button id="zoomInBtn"><i class="fas fa-search-plus"></i></button>
-                    <button id="zoomOutBtn"><i class="fas fa-search-minus"></i></button>
+                    <button id="zoomInBtn" aria-label="Zoom In"><i class="fas fa-search-plus"></i></button>
+                    <button id="zoomOutBtn" aria-label="Zoom Out"><i class="fas fa-search-minus"></i></button>
                 </div>
 
                 <!-- Navigation Controls -->
                 <div class="nav-controls">
-                    <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
-                    <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                    <button id="prevBtn" aria-label="Previous Image"><i class="fas fa-chevron-left"></i></button>
+                    <button id="nextBtn" aria-label="Next Image"><i class="fas fa-chevron-right"></i></button>
                 </div>
 
                 <img src="" alt="Gambar" class="modal-img" id="modalImage">
@@ -727,8 +733,8 @@
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                 // Menggunakan format WebP untuk kompresi yang lebih baik
-                const compressedDataUrl = canvas.toDataURL('image/webp', quality);
-                callback(compressedDataUrl);
+                const compressedDataURL = canvas.toDataURL('image/webp', quality);
+                callback(compressedDataURL);
             }
         }
 
@@ -755,18 +761,10 @@
         function hapusGambarDefault(id) {
             const password = prompt('Masukkan kata sandi untuk menghapus gambar ini:');
             if(password === 'sakitgigi') {
-                // Jika default images disimpan dalam objek atau database, tambahkan logika penghapusan di sini.
-                // Namun, karena default images berasal dari array statis, Anda bisa menghilangkan atau mengaburkan gambar.
-
                 alert('Gambar default tidak dapat dihapus secara permanen.');
             } else {
                 alert('Kata sandi salah. Gambar tidak dihapus.');
             }
-        }
-
-        // Fungsi untuk menghasilkan ID unik
-        function generateUniqueId() {
-            return '_' + Math.random().toString(36).substr(2, 9);
         }
 
         // Menambahkan Event Listener untuk Reset Gallery
@@ -929,8 +927,20 @@
             modalImage.style.cursor = 'grab';
         });
 
-        // Reset transform when modal is closed
+        // Menambahkan Event Listener untuk Menutup Modal saat Mengklik di Luar Gambar
         const imageModalElement = document.getElementById('imageModal');
+        imageModalElement.addEventListener('click', function(e) {
+            // Cek apakah klik terjadi di area modal-body atau di dalam modal-img-container
+            const modalBody = e.currentTarget.querySelector('.modal-body');
+            const modalImgContainer = e.currentTarget.querySelector('.modal-img-container');
+
+            if(!modalImgContainer.contains(e.target)) {
+                const bsModal = bootstrap.Modal.getInstance(imageModalElement);
+                bsModal.hide();
+            }
+        });
+
+        // Reset transform when modal is closed
         imageModalElement.addEventListener('hidden.bs.modal', function () {
             resetZoom();
         });
