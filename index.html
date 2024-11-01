@@ -323,6 +323,7 @@
             justify-content: center;
             z-index: 3000;
             animation: fadeIn 1s ease-in-out;
+            padding: 20px;
         }
 
         .intro-content {
@@ -333,6 +334,8 @@
             color: var(--text-color);
             box-shadow: 0 4px 8px var(--shadow-color);
             animation: slideIn 1s ease-in-out;
+            position: relative;
+            max-width: 90%;
         }
 
         .button-group {
@@ -346,9 +349,17 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .button-group .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px var(--shadow-color);
+        /* Hitwebcounter Styling */
+        .hit-counter {
+            margin-top: 20px;
+        }
+
+        /* Tambahan: Pastikan Hitwebcounter tidak mengganggu tampilan pada layar kecil */
+        @media (max-width: 576px) {
+            .hit-counter img {
+                width: 100%;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -396,6 +407,17 @@
             <div class="button-group">
                 <button id="continueWebBtn" class="btn btn-primary">Lanjutkan ke versi Website</button>
                 <button id="downloadAppBtn" class="btn btn-success">Download Aplikasi Android</button>
+            </div>
+            <!-- Hitwebcounter Code Tambahan -->
+            <div class="hit-counter">
+                <!-- hitwebcounter Code START -->
+                <a href="https://www.hitwebcounter.com" target="_blank">
+                    <img src="https://hitwebcounter.com/counter/counter.php?page=17169300&style=0011&nbdigits=5&type=page&initCount=0" 
+                         title="Counter Widget" 
+                         alt="Visit counter For Websites" 
+                         border="0" />
+                </a>
+                <!-- hitwebcounter Code END -->
             </div>
         </div>
     </div>
@@ -565,8 +587,8 @@
                     // Tandai bahwa overlay sudah ditampilkan
                     sessionStorage.setItem('introShown', 'true');
                     // Arahkan ke link download aplikasi Android
-                    window.open('https://drive.google.com/file/d/1p89y7aQGkira0S4OrSSxu_azsgZbVyIX/view?usp=sharing', '_blank');
-                    // kode lama https://drive.google.com/file/d/1IPkBeNYpcPV700X_jMkhsG4FdOFjtew-/view?usp=sharing
+                    window.open('https://drive.google.com/file/d/1IPkBeNYpcPV700X_jMkhsG4FdOFjtew-/view?usp=sharing', '_blank');
+                    // Sembunyikan overlay
                     introOverlay.style.display = 'none';
                 });
             }
