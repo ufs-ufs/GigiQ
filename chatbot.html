@@ -30,8 +30,8 @@
             color: #e0e0e0; /* Light text */
             height: 100%;
             width: 100%;
-            /* Flexbox untuk desktop */
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding-top: env(safe-area-inset-top);
@@ -47,13 +47,12 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             width: 100%;
-            height: calc(var(--vh, 1vh) * 100); /* Gunakan variabel CSS untuk tinggi viewport */
             max-width: 1000px; /* For large screens */
             display: flex;
             flex-direction: column;
             overflow: hidden; /* Allow internal scrolling */
             position: relative; /* For positioning child elements */
-            padding-top: 60px; /* Sesuaikan dengan tinggi header */
+            flex: 1; /* Allow container to grow and fill available space */
         }
 
         /* Header */
@@ -226,6 +225,26 @@
             font-size: 0.85rem;
             flex-shrink: 0;
             max-height: 70vh; /* Membatasi tinggi untuk memungkinkan scroll */
+            position: absolute;
+            top: 60px; /* Sesuaikan dengan padding-top pada #chat-container */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 8px;
+            z-index: 1001; /* Lebih tinggi dari header */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #instructions::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent #3c3c3c transparent;
         }
 
         #instructions h2 {
@@ -301,24 +320,28 @@
         @media (max-width: 900px) {
             #chat-container {
                 max-width: 100%;
-                height: auto; /* Ubah dari 100% atau 100vh ke auto */
+                height: calc(var(--vh, 1vh) * 100); /* Tetap menggunakan tinggi viewport */
             }
         }
 
         @media (max-width: 600px) {
-            /* Ubah display flex ke block pada mobile */
+            /* Tetap menggunakan flex layout pada mobile */
             body {
-                display: block;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
                 padding-top: env(safe-area-inset-top);
                 padding-bottom: env(safe-area-inset-bottom);
                 padding-left: env(safe-area-inset-left);
                 padding-right: env(safe-area-inset-right);
-                overflow: auto; /* Izinkan scroll jika diperlukan */
+                overflow: hidden; /* Prevent scrolling on body */
             }
 
             #chat-container {
                 max-width: 100%;
-                height: auto; /* Hindari penggunaan 100vh */
+                height: calc(var(--vh, 1vh) * 100); /* Tetap menggunakan tinggi viewport */
                 padding-top: 60px; /* Sesuaikan jika menggunakan posisi sticky */
             }
 
@@ -350,11 +373,6 @@
             .btn-3d {
                 padding: 8px 16px;
                 font-size: 0.9rem;
-            }
-
-            /* Adjust chat-container height for smaller screens */
-            #chat-container {
-                height: auto; /* Ubah dari 100vh ke auto */
             }
         }
 
@@ -9662,7 +9680,7 @@
         "tanya random aja"
     ],
     "answer": "Wah, pertanyaan yang asik nih, tapi lebih asik lagi kalau kita bahas soal gigi! Coba tanya yang seru-seru soal kesehatan gigi. Gimana? Biar ngobrolnya makin greget, hehe. 😁"
-}
+},
         ];
 
         // Fungsi untuk memuat data dari default, localStorage, atau file JSON
@@ -9797,6 +9815,49 @@
             return bestResponse;
         }
 
+        // Fungsi untuk menangani klik di luar #instructions
+        function handleClickOutside(event) {
+            const instructions = document.getElementById('instructions');
+            const toggleButton = document.querySelector('.toggle-instructions');
+
+            // Jika #instructions tidak sedang ditampilkan, tidak perlu melakukan apa-apa
+            if (instructions.style.display !== "block") return;
+
+            // Jika klik berada di dalam #instructions atau tombol toggle, tidak perlu menutup
+            if (instructions.contains(event.target) || toggleButton.contains(event.target)) {
+                return;
+            }
+
+            // Jika klik berada di luar #instructions dan tombol toggle, tutup #instructions
+            toggleInstructions(false);
+        }
+
+        // Fungsi untuk menampilkan atau menyembunyikan #instructions
+        function toggleInstructions(forceState) {
+            const instructions = document.getElementById('instructions');
+            const toggleButton = document.querySelector('.toggle-instructions');
+
+            if (typeof forceState === 'boolean') {
+                if (forceState) {
+                    instructions.style.display = "block";
+                    document.addEventListener('click', handleClickOutside);
+                } else {
+                    instructions.style.display = "none";
+                    document.removeEventListener('click', handleClickOutside);
+                }
+                return;
+            }
+
+            // Toggle display
+            if (instructions.style.display === "block") {
+                instructions.style.display = "none";
+                document.removeEventListener('click', handleClickOutside);
+            } else {
+                instructions.style.display = "block";
+                document.addEventListener('click', handleClickOutside);
+            }
+        }
+
         async function sendMessage() {
             const userInput = document.getElementById('userInput').value.trim();
             if (userInput) {
@@ -9812,7 +9873,7 @@
                 // Tambahkan pesan bot
                 const botMessage = document.createElement('div');
                 botMessage.classList.add('message', 'bot');
-                botMessage.innerHTML = response;
+                botMessage.innerHTML = sanitizeHTML(response);
                 chatbox.appendChild(botMessage);
 
                 // Reset input
@@ -9821,6 +9882,12 @@
                 // Scroll ke bawah
                 chatbox.scrollTop = chatbox.scrollHeight;
             }
+        }
+
+        function sanitizeHTML(str) {
+            var temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
         }
 
         document.addEventListener('keydown', function(event) {
@@ -9843,24 +9910,13 @@
             botMessage.innerHTML = welcomeMessage;
             chatbox.appendChild(botMessage);
             chatbox.scrollTop = chatbox.scrollHeight;
-        };
 
-        // Toggle Instructions Function
-        function toggleInstructions() {
-            const instructions = document.getElementById('instructions');
-            if (instructions.style.display === "none" || instructions.style.display === "") {
-                instructions.style.display = "block";
-            } else {
-                instructions.style.display = "none";
+            // Terapkan Preferensi Dark Mode Jika Diaktifkan
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'enabled') {
+                document.body.classList.add('dark-mode');
             }
-        }
-
-        // Fungsi untuk menavigasi ke halaman HTML lokal yang berbeda
-        function navigateTo(page) {
-            // Tidak melakukan navigasi karena "GigiQ ChatBot" adalah judul
-            console.log("GigiQ ChatBot diklik");
-            // Anda bisa menambahkan animasi atau efek lain di sini
-        }
+        };
 
         // Penanganan Error Global untuk mencegah aplikasi crash
         window.addEventListener('error', function (event) {
@@ -9874,15 +9930,15 @@
         <!-- Header -->
         <div class="chat-header">
             <!-- Tombol Kembali (Left) -->
-            <button class="btn-3d back-home" onclick="window.location.href='index.html'">
+            <button class="btn-3d back-home" onclick="window.location.href='index.html'" aria-label="Kembali ke Beranda">
                 <i class="fas fa-home me-2"></i>
             </button>
             <!-- Tombol GigiQ ChatBot (Center) -->
-            <div class="header-title" onclick="navigateTo('')">
+            <div class="header-title" onclick="navigateTo('')" tabindex="0" role="button" aria-pressed="false">
                 <i class="fas fa-tooth me-2"></i> GigiQ ChatBot
             </div>
             <!-- Tombol Info (Right) -->
-            <button class="btn-3d toggle-instructions" onclick="toggleInstructions()">
+            <button class="btn-3d toggle-instructions" onclick="toggleInstructions()" aria-label="Tampilkan Info">
                 <i class="fas fa-info-circle me-2"></i> Info
             </button>
             <!-- 
@@ -9898,12 +9954,13 @@
 
         <!-- Input Area -->
         <div id="input-area">
+            <label for="userInput" class="sr-only">Tulis Pertanyaan</label>
             <input type="text" id="userInput" placeholder="Tulis pertanyaan..." autocomplete="off">
-            <button id="sendButton" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            <button id="sendButton" onclick="sendMessage()" aria-label="Kirim Pesan"><i class="fas fa-paper-plane"></i></button>
         </div>
 
         <!-- Instructions Section (Info) -->
-        <div id="instructions">
+        <div id="instructions" aria-hidden="true">
             <h2>Cara Penggunaan</h2>
             <p>1. Ketik pertanyaan Anda di kolom chat.</p>
             <p>2. Tekan Enter atau klik tombol "Kirim".</p>
