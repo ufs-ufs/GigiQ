@@ -309,6 +309,47 @@
         .blink {
             animation: blink 2s infinite;
         }
+
+        /* Overlay Animasi */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: none; /* Awalnya disembunyikan */
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .intro-content {
+            background-color: var(--section-bg);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: var(--text-color);
+            box-shadow: 0 4px 8px var(--shadow-color);
+            animation: slideIn 1s ease-in-out;
+        }
+
+        .button-group {
+            margin-top: 20px;
+        }
+
+        .button-group .btn {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .button-group .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px var(--shadow-color);
+        }
     </style>
 </head>
 <body>
@@ -345,6 +386,18 @@
     <!-- Footer (Optional) -->
     <div class="footer">
         &copy; GigiQ - Aplikasi Edukasi Gigi By: UFS
+    </div>
+
+    <!-- Overlay Animasi untuk Sesi Pertama -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-content">
+            <h2>Selamat Datang di GigiQ!</h2>
+            <p>Pilih salah satu opsi di bawah untuk melanjutkan:</p>
+            <div class="button-group">
+                <button id="continueWebBtn" class="btn btn-primary">Lanjutkan ke versi Website</button>
+                <button id="downloadAppBtn" class="btn btn-success">Download Aplikasi Android</button>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS dan Dependencies -->
@@ -488,6 +541,36 @@
                 // Anda dapat menampilkan pesan atau tindakan lain di sini jika diperlukan
             }
         }
+    </script>
+
+    <!-- Custom JS untuk Overlay Animasi -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek apakah overlay sudah pernah ditampilkan dalam sesi ini
+            if (!sessionStorage.getItem('introShown')) {
+                const introOverlay = document.getElementById('introOverlay');
+                introOverlay.style.display = 'flex';
+
+                const continueWebBtn = document.getElementById('continueWebBtn');
+                const downloadAppBtn = document.getElementById('downloadAppBtn');
+
+                continueWebBtn.addEventListener('click', function() {
+                    // Tandai bahwa overlay sudah ditampilkan
+                    sessionStorage.setItem('introShown', 'true');
+                    // Sembunyikan overlay
+                    introOverlay.style.display = 'none';
+                });
+
+                downloadAppBtn.addEventListener('click', function() {
+                    // Tandai bahwa overlay sudah ditampilkan
+                    sessionStorage.setItem('introShown', 'true');
+                    // Arahkan ke link download aplikasi Android
+                    window.open('https://drive.google.com/file/d/1IPkBeNYpcPV700X_jMkhsG4FdOFjtew-/view?usp=sharing', '_blank');
+                    // Sembunyikan overlay
+                    introOverlay.style.display = 'none';
+                });
+            }
+        });
     </script>
 
     <!-- Service Worker Registration -->
