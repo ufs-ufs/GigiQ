@@ -10,18 +10,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <style>
+        /* Global Box-Sizing */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* Reset Margins and Padding */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         /* General Styles */
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #1e1e1e; /* Dark background */
             color: #e0e0e0; /* Light text */
-            margin: 0;
-            padding: 0;
-            height: 100vh;
+            height: 100%;
+            width: 100%;
+            /* Flexbox untuk mobile only */
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
         }
 
         /* Chat Container */
@@ -30,11 +41,11 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 600px;
-            height: 100vh; /* Full height */
+            height: 100%;
+            max-width: 1000px; /* For large screens */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Allow internal scrolling */
         }
 
         /* Header */
@@ -43,9 +54,10 @@
             color: #fff;
             padding: 15px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between; /* Space between buttons */
             align-items: center;
             position: relative;
+            flex-shrink: 0; /* Prevent shrinking */
         }
 
         /* Tombol 3D dengan Warna Biru yang Digelapkan */
@@ -68,6 +80,7 @@
             position: relative;
             overflow: hidden;
             margin: 0 5px; /* Spacing antara tombol */
+            flex-shrink: 0;
         }
 
         /* Efek Hover untuk Tombol 3D */
@@ -106,20 +119,24 @@
 
         /* Tombol Kembali (Left) */
         .back-home {
-            position: absolute;
-            left: 15px;
+            /* Sudah diatur dengan flexbox di header */
         }
 
         /* Tombol Info (Right) */
         .toggle-instructions {
-            position: absolute;
-            right: 15px;
+            /* Sudah diatur dengan flexbox di header */
         }
 
         /* Tombol GigiQ ChatBot (Center) */
         .header-title {
-            /* Already centered by flexbox */
-            /* Additional styles if needed */
+            flex-grow: 1;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
         /* Chatbox */
@@ -165,6 +182,7 @@
             padding: 10px;
             background-color: #3c3c3c; /* Sedikit lebih terang untuk kontras */
             align-items: center;
+            flex-shrink: 0;
         }
 
         #userInput {
@@ -188,6 +206,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
             font-size: 1rem;
+            flex-shrink: 0;
         }
 
         #sendButton:hover {
@@ -201,6 +220,8 @@
             display: none; /* Disembunyikan secara default */
             overflow-y: auto;
             font-size: 0.85rem;
+            flex-shrink: 0;
+            max-height: 70vh; /* Membatasi tinggi untuk memungkinkan scroll */
         }
 
         #instructions h2 {
@@ -234,6 +255,7 @@
             color: #e0e0e0;
             border: none;
             border-radius: 5px;
+            width: 100%;
         }
 
         /* Download Database Section */
@@ -262,10 +284,37 @@
             padding: 10px;
             font-size: 0.8rem;
             border-top: 1px solid #444;
+            flex-shrink: 0;
         }
 
         /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            #chat-container {
+                max-width: 95%;
+            }
+        }
+
+        @media (max-width: 900px) {
+            #chat-container {
+                max-width: 100%;
+                height: 100%;
+            }
+        }
+
         @media (max-width: 600px) {
+            /* Apply flexbox centering on mobile */
+            body {
+                justify-content: center;
+                align-items: center;
+                overflow: auto; /* Allow scroll if necessary */
+            }
+
+            #chat-container {
+                border-radius: 10px;
+                max-width: 100%;
+                height: 100vh;
+            }
+
             .chat-header .header-title {
                 font-size: 1rem;
             }
@@ -295,12 +344,17 @@
                 padding: 8px 16px;
                 font-size: 0.9rem;
             }
+
+            /* Adjust chat-container height for smaller screens */
+            #chat-container {
+                height: 100vh;
+            }
         }
 
         /* Landscape Mode Adjustments */
         @media (orientation: landscape) and (max-width: 600px) {
             #chat-container {
-                height: 100vh;
+                max-width: 100%;
             }
 
             .chat-header .header-title {
@@ -331,14 +385,14 @@
 
         // Pertanyaan dan Jawaban Default
         const defaultQuestions = [
-   {
-        "keywords": ["perawatan ortodonti", "kawat gigi"],
-        "answer": "Kawat gigi digunakan untuk meluruskan dan merapikan gigi yang tidak rata. Perawatan ini bisa memakan waktu beberapa tahun tergantung kasusnya."
-    },
-    {
-        "keywords": ["pencabutan gigi", "cabut gigi"],
-        "answer": "Pencabutan gigi diperlukan jika gigi rusak parah atau menyebabkan masalah kesehatan lainnya. Dokter gigi akan memberi tahu Anda kapan perlu dilakukan."
-    },
+            {
+                "keywords": ["perawatan ortodonti", "kawat gigi"],
+                "answer": "Kawat gigi digunakan untuk meluruskan dan merapikan gigi yang tidak rata. Perawatan ini bisa memakan waktu beberapa tahun tergantung kasusnya."
+            },
+            {
+                "keywords": ["pencabutan gigi", "cabut gigi"],
+                "answer": "Pencabutan gigi diperlukan jika gigi rusak parah atau menyebabkan masalah kesehatan lainnya. Dokter gigi akan memberi tahu Anda kapan perlu dilakukan."
+            },
     {
         "keywords": ["gigi sensitif", "sensitif terhadap dingin"],
         "answer": "Gigi sensitif bisa terjadi karena enamel yang terkikis atau masalah gusi. Hindari makanan dan minuman dingin serta gunakan pasta gigi khusus gigi sensitif."
@@ -9648,8 +9702,8 @@
                         if (Array.isArray(importedQuestions)) {
                             // Tambahkan pertanyaan baru ke array questions
                             questions = questions.concat(importedQuestions);
-                            // Simpan pertanyaan yang diimpor ke localStorage
-                            localStorage.setItem('questions', JSON.stringify(importedQuestions));
+                            // Simpan seluruh pertanyaan ke localStorage
+                            localStorage.setItem('questions', JSON.stringify(questions));
                             alert('Database berhasil diperbarui!');
                             location.reload(); // Reload untuk memuat pertanyaan baru
                         } else {
@@ -9807,9 +9861,9 @@
                 <i class="fas fa-home me-2"></i> 
             </button>
             <!-- Tombol GigiQ ChatBot (Center) -->
-            <button class="btn-3d header-title" onclick="navigateTo('')">
+            <div class="header-title" onclick="navigateTo('')">
                 <i class="fas fa-tooth me-2"></i> GigiQ ChatBot
-            </button>
+            </div>
             <!-- Tombol Info (Right) -->
             <button class="btn-3d toggle-instructions" onclick="toggleInstructions()">
                 <i class="fas fa-info-circle me-2"></i> Info
