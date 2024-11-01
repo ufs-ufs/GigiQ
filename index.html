@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -287,6 +286,16 @@
             .back-button span {
                 font-size: 0.9rem;
             }
+
+            /* Perbaikan Ukuran Hitwebcounter pada Mobile */
+            .hit-counter img {
+                width: 80px; /* Atur lebar gambar sesuai kebutuhan */
+                height: auto; /* Pertahankan aspek rasio */
+            }
+
+            .hit-counter {
+                margin-top: 10px; /* Sesuaikan jarak jika perlu */
+            }
         }
 
         /* Animasi */
@@ -358,7 +367,19 @@
         /* Tambahan: Pastikan Hitwebcounter tidak mengganggu tampilan pada layar kecil */
         @media (max-width: 576px) {
             .hit-counter img {
-                width: 100%;
+                width: 80px; /* Ukuran yang lebih kecil */
+                height: auto;
+            }
+
+            .hit-counter {
+                margin-top: 10px; /* Mengurangi jarak jika perlu */
+            }
+        }
+
+        /* Desktop Styling untuk Hitwebcounter */
+        @media (min-width: 577px) {
+            .hit-counter img {
+                width: 100px; /* Atur lebar sesuai keinginan untuk desktop */
                 height: auto;
             }
         }
