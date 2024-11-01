@@ -33,6 +33,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         /* Chat Container */
@@ -56,8 +60,8 @@
             display: flex;
             justify-content: space-between; /* Space between buttons */
             align-items: center;
-            position: relative;
             flex-shrink: 0; /* Prevent shrinking */
+            position: relative;
         }
 
         /* Tombol 3D dengan Warna Biru yang Digelapkan */
@@ -117,19 +121,9 @@
             transition: 0s;
         }
 
-        /* Tombol Kembali (Left) */
-        .back-home {
-            /* Sudah diatur dengan flexbox di header */
-        }
-
-        /* Tombol Info (Right) */
-        .toggle-instructions {
-            /* Sudah diatur dengan flexbox di header */
-        }
-
         /* Tombol GigiQ ChatBot (Center) */
         .header-title {
-            flex-grow: 1;
+            flex: 1;
             text-align: center;
             font-size: 1.2rem;
             font-weight: bold;
@@ -137,6 +131,10 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            padding: 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Chatbox */
@@ -9645,7 +9643,7 @@
         "tanya random aja"
     ],
     "answer": "Wah, pertanyaan yang asik nih, tapi lebih asik lagi kalau kita bahas soal gigi! Coba tanya yang seru-seru soal kesehatan gigi. Gimana? Biar ngobrolnya makin greget, hehe. 😁"
-},
+}
         ];
 
         // Fungsi untuk memuat data dari default, localStorage, atau file JSON
@@ -9858,7 +9856,7 @@
         <div class="chat-header">
             <!-- Tombol Kembali (Left) -->
             <button class="btn-3d back-home" onclick="window.location.href='index.html'">
-                <i class="fas fa-home me-2"></i> 
+                <i class="fas fa-home me-2"></i>
             </button>
             <!-- Tombol GigiQ ChatBot (Center) -->
             <div class="header-title" onclick="navigateTo('')">
