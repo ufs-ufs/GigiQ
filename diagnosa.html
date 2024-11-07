@@ -1,0 +1,689 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFSdental-Diagnosa</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Tailwind Configuration for Animations -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: 0 },
+                            '100%': { opacity: 1 },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateY(20px)', opacity: 0 },
+                            '100%': { transform: 'translateY(0)', opacity: 1 },
+                        },
+                        bounceIn: {
+                            '0%, 20%, 40%, 60%, 80%, 100%': { animationTimingFunction: 'cubic-bezier(0.215, 0.610, 0.355, 1.000)' },
+                            '0%': { opacity: 0, transform: 'scale(0.3)' },
+                            '50%': { opacity: 1, transform: 'scale(1.05)' },
+                            '100%': { transform: 'scale(1)' },
+                        },
+                        rotate3d: {
+                            '0%': { transform: 'rotateY(0deg)' },
+                            '100%': { transform: 'rotateY(360deg)' },
+                        },
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 1s ease-out',
+                        slideIn: 'slideIn 0.5s ease-out',
+                        bounceIn: 'bounceIn 1s ease-out',
+                        rotate3d: 'rotate3d 10s linear infinite',
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom styles for progress bar animation */
+        #progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Button hover effects */
+        .btn-animated:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 3D Rotating Dental Icon */
+        .dental-icon {
+            animation: rotate3d;
+            width: 100px;
+            height: 100px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .dental-icon {
+                width: 80px;
+                height: 80px;
+            }
+            .modal-content {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Footer Styles */
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #4A5568; /* Gray-700 */
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-teal-100 min-h-screen flex flex-col items-center justify-center">
+    <!-- Modal Disclaimer -->
+    <div id="disclaimer-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-teal-600 mb-4">Disclaimer</h2>
+            <p class="text-gray-700 mb-6">
+                Aplikasi ini dirancang hanya untuk tujuan edukasi dan informasi. Tidak dimaksudkan sebagai pengganti nasihat medis profesional. Jika Anda mengalami gejala atau masalah kesehatan, segera konsultasikan dengan dokter atau profesional kesehatan terpercaya.
+            </p>
+            <button id="accept-button" class="bg-teal-500 text-white px-6 py-2 rounded-full shadow-md hover:bg-teal-600 btn-animated transition duration-300">
+                Saya Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="app" class="container mx-auto p-6 hidden flex-grow">
+        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-700 hover:scale-105">
+            <div class="p-6">
+                <div class="flex flex-col items-center mb-6">
+                    <!-- 3D Rotating Dental Icon -->
+                    <i class="fas fa-tooth dental-icon text-teal-500 mb-4"></i>
+                    <h1 class="text-4xl font-bold text-center text-teal-600 mb-2 animate-bounceIn">UFSdental-Diagnosa</h1>
+                </div>
+                
+                <!-- Progress Bar Container -->
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-6">
+                    <div id="progress-bar" class="bg-teal-500 h-4 rounded-full" style="width: 0%"></div>
+                </div>
+                
+                <!-- Quiz Container -->
+                <div id="quiz-container" class="animate-slideIn">
+                    <!-- Pertanyaan akan dimasukkan di sini melalui JavaScript -->
+                </div>
+                
+                <!-- Hasil Diagnosa -->
+                <div id="result-container" class="hidden animate-fadeIn">
+                    <h2 class="text-3xl font-semibold text-center text-teal-600 mb-4">Hasil Diagnosa</h2>
+                    <div id="diagnosis-results" class="mb-4 space-y-2">
+                        <!-- Hasil diagnosa akan ditampilkan di sini -->
+                    </div>
+                    <div id="recommendations" class="mb-4">
+                        <!-- Rekomendasi perawatan akan ditampilkan di sini -->
+                    </div>
+                    <div class="flex justify-center">
+                        <button id="print-button" class="bg-teal-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-teal-600 btn-animated">
+                            <i class="fas fa-print mr-2"></i> Cetak Hasil
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <footer>
+                <p>© 2024 UFS. Semua hak cipta dilindungi.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Data Penyakit Gigi
+        const diseases = [
+            {
+                name: "Pulpitis",
+                icd: "K04.7",
+                symptoms: {
+                    nyeri: 3,
+                    nyeriTerhadapSuhu: 2,
+                    pembengkakan: 2,
+                    perubahanWarna: 1,
+                    nyeriSaatMengunyah: 1
+                },
+                recommendations: "Konsultasikan dengan dokter gigi untuk perawatan saluran akar. Perawatan ini biasanya melibatkan pembersihan jaringan yang terinfeksi dan pengisian ruang akar gigi."
+            },
+            {
+                name: "Periodontitis",
+                icd: "K05.3",
+                symptoms: {
+                    pembengkakan: 3,
+                    perdarahanGusi: 3,
+                    nyeriSaatMengunyah: 2,
+                    nyeri: 2,
+                    kehilanganTulang: 2
+                },
+                recommendations: "Lakukan pembersihan gigi secara profesional dan perawatan periodontal. Ini dapat mencakup scaling dan root planing, serta perawatan lanjutan untuk mencegah kerusakan lebih lanjut."
+            },
+            {
+                name: "Karies Gigi",
+                icd: "K02.4",
+                symptoms: {
+                    nyeri: 2,
+                    perubahanWarna: 3,
+                    nyeriTerhadapSuhu: 2,
+                    lubangGigi: 3
+                },
+                recommendations: "Perlu penambalan gigi oleh dokter gigi. Penambalan membantu mencegah perkembangan karies lebih lanjut dan mengembalikan fungsi serta estetika gigi."
+            },
+            {
+                name: "Abses Gigi",
+                icd: "K04.0",
+                symptoms: {
+                    pembengkakan: 3,
+                    nyeri: 3,
+                    demam: 2,
+                    nyeriSaatMengunyah: 2,
+                    pembentukanNanah: 3
+                },
+                recommendations: "Pengobatan antibiotik dan pembedahan mungkin diperlukan. Abses gigi memerlukan perawatan segera untuk mencegah penyebaran infeksi."
+            },
+            {
+                name: "Infeksi Gusi",
+                icd: "K05.2",
+                symptoms: {
+                    perdarahanGusi: 3,
+                    pembengkakan: 2,
+                    nyeri: 1,
+                    bauMulut: 2
+                },
+                recommendations: "Perawatan kebersihan mulut yang lebih baik dan mungkin antibiotik. Ini termasuk pembersihan profesional dan peningkatan rutinitas kebersihan oral di rumah."
+            },
+            {
+                name: "Gingivitis",
+                icd: "K05.1",
+                symptoms: {
+                    perdarahanGusi: 3,
+                    pembengkakan: 2,
+                    bauMulut: 2,
+                    kemerahanGusi: 3
+                },
+                recommendations: "Peningkatan kebersihan mulut dan pembersihan profesional. Menggunakan sikat gigi yang tepat dan flossing secara rutin sangat penting."
+            },
+            {
+                name: "Gigi Sensitif",
+                icd: "K08.8",
+                symptoms: {
+                    nyeriTerhadapSuhu: 3,
+                    nyeriSaatMengunyah: 2,
+                    lubangGigi: 2,
+                    erosiGigi: 2
+                },
+                recommendations: "Gunakan pasta gigi untuk gigi sensitif dan konsultasi dengan dokter gigi. Perawatan mungkin termasuk sealant atau penggunaan fluoride untuk memperkuat enamel gigi."
+            },
+            {
+                name: "Maloklusi",
+                icd: "K07.6",
+                symptoms: {
+                    nyeriRahang: 2,
+                    sakitKepala: 1,
+                    nyeriSaatMengunyah: 2,
+                    keausanGigi: 2
+                },
+                recommendations: "Konsultasi dengan ortodontis untuk penyesuaian gigi. Penyesuaian bisa melibatkan penggunaan kawat gigi atau perangkat lain untuk memperbaiki posisi gigi."
+            },
+            // Tambahkan lebih banyak penyakit sesuai kebutuhan
+        ];
+
+        // Pertanyaan Quiz
+        const questions = [
+            {
+                id: "q1",
+                text: "Apakah Anda merasakan nyeri di gigi?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q1_1",
+                        text: "Seberapa intens nyeri yang Anda rasakan? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "nyeri"
+                    },
+                    {
+                        id: "q1_2",
+                        text: "Apakah nyeri ini terpengaruh oleh suhu? (panas/dingin)",
+                        type: "yesno",
+                        relatedSymptom: "nyeriTerhadapSuhu"
+                    },
+                    {
+                        id: "q1_3",
+                        text: "Apakah Anda merasakan nyeri saat mengunyah?",
+                        type: "yesno",
+                        relatedSymptom: "nyeriSaatMengunyah"
+                    }
+                ]
+            },
+            {
+                id: "q2",
+                text: "Apakah Anda mengalami pembengkakan di area gusi?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q2_1",
+                        text: "Seberapa intens pembengkakan yang Anda rasakan? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "pembengkakan"
+                    },
+                    {
+                        id: "q2_2",
+                        text: "Apakah ada perubahan warna pada gusi Anda?",
+                        type: "yesno",
+                        relatedSymptom: "perubahanWarna"
+                    }
+                ]
+            },
+            {
+                id: "q3",
+                text: "Apakah gusi Anda mudah berdarah?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q3_1",
+                        text: "Seberapa sering gusi Anda berdarah? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "perdarahanGusi"
+                    }
+                ]
+            },
+            {
+                id: "q4",
+                text: "Apakah Anda mengalami demam?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q4_1",
+                        text: "Seberapa tinggi demam yang Anda alami? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "demam"
+                    }
+                ]
+            },
+            {
+                id: "q5",
+                text: "Apakah Anda merasakan sensitivitas gigi terhadap makanan atau minuman manis?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q5_1",
+                        text: "Seberapa sering Anda merasakan sensitivitas ini? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "sensitivitasManis"
+                    }
+                ]
+            },
+            {
+                id: "q6",
+                text: "Apakah Anda melihat lubang atau lubang kecil pada gigi Anda?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q6_1",
+                        text: "Seberapa besar lubang yang Anda lihat? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "lubangGigi"
+                    }
+                ]
+            },
+            {
+                id: "q7",
+                text: "Apakah Anda merasakan bau mulut yang tidak sedap?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q7_1",
+                        text: "Seberapa sering Anda mengalami bau mulut ini? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "bauMulut"
+                    }
+                ]
+            },
+            {
+                id: "q8",
+                text: "Apakah Anda merasakan erosi pada gigi Anda?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q8_1",
+                        text: "Seberapa parah erosi gigi yang Anda alami? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "erosiGigi"
+                    }
+                ]
+            },
+            {
+                id: "q9",
+                text: "Apakah Anda merasakan nyeri di rahang atau sendi temporomandibular?",
+                type: "yesno",
+                followUp: [
+                    {
+                        id: "q9_1",
+                        text: "Seberapa sering Anda merasakan nyeri ini? (1-10)",
+                        type: "scale",
+                        relatedSymptom: "nyeriRahang"
+                    }
+                ]
+            },
+            // Tambahkan lebih banyak pertanyaan sesuai kebutuhan untuk mencapai 20+
+        ];
+
+        // Variabel untuk menyimpan jawaban
+        let answers = {};
+        let currentQuestionIndex = 0;
+
+        // Referensi ke elemen DOM
+        const quizContainer = document.getElementById('quiz-container');
+        const progressBar = document.getElementById('progress-bar');
+        const resultContainer = document.getElementById('result-container');
+        const diagnosisResults = document.getElementById('diagnosis-results');
+        const recommendations = document.getElementById('recommendations');
+        const printButton = document.getElementById('print-button');
+        const disclaimerModal = document.getElementById('disclaimer-modal');
+        const acceptButton = document.getElementById('accept-button');
+        const appContainer = document.getElementById('app');
+
+        // Fungsi untuk memulai quiz
+        function startQuiz() {
+            showQuestion(questions[currentQuestionIndex]);
+            updateProgress();
+        }
+
+        // Fungsi untuk menampilkan pertanyaan
+        function showQuestion(question) {
+            quizContainer.innerHTML = ''; // Kosongkan kontainer
+            const questionElement = document.createElement('div');
+            questionElement.classList.add('mb-6', 'animate-slideIn');
+
+            const questionText = document.createElement('h2');
+            questionText.classList.add('text-2xl', 'font-medium', 'text-gray-800', 'mb-4');
+            questionText.textContent = question.text;
+            questionElement.appendChild(questionText);
+
+            // Buat tombol Yes dan No atau input lainnya berdasarkan tipe pertanyaan
+            if (question.type === 'yesno') {
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.classList.add('flex', 'space-x-4');
+
+                const yesButton = createButton('Ya', () => handleAnswer(question, 'yes'));
+                const noButton = createButton('Tidak', () => handleAnswer(question, 'no'));
+
+                buttonsContainer.appendChild(yesButton);
+                buttonsContainer.appendChild(noButton);
+                questionElement.appendChild(buttonsContainer);
+            } else if (question.type === 'scale') {
+                const scaleInput = document.createElement('input');
+                scaleInput.type = 'number';
+                scaleInput.min = 1;
+                scaleInput.max = 10;
+                scaleInput.classList.add('border', 'border-gray-300', 'rounded', 'p-3', 'w-full', 'mb-4', 'focus:outline-none', 'focus:ring-2', 'focus:ring-teal-500', 'transition', 'duration-300');
+                scaleInput.placeholder = '1 - 10';
+                scaleInput.required = true;
+                questionElement.appendChild(scaleInput);
+
+                const submitButton = createButton('Submit', () => {
+                    const value = parseInt(scaleInput.value);
+                    if (value >=1 && value <=10) {
+                        handleAnswer(question, value);
+                    } else {
+                        alert('Silakan masukkan angka antara 1 dan 10.');
+                    }
+                });
+                questionElement.appendChild(submitButton);
+            }
+
+            quizContainer.appendChild(questionElement);
+        }
+
+        // Fungsi untuk membuat tombol
+        function createButton(text, onClick) {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.classList.add(
+                'bg-teal-500',
+                'text-white',
+                'px-6',
+                'py-2',
+                'rounded-full',
+                'shadow-md',
+                'hover:bg-teal-600',
+                'btn-animated',
+                'transition',
+                'duration-300'
+            );
+            button.addEventListener('click', onClick);
+            return button;
+        }
+
+        // Fungsi untuk menangani jawaban
+        function handleAnswer(question, answer) {
+            if (question.type === 'yesno') {
+                // Simpan jawaban "yes" atau "no"
+                answers[question.id] = answer;
+            } else if (question.type === 'scale') {
+                // Simpan nilai skala berdasarkan relatedSymptom
+                answers[question.relatedSymptom] = answer;
+            }
+
+            // Cari pertanyaan berikutnya berdasarkan logika kondisional
+            if (question.type === 'yesno' && answer === 'yes' && question.followUp.length > 0) {
+                // Jika ada pertanyaan follow-up dan jawabannya "Ya", tampilkan pertanyaan follow-up
+                const followUpQuestion = question.followUp.shift();
+                showQuestion(followUpQuestion);
+                updateProgress();
+                return;
+            }
+
+            // Jika jawabannya "Tidak" atau tidak ada follow-up, lanjutkan ke pertanyaan berikutnya
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion(questions[currentQuestionIndex]);
+                updateProgress();
+            } else {
+                // Quiz selesai, hitung diagnosa
+                calculateDiagnosis();
+            }
+        }
+
+        // Fungsi untuk memperbarui progress bar
+        function updateProgress() {
+            const totalMainQuestions = questions.length;
+            const totalFollowUpQuestions = questions.reduce((acc, q) => acc + q.followUp.length, 0);
+            const totalQuestions = totalMainQuestions + totalFollowUpQuestions;
+
+            const answeredMainQuestions = Object.keys(answers).filter(key => key.startsWith('q')).length;
+            const answeredFollowUpQuestions = Object.keys(answers).filter(key => !key.startsWith('q')).length;
+            const answeredQuestions = answeredMainQuestions + answeredFollowUpQuestions;
+
+            const progress = ((answeredQuestions) / totalQuestions) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Fungsi untuk menghitung diagnosa
+        function calculateDiagnosis() {
+            // Implementasi logika berbasis pembobotan
+            let diseaseScores = {};
+
+            diseases.forEach(disease => {
+                let score = 0;
+                for (let symptom in disease.symptoms) {
+                    if (answers[symptom]) {
+                        if (typeof answers[symptom] === 'number') {
+                            score += disease.symptoms[symptom] * answers[symptom];
+                        } else if (answers[symptom] === 'yes') {
+                            score += disease.symptoms[symptom];
+                        }
+                    }
+                }
+                diseaseScores[disease.name] = score;
+            });
+
+            // Hitung total skor
+            let totalScore = Object.values(diseaseScores).reduce((a, b) => a + b, 0);
+
+            // Hitung persentase
+            let diagnosis = [];
+            for (let disease in diseaseScores) {
+                let percentage = totalScore > 0 ? ((diseaseScores[disease] / totalScore) * 100).toFixed(2) : 0;
+                diagnosis.push({ 
+                    name: disease, 
+                    percentage, 
+                    icd: getDiseaseICD(disease), 
+                    recommendation: getDiseaseRecommendation(disease) 
+                });
+            }
+
+            // Urutkan dari yang tertinggi
+            diagnosis.sort((a, b) => b.percentage - a.percentage);
+
+            displayResults(diagnosis);
+        }
+
+        // Fungsi untuk mendapatkan kode ICD
+        function getDiseaseICD(diseaseName) {
+            const disease = diseases.find(d => d.name === diseaseName);
+            return disease ? disease.icd : '';
+        }
+
+        // Fungsi untuk mendapatkan rekomendasi
+        function getDiseaseRecommendation(diseaseName) {
+            const disease = diseases.find(d => d.name === diseaseName);
+            return disease ? disease.recommendations : '';
+        }
+
+        // Fungsi untuk menampilkan hasil diagnosa
+        function displayResults(diagnosis) {
+            quizContainer.classList.add('hidden');
+            progressBar.style.width = `100%`;
+
+            diagnosisResults.innerHTML = '';
+            recommendations.innerHTML = '';
+
+            if (diagnosis.every(d => d.percentage === '0.00')) {
+                // Jika tidak ada gejala yang dipilih, tampilkan pesan
+                const noSymptomsMsg = document.createElement('p');
+                noSymptomsMsg.classList.add('text-lg', 'text-gray-700');
+                noSymptomsMsg.textContent = "Tidak ada gejala yang dipilih. Silakan ulangi diagnosa dengan menjawab pertanyaan yang relevan.";
+                recommendations.appendChild(noSymptomsMsg);
+                resultContainer.classList.remove('hidden');
+                return;
+            }
+
+            diagnosis.forEach(d => {
+                if (d.percentage > 0) { // Tampilkan hanya penyakit dengan skor > 0
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('flex', 'items-center', 'justify-between', 'bg-gray-100', 'p-4', 'rounded-lg', 'shadow-sm', 'animate-fadeIn');
+                    
+                    const diseaseInfo = document.createElement('div');
+                    diseaseInfo.innerHTML = `<p class="text-xl font-semibold text-gray-800">${d.name} <span class="text-sm text-gray-500">(${d.icd})</span></p>`;
+                    
+                    const percentage = document.createElement('span');
+                    percentage.classList.add('text-teal-600', 'font-bold', 'text-lg');
+                    percentage.textContent = `${d.percentage}%`;
+
+                    resultItem.appendChild(diseaseInfo);
+                    resultItem.appendChild(percentage);
+                    diagnosisResults.appendChild(resultItem);
+                }
+            });
+
+            // Tampilkan rekomendasi untuk penyakit dengan persentase tertinggi
+            const topDiseases = diagnosis.filter(d => d.percentage > 0).slice(0, 3); // Tampilkan hingga 3 penyakit teratas
+            if (topDiseases.length > 0) {
+                topDiseases.forEach(d => {
+                    const recommendationText = document.createElement('p');
+                    recommendationText.classList.add('text-lg', 'text-gray-700', 'mb-2');
+                    recommendationText.innerHTML = `<strong>${d.name}:</strong> ${d.recommendation}`;
+                    recommendations.appendChild(recommendationText);
+                });
+            }
+
+            resultContainer.classList.remove('hidden');
+
+            // Simpan diagnosa
+            saveDiagnosis(diagnosis);
+        }
+
+        // Fungsi untuk menyimpan hasil diagnosa
+        function saveDiagnosis(diagnosis) {
+            if (confirm("Apakah Anda ingin menyimpan hasil diagnosa ini?")) {
+                let savedDiagnoses = JSON.parse(localStorage.getItem('diagnoses')) || [];
+                savedDiagnoses.push({
+                    timestamp: new Date(),
+                    diagnosis: diagnosis
+                });
+                localStorage.setItem('diagnoses', JSON.stringify(savedDiagnoses));
+                alert("Hasil diagnosa berhasil disimpan.");
+            }
+        }
+
+        // Event listener untuk tombol cetak
+        printButton.addEventListener('click', () => {
+            window.print();
+        });
+
+        // Event listener untuk tombol accept disclaimer
+        acceptButton.addEventListener('click', () => {
+            disclaimerModal.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            startQuiz();
+        });
+
+        // Mulai quiz saat halaman dimuat setelah menerima disclaimer
+        // Tidak diperlukan karena modal tampil terlebih dahulu
+    </script>
+</body>
+</html>
