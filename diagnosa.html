@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UFSdental-Diagnosa</title>
+    <title>UFS Dental - Diagnosa Interaktif</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for Icons -->
@@ -16,41 +16,39 @@
                 extend: {
                     keyframes: {
                         fadeIn: {
-                            '0%': { opacity: 0 },
-                            '100%': { opacity: 1 },
+                            'from': { opacity: 0 },
+                            'to': { opacity: 1 },
                         },
-                        slideIn: {
-                            '0%': { transform: 'translateY(20px)', opacity: 0 },
-                            '100%': { transform: 'translateY(0)', opacity: 1 },
+                        slideInUp: {
+                            'from': { transform: 'translateY(100%)', opacity: 0 },
+                            'to': { transform: 'translateY(0)', opacity: 1 },
                         },
-                        bounceIn: {
-                            '0%, 20%, 40%, 60%, 80%, 100%': { animationTimingFunction: 'cubic-bezier(0.215, 0.610, 0.355, 1.000)' },
-                            '0%': { opacity: 0, transform: 'scale(0.3)' },
-                            '50%': { opacity: 1, transform: 'scale(1.05)' },
-                            '100%': { transform: 'scale(1)' },
+                        rotate: {
+                            'from': { transform: 'rotate(0deg)' },
+                            'to': { transform: 'rotate(360deg)' },
                         },
-                        rotate3d: {
-                            '0%': { transform: 'rotateY(0deg)' },
-                            '100%': { transform: 'rotateY(360deg)' },
+                        accordionOpen: {
+                            'from': { maxHeight: '0px' },
+                            'to': { maxHeight: '500px' },
+                        },
+                        accordionClose: {
+                            'from': { maxHeight: '500px' },
+                            'to': { maxHeight: '0px' },
                         },
                     },
                     animation: {
-                        fadeIn: 'fadeIn 1s ease-out',
-                        slideIn: 'slideIn 0.5s ease-out',
-                        bounceIn: 'bounceIn 1s ease-out',
-                        rotate3d: 'rotate3d 10s linear infinite',
+                        fadeIn: 'fadeIn 0.5s ease-out',
+                        slideInUp: 'slideInUp 0.5s ease-out',
+                        rotate: 'rotate 10s linear infinite',
+                        accordionOpen: 'accordionOpen 0.3s ease-out forwards',
+                        accordionClose: 'accordionClose 0.3s ease-out forwards',
                     },
                 },
             },
         }
     </script>
     <style>
-        /* Custom styles for progress bar animation */
-        #progress-bar {
-            transition: width 0.5s ease-in-out;
-        }
-
-        /* Custom scrollbar for better aesthetics */
+        /* Custom scrollbar styles */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -69,118 +67,354 @@
             background: #555;
         }
 
-        /* Button hover effects */
-        .btn-animated:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 3D Rotating Dental Icon */
-        .dental-icon {
-            animation: rotate3d;
-            width: 100px;
-            height: 100px;
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
+        /* Positioning the hit counter */
+        #hit-counter {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            animation: fadeIn 0.5s ease-out;
+            bottom: 10px;
+            right: 10px;
+            z-index: 100;
+        }
+        #hit-counter img {
+            width: 60px; /* Adjust the size as needed */
+            height: auto;
+        }
+        #hit-counter a {
+            pointer-events: none; /* Disable hyperlink */
         }
 
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            animation: slideIn 0.5s ease-out;
+        /* Accordion Styles */
+        .accordion-content {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-active .accordion-content {
+            max-height: 500px; /* Adjust as needed */
         }
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .dental-icon {
-                width: 80px;
-                height: 80px;
-            }
-            .modal-content {
-                padding: 1.5rem;
+            #hit-counter img {
+                width: 40px;
             }
         }
 
-        /* Footer Styles */
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            color: #4A5568; /* Gray-700 */
+        /* FAQ Card Styles */
+        .faq-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .faq-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body class="bg-gradient-to-r from-blue-100 to-teal-100 min-h-screen flex flex-col items-center justify-center">
+<body class="bg-gradient-to-r from-blue-100 to-teal-100 min-h-screen flex flex-col">
+    <!-- Navigation Menu -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-tooth text-teal-500 text-3xl mr-2"></i>
+                <a class="text-xl font-bold text-teal-600" href="#">UFS Dental</a>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#" id="home-link" class="text-gray-600 hover:text-teal-500 transition duration-300">Home</a>
+                <a href="#" id="diagnosis-link" class="text-gray-600 hover:text-teal-500 transition duration-300">Diagnosa</a>
+                <a href="#" id="faq-link" class="text-gray-600 hover:text-teal-500 transition duration-300">FAQ</a>
+            </div>
+        </div>
+    </nav>
+
     <!-- Modal Disclaimer -->
-    <div id="disclaimer-modal" class="modal-overlay">
-        <div class="modal-content">
+    <div id="disclaimer-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg max-w-md w-full mx-4 animate-fadeIn">
             <h2 class="text-2xl font-bold text-teal-600 mb-4">Disclaimer</h2>
             <p class="text-gray-700 mb-6">
-                Aplikasi ini dirancang hanya untuk tujuan edukasi dan informasi. Tidak dimaksudkan sebagai pengganti nasihat medis profesional. Jika Anda mengalami gejala atau masalah kesehatan, segera konsultasikan dengan dokter atau profesional kesehatan terpercaya.
+                Aplikasi ini dirancang untuk tujuan edukasi dan informasi. Tidak dimaksudkan sebagai pengganti nasihat medis profesional. Jika Anda mengalami gejala atau masalah kesehatan, segera konsultasikan dengan dokter atau profesional kesehatan terpercaya.
             </p>
-            <button id="accept-button" class="bg-teal-500 text-white px-6 py-2 rounded-full shadow-md hover:bg-teal-600 btn-animated transition duration-300">
+            <button id="accept-button" class="w-full bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 transition duration-300">
                 Saya Mengerti
             </button>
         </div>
     </div>
 
     <!-- Main Application Container -->
-    <div id="app" class="container mx-auto p-6 hidden flex-grow">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-700 hover:scale-105">
-            <div class="p-6">
-                <div class="flex flex-col items-center mb-6">
-                    <!-- 3D Rotating Dental Icon -->
-                    <i class="fas fa-tooth dental-icon text-teal-500 mb-4"></i>
-                    <h1 class="text-4xl font-bold text-center text-teal-600 mb-2 animate-bounceIn">UFSdental-Diagnosa</h1>
-                </div>
-                
-                <!-- Progress Bar Container -->
-                <div class="w-full bg-gray-200 rounded-full h-4 mb-6">
-                    <div id="progress-bar" class="bg-teal-500 h-4 rounded-full" style="width: 0%"></div>
-                </div>
-                
-                <!-- Quiz Container -->
-                <div id="quiz-container" class="animate-slideIn">
-                    <!-- Pertanyaan akan dimasukkan di sini melalui JavaScript -->
-                </div>
-                
-                <!-- Hasil Diagnosa -->
-                <div id="result-container" class="hidden animate-fadeIn">
-                    <h2 class="text-3xl font-semibold text-center text-teal-600 mb-4">Hasil Diagnosa</h2>
-                    <div id="diagnosis-results" class="mb-4 space-y-2">
-                        <!-- Hasil diagnosa akan ditampilkan di sini -->
+    <div id="app" class="container mx-auto p-6 flex-grow hidden">
+        <!-- Home Section -->
+        <div id="home-section" class="animate-fadeIn">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-teal-600 mb-4">Selamat Datang di UFS Dental</h1>
+                <p class="text-gray-700 mb-6">Kami siap membantu Anda memahami kesehatan gigi dan mulut Anda.</p>
+                <button id="start-diagnosis" class="bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition duration-300">
+                    Mulai Diagnosa
+                </button>
+            </div>
+        </div>
+
+        <!-- Diagnosis Section -->
+        <div id="diagnosis-section" class="hidden animate-fadeIn">
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="flex flex-col items-center mb-6">
+                        <!-- 3D Rotating Dental Icon -->
+                        <i class="fas fa-tooth text-teal-500 text-6xl mb-4 animate-rotate"></i>
+                        <h2 class="text-3xl font-bold text-center text-teal-600 mb-2">Diagnosa Interaktif</h2>
+                        <p class="text-center text-gray-600">Jawab pertanyaan berikut untuk membantu kami memahami gejala yang Anda alami.</p>
                     </div>
-                    <div id="recommendations" class="mb-4">
-                        <!-- Rekomendasi perawatan akan ditampilkan di sini -->
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                        <div id="progress-bar" class="bg-teal-500 h-2 rounded-full" style="width: 0%"></div>
                     </div>
-                    <div class="flex justify-center">
-                        <button id="print-button" class="bg-teal-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-teal-600 btn-animated">
-                            <i class="fas fa-print mr-2"></i> Cetak Hasil
-                        </button>
+
+                    <!-- Quiz Container -->
+                    <div id="quiz-container">
+                        <!-- Pertanyaan akan dimasukkan di sini melalui JavaScript -->
+                    </div>
+
+                    <!-- Hasil Diagnosa -->
+                    <div id="result-container" class="hidden">
+                        <h2 class="text-2xl font-semibold text-center text-teal-600 mb-4">Hasil Diagnosa</h2>
+                        <div id="diagnosis-results" class="mb-4 space-y-4">
+                            <!-- Hasil diagnosa akan ditampilkan di sini -->
+                        </div>
+                        <div id="recommendations" class="mb-6">
+                            <!-- Rekomendasi perawatan akan ditampilkan di sini -->
+                        </div>
+                        <div class="flex justify-center space-x-4">
+                            <button id="print-button" class="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600 transition duration-300">
+                                <i class="fas fa-print mr-2"></i> Cetak Hasil
+                            </button>
+                            <button id="restart-button" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition duration-300">
+                                <i class="fas fa-redo mr-2"></i> Ulangi Diagnosa
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Footer -->
-            <footer>
-                <p>© 2024 UFS. Semua hak cipta dilindungi.</p>
-            </footer>
         </div>
+
+        <!-- FAQ Section -->
+        <div id="faq-section" class="hidden animate-fadeIn">
+            <h2 class="text-3xl font-bold text-teal-600 mb-6 text-center">Frequently Asked Questions</h2>
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Category 1: Perawatan Gigi -->
+                <div class="faq-category">
+                    <h3 class="text-2xl font-semibold text-teal-500 mb-4">Perawatan Gigi</h3>
+                    <div class="space-y-2">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Bagaimana cara menyikat gigi yang benar?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Menyikat gigi yang benar melibatkan menyikat selama minimal 2 menit, dua kali sehari, dengan gerakan memutar lembut untuk menghilangkan plak tanpa merusak gusi.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Apakah perlu flossing setiap hari?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Ya, flossing setiap hari membantu menghilangkan plak dan sisa makanan di antara gigi yang sulit dijangkau oleh sikat gigi.</p>
+                            </div>
+                        </div>
+                        <!-- Tambahkan lebih banyak FAQ dalam kategori ini -->
+                        <!-- ... -->
+                    </div>
+                </div>
+
+                <!-- Category 2: Kesehatan Mulut -->
+                <div class="faq-category">
+                    <h3 class="text-2xl font-semibold text-teal-500 mb-4">Kesehatan Mulut</h3>
+                    <div class="space-y-2">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Bagaimana cara mencegah gigi berlubang?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Mencegah gigi berlubang dapat dilakukan dengan menjaga kebersihan mulut, mengurangi konsumsi gula, menggunakan pasta gigi berfluoride, dan rutin memeriksakan gigi ke dokter gigi setiap 6 bulan sekali.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Apa itu gingivitis dan bagaimana cara mengatasinya?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Gingivitis adalah peradangan pada gusi yang disebabkan oleh penumpukan plak. Cara mengatasinya adalah dengan meningkatkan kebersihan mulut, menyikat gigi dan flossing secara teratur, serta melakukan pembersihan profesional oleh dokter gigi.</p>
+                            </div>
+                        </div>
+                        <!-- Tambahkan lebih banyak FAQ dalam kategori ini -->
+                        <!-- ... -->
+                    </div>
+                </div>
+
+                <!-- Category 3: Masalah Umum -->
+                <div class="faq-category">
+                    <h3 class="text-2xl font-semibold text-teal-500 mb-4">Masalah Umum</h3>
+                    <div class="space-y-2">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Apa yang menyebabkan gigi sensitif?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Gigi sensitif disebabkan oleh erosi enamel, gusi yang surut, atau retakan pada gigi yang memungkinkan rangsangan suhu atau tekanan masuk ke dalam gigi.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Bagaimana cara mengatasi bau mulut?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Bau mulut dapat diatasi dengan menjaga kebersihan mulut, menyikat gigi dan lidah secara teratur, menggunakan mouthwash, serta menghindari makanan yang dapat menyebabkan bau mulut.</p>
+                            </div>
+                        </div>
+                        <!-- Tambahkan lebih banyak FAQ dalam kategori ini -->
+                        <!-- ... -->
+                    </div>
+                </div>
+
+                <!-- Category 4: Pertanyaan Teknis -->
+                <div class="faq-category">
+                    <h3 class="text-2xl font-semibold text-teal-500 mb-4">Pertanyaan Teknis</h3>
+                    <div class="space-y-2">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Apa itu scaling dan root planing?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Scaling dan root planing adalah prosedur pembersihan gigi secara mendalam yang dilakukan untuk menghilangkan plak dan tartar dari bawah garis gusi serta menghaluskan permukaan akar gigi.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Bagaimana proses perawatan saluran akar?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Perawatan saluran akar melibatkan pembersihan saluran akar yang terinfeksi, pengisian saluran dengan bahan khusus, dan penambalan gigi untuk mencegah infeksi kembali.</p>
+                            </div>
+                        </div>
+                        <!-- Tambahkan lebih banyak FAQ dalam kategori ini -->
+                        <!-- ... -->
+                    </div>
+                </div>
+
+                <!-- Category 5: Tambahan -->
+                <div class="faq-category">
+                    <h3 class="text-2xl font-semibold text-teal-500 mb-4">Tambahan</h3>
+                    <div class="space-y-2">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Apa itu bruxism dan bagaimana mengatasinya?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Bruxism adalah kebiasaan menggertakkan atau menggesek gigi secara tidak sadar, sering terjadi saat tidur. Mengatasinya melibatkan penggunaan mouthguard, manajemen stres, dan teknik relaksasi.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Bagaimana cara mengatasi gigi goyang?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Gigi goyang dapat diatasi dengan perawatan periodontal profesional, penggunaan kawat gigi, atau prosedur pengikat gigi untuk menstabilkan posisi gigi.</p>
+                            </div>
+                        </div>
+                        <!-- Tambahkan lebih banyak FAQ dalam kategori ini -->
+                        <!-- ... -->
+                    </div>
+                </div>
+
+                <!-- Tambahkan lebih banyak kategori dan FAQ sesuai kebutuhan hingga mencapai 50 pertanyaan -->
+                <!-- Contoh Tambahan: Kesehatan Anak, Pemasangan Implan, etc. -->
+                <!-- Category 6: Kesehatan Anak -->
+                <div class="faq-category">
+                    <h3 class="text-2xl font-semibold text-teal-500 mb-4">Kesehatan Anak</h3>
+                    <div class="space-y-2">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Bagaimana cara merawat gigi anak yang benar?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Mulai mengajarkan anak menyikat gigi sejak usia dini dengan menggunakan sikat gigi yang sesuai dan pasta gigi berfluoride. Bimbing mereka hingga mereka dapat melakukannya sendiri dengan benar.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Apakah penting untuk memeriksakan gigi anak sejak dini?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Ya, pemeriksaan gigi sejak dini membantu mendeteksi masalah sejak awal dan mencegah perkembangan penyakit gigi lebih lanjut.</p>
+                            </div>
+                        </div>
+                        <!-- Tambahkan lebih banyak FAQ dalam kategori ini -->
+                        <!-- ... -->
+                    </div>
+                </div>
+                <!-- Category 7: Pemasangan Implan -->
+                <div class="faq-category">
+                    <h3 class="text-2xl font-semibold text-teal-500 mb-4">Pemasangan Implan</h3>
+                    <div class="space-y-2">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Apakah implan gigi aman?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Ya, implan gigi adalah prosedur yang aman dan efektif ketika dilakukan oleh profesional kesehatan gigi yang berpengalaman.</p>
+                            </div>
+                        </div>
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-card bg-white rounded-lg shadow-md p-4">
+                            <button class="w-full text-left py-2 flex justify-between items-center focus:outline-none">
+                                <span>Berapa lama proses pemasangan implan gigi?</span>
+                                <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                            </button>
+                            <div class="accordion-content mt-2 text-gray-700">
+                                <p>Proses pemasangan implan gigi biasanya memakan waktu beberapa bulan, tergantung pada kondisi tulang rahang dan proses penyembuhan individu.</p>
+                            </div>
+                        </div>
+                        <!-- Tambahkan lebih banyak FAQ dalam kategori ini -->
+                        <!-- ... -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center p-4 bg-gray-100 text-gray-600">
+        <p>© 2024 UFS Dental. Semua hak cipta dilindungi.</p>
+    </footer>
+
+    <!-- Hit Counter -->
+    <div id="hit-counter">
+        <!-- hitwebcounter Code START -->
+        <img src="https://hitwebcounter.com/counter/counter.php?page=17250287&style=0011&nbdigits=5&type=page&initCount=0" title="Counter Widget" Alt="Visit counter For Websites" border="0" />
+        <!-- hitwebcounter Code END -->
     </div>
 
     <!-- JavaScript -->
@@ -188,237 +422,182 @@
         // Data Penyakit Gigi
         const diseases = [
             {
-                name: "Pulpitis",
-                icd: "K04.7",
+                name: "Karies Gigi",
+                icd: "K02.1",
                 symptoms: {
-                    nyeri: 3,
+                    nyeriRingan: 3,
+                    perubahanWarnaGigi: 2,
                     nyeriTerhadapSuhu: 2,
-                    pembengkakan: 2,
-                    perubahanWarna: 1,
-                    nyeriSaatMengunyah: 1
+                    lubangGigi: 3
                 },
-                recommendations: "Konsultasikan dengan dokter gigi untuk perawatan saluran akar. Perawatan ini biasanya melibatkan pembersihan jaringan yang terinfeksi dan pengisian ruang akar gigi."
+                recommendations: "Perlu penambalan gigi oleh dokter gigi. Penambalan membantu mencegah perkembangan karies lebih lanjut dan mengembalikan fungsi gigi."
+            },
+            {
+                name: "Gingivitis",
+                icd: "K05.0",
+                symptoms: {
+                    perdarahanGusi: 3,
+                    pembengkakanGusi: 2,
+                    bauMulut: 2,
+                    kemerahanGusi: 2
+                },
+                recommendations: "Peningkatan kebersihan mulut dan pembersihan profesional. Menggunakan sikat gigi yang tepat dan flossing secara rutin sangat penting."
             },
             {
                 name: "Periodontitis",
                 icd: "K05.3",
                 symptoms: {
-                    pembengkakan: 3,
                     perdarahanGusi: 3,
-                    nyeriSaatMengunyah: 2,
-                    nyeri: 2,
-                    kehilanganTulang: 2
+                    pembengkakanGusi: 3,
+                    gigiGoyang: 2,
+                    resesiGusi: 2
                 },
-                recommendations: "Lakukan pembersihan gigi secara profesional dan perawatan periodontal. Ini dapat mencakup scaling dan root planing, serta perawatan lanjutan untuk mencegah kerusakan lebih lanjut."
-            },
-            {
-                name: "Karies Gigi",
-                icd: "K02.4",
-                symptoms: {
-                    nyeri: 2,
-                    perubahanWarna: 3,
-                    nyeriTerhadapSuhu: 2,
-                    lubangGigi: 3
-                },
-                recommendations: "Perlu penambalan gigi oleh dokter gigi. Penambalan membantu mencegah perkembangan karies lebih lanjut dan mengembalikan fungsi serta estetika gigi."
+                recommendations: "Lakukan pembersihan gigi secara profesional dan perawatan periodontal. Ini termasuk scaling dan root planing untuk mencegah kerusakan lebih lanjut."
             },
             {
                 name: "Abses Gigi",
-                icd: "K04.0",
+                icd: "K04.7",
                 symptoms: {
-                    pembengkakan: 3,
-                    nyeri: 3,
+                    nyeriHebat: 3,
+                    pembengkakanParah: 3,
                     demam: 2,
-                    nyeriSaatMengunyah: 2,
                     pembentukanNanah: 3
                 },
                 recommendations: "Pengobatan antibiotik dan pembedahan mungkin diperlukan. Abses gigi memerlukan perawatan segera untuk mencegah penyebaran infeksi."
             },
             {
-                name: "Infeksi Gusi",
-                icd: "K05.2",
+                name: "Bruxism",
+                icd: "F45.8",
                 symptoms: {
-                    perdarahanGusi: 3,
-                    pembengkakan: 2,
-                    nyeri: 1,
-                    bauMulut: 2
+                    keausanGigi: 3,
+                    nyeriRahang: 2,
+                    sakitKepala: 2,
+                    gigiSensitif: 2
                 },
-                recommendations: "Perawatan kebersihan mulut yang lebih baik dan mungkin antibiotik. Ini termasuk pembersihan profesional dan peningkatan rutinitas kebersihan oral di rumah."
-            },
-            {
-                name: "Gingivitis",
-                icd: "K05.1",
-                symptoms: {
-                    perdarahanGusi: 3,
-                    pembengkakan: 2,
-                    bauMulut: 2,
-                    kemerahanGusi: 3
-                },
-                recommendations: "Peningkatan kebersihan mulut dan pembersihan profesional. Menggunakan sikat gigi yang tepat dan flossing secara rutin sangat penting."
+                recommendations: "Konsultasi dengan dokter gigi untuk penggunaan mouthguard. Mengelola stres dan teknik relaksasi juga dapat membantu."
             },
             {
                 name: "Gigi Sensitif",
                 icd: "K08.8",
                 symptoms: {
                     nyeriTerhadapSuhu: 3,
-                    nyeriSaatMengunyah: 2,
-                    lubangGigi: 2,
+                    nyeriTerhadapMakananAsamManis: 2,
                     erosiGigi: 2
                 },
-                recommendations: "Gunakan pasta gigi untuk gigi sensitif dan konsultasi dengan dokter gigi. Perawatan mungkin termasuk sealant atau penggunaan fluoride untuk memperkuat enamel gigi."
+                recommendations: "Gunakan pasta gigi untuk gigi sensitif dan konsultasi dengan dokter gigi. Perawatan mungkin termasuk penggunaan fluoride untuk memperkuat enamel gigi."
             },
-            {
-                name: "Maloklusi",
-                icd: "K07.6",
-                symptoms: {
-                    nyeriRahang: 2,
-                    sakitKepala: 1,
-                    nyeriSaatMengunyah: 2,
-                    keausanGigi: 2
-                },
-                recommendations: "Konsultasi dengan ortodontis untuk penyesuaian gigi. Penyesuaian bisa melibatkan penggunaan kawat gigi atau perangkat lain untuk memperbaiki posisi gigi."
-            },
-            // Tambahkan lebih banyak penyakit sesuai kebutuhan
+            // Tambahkan lebih banyak penyakit sesuai kebutuhan hingga mencapai jumlah yang diinginkan
         ];
 
         // Pertanyaan Quiz
         const questions = [
             {
                 id: "q1",
-                text: "Apakah Anda merasakan nyeri di gigi?",
+                text: "Apakah Anda merasakan nyeri pada gigi?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q1_1",
-                        text: "Seberapa intens nyeri yang Anda rasakan? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "nyeri"
-                    },
-                    {
-                        id: "q1_2",
-                        text: "Apakah nyeri ini terpengaruh oleh suhu? (panas/dingin)",
-                        type: "yesno",
-                        relatedSymptom: "nyeriTerhadapSuhu"
-                    },
-                    {
-                        id: "q1_3",
-                        text: "Apakah Anda merasakan nyeri saat mengunyah?",
-                        type: "yesno",
-                        relatedSymptom: "nyeriSaatMengunyah"
-                    }
-                ]
+                followUp: {
+                    id: "q1_1",
+                    text: "Seberapa intens nyeri yang Anda rasakan? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "nyeriRingan"
+                }
             },
             {
                 id: "q2",
-                text: "Apakah Anda mengalami pembengkakan di area gusi?",
+                text: "Apakah Anda mengalami perdarahan pada gusi?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q2_1",
-                        text: "Seberapa intens pembengkakan yang Anda rasakan? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "pembengkakan"
-                    },
-                    {
-                        id: "q2_2",
-                        text: "Apakah ada perubahan warna pada gusi Anda?",
-                        type: "yesno",
-                        relatedSymptom: "perubahanWarna"
-                    }
-                ]
+                followUp: {
+                    id: "q2_1",
+                    text: "Seberapa sering gusi Anda berdarah? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "perdarahanGusi"
+                }
             },
             {
                 id: "q3",
-                text: "Apakah gusi Anda mudah berdarah?",
+                text: "Apakah Anda merasakan gusi bengkak atau kemerahan?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q3_1",
-                        text: "Seberapa sering gusi Anda berdarah? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "perdarahanGusi"
-                    }
-                ]
+                followUp: {
+                    id: "q3_1",
+                    text: "Seberapa parah pembengkakan atau kemerahan tersebut? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "pembengkakanGusi"
+                }
             },
             {
                 id: "q4",
-                text: "Apakah Anda mengalami demam?",
+                text: "Apakah Anda mengalami bau mulut yang tidak sedap?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q4_1",
-                        text: "Seberapa tinggi demam yang Anda alami? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "demam"
-                    }
-                ]
+                followUp: {
+                    id: "q4_1",
+                    text: "Seberapa sering Anda mengalami bau mulut ini? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "bauMulut"
+                }
             },
             {
                 id: "q5",
-                text: "Apakah Anda merasakan sensitivitas gigi terhadap makanan atau minuman manis?",
+                text: "Apakah gigi Anda sensitif terhadap suhu atau makanan tertentu?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q5_1",
-                        text: "Seberapa sering Anda merasakan sensitivitas ini? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "sensitivitasManis"
-                    }
-                ]
+                followUp: {
+                    id: "q5_1",
+                    text: "Seberapa sensitif gigi Anda? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "nyeriTerhadapSuhu"
+                }
             },
             {
                 id: "q6",
-                text: "Apakah Anda melihat lubang atau lubang kecil pada gigi Anda?",
+                text: "Apakah Anda melihat adanya lubang pada gigi Anda?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q6_1",
-                        text: "Seberapa besar lubang yang Anda lihat? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "lubangGigi"
-                    }
-                ]
+                followUp: {
+                    id: "q6_1",
+                    text: "Seberapa besar lubang tersebut? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "lubangGigi"
+                }
             },
             {
                 id: "q7",
-                text: "Apakah Anda merasakan bau mulut yang tidak sedap?",
+                text: "Apakah Anda mengalami sakit kepala atau nyeri rahang?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q7_1",
-                        text: "Seberapa sering Anda mengalami bau mulut ini? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "bauMulut"
-                    }
-                ]
+                followUp: {
+                    id: "q7_1",
+                    text: "Seberapa sering Anda merasakan nyeri ini? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "nyeriRahang"
+                }
             },
             {
                 id: "q8",
-                text: "Apakah Anda merasakan erosi pada gigi Anda?",
+                text: "Apakah Anda mendengar suara 'klik' saat membuka mulut?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q8_1",
-                        text: "Seberapa parah erosi gigi yang Anda alami? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "erosiGigi"
-                    }
-                ]
+                relatedSymptom: "suaraKlikRahang"
             },
             {
                 id: "q9",
-                text: "Apakah Anda merasakan nyeri di rahang atau sendi temporomandibular?",
+                text: "Apakah Anda mengalami gigi goyang atau resesi gusi?",
                 type: "yesno",
-                followUp: [
-                    {
-                        id: "q9_1",
-                        text: "Seberapa sering Anda merasakan nyeri ini? (1-10)",
-                        type: "scale",
-                        relatedSymptom: "nyeriRahang"
-                    }
-                ]
+                followUp: {
+                    id: "q9_1",
+                    text: "Seberapa parah kondisi tersebut? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "gigiGoyang"
+                }
             },
-            // Tambahkan lebih banyak pertanyaan sesuai kebutuhan untuk mencapai 20+
+            {
+                id: "q10",
+                text: "Apakah Anda mengalami demam atau pembengkakan parah?",
+                type: "yesno",
+                followUp: {
+                    id: "q10_1",
+                    text: "Seberapa tinggi demam atau pembengkakan Anda? (1-10)",
+                    type: "scale",
+                    relatedSymptom: "pembengkakanParah"
+                }
+            },
+            // Tambahkan lebih banyak pertanyaan hingga mencapai jumlah yang diinginkan (misalnya 20-30)
+            // ...
         ];
 
         // Variabel untuk menyimpan jawaban
@@ -432,12 +611,24 @@
         const diagnosisResults = document.getElementById('diagnosis-results');
         const recommendations = document.getElementById('recommendations');
         const printButton = document.getElementById('print-button');
+        const restartButton = document.getElementById('restart-button');
         const disclaimerModal = document.getElementById('disclaimer-modal');
         const acceptButton = document.getElementById('accept-button');
         const appContainer = document.getElementById('app');
+        const homeLink = document.getElementById('home-link');
+        const diagnosisLink = document.getElementById('diagnosis-link');
+        const faqLink = document.getElementById('faq-link');
+        const homeSection = document.getElementById('home-section');
+        const diagnosisSection = document.getElementById('diagnosis-section');
+        const faqSection = document.getElementById('faq-section');
+        const startDiagnosisButton = document.getElementById('start-diagnosis');
 
         // Fungsi untuk memulai quiz
         function startQuiz() {
+            answers = {};
+            currentQuestionIndex = 0;
+            resultContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
             showQuestion(questions[currentQuestionIndex]);
             updateProgress();
         }
@@ -446,14 +637,14 @@
         function showQuestion(question) {
             quizContainer.innerHTML = ''; // Kosongkan kontainer
             const questionElement = document.createElement('div');
-            questionElement.classList.add('mb-6', 'animate-slideIn');
+            questionElement.classList.add('mb-6', 'animate-slideInUp');
 
             const questionText = document.createElement('h2');
-            questionText.classList.add('text-2xl', 'font-medium', 'text-gray-800', 'mb-4');
+            questionText.classList.add('text-xl', 'font-medium', 'text-gray-800', 'mb-4');
             questionText.textContent = question.text;
             questionElement.appendChild(questionText);
 
-            // Buat tombol Yes dan No atau input lainnya berdasarkan tipe pertanyaan
+            // Buat elemen input berdasarkan tipe pertanyaan
             if (question.type === 'yesno') {
                 const buttonsContainer = document.createElement('div');
                 buttonsContainer.classList.add('flex', 'space-x-4');
@@ -476,7 +667,7 @@
 
                 const submitButton = createButton('Submit', () => {
                     const value = parseInt(scaleInput.value);
-                    if (value >=1 && value <=10) {
+                    if (value >= 1 && value <= 10) {
                         handleAnswer(question, value);
                     } else {
                         alert('Silakan masukkan angka antara 1 dan 10.');
@@ -497,12 +688,11 @@
                 'text-white',
                 'px-6',
                 'py-2',
-                'rounded-full',
-                'shadow-md',
+                'rounded-lg',
                 'hover:bg-teal-600',
-                'btn-animated',
                 'transition',
-                'duration-300'
+                'duration-300',
+                'flex-1'
             );
             button.addEventListener('click', onClick);
             return button;
@@ -511,51 +701,36 @@
         // Fungsi untuk menangani jawaban
         function handleAnswer(question, answer) {
             if (question.type === 'yesno') {
-                // Simpan jawaban "yes" atau "no"
                 answers[question.id] = answer;
+                if (answer === 'yes' && question.followUp) {
+                    showQuestion(question.followUp);
+                    updateProgress();
+                    return;
+                }
             } else if (question.type === 'scale') {
-                // Simpan nilai skala berdasarkan relatedSymptom
                 answers[question.relatedSymptom] = answer;
             }
 
-            // Cari pertanyaan berikutnya berdasarkan logika kondisional
-            if (question.type === 'yesno' && answer === 'yes' && question.followUp.length > 0) {
-                // Jika ada pertanyaan follow-up dan jawabannya "Ya", tampilkan pertanyaan follow-up
-                const followUpQuestion = question.followUp.shift();
-                showQuestion(followUpQuestion);
-                updateProgress();
-                return;
-            }
-
-            // Jika jawabannya "Tidak" atau tidak ada follow-up, lanjutkan ke pertanyaan berikutnya
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.length) {
                 showQuestion(questions[currentQuestionIndex]);
                 updateProgress();
             } else {
-                // Quiz selesai, hitung diagnosa
                 calculateDiagnosis();
             }
         }
 
         // Fungsi untuk memperbarui progress bar
         function updateProgress() {
-            const totalMainQuestions = questions.length;
-            const totalFollowUpQuestions = questions.reduce((acc, q) => acc + q.followUp.length, 0);
-            const totalQuestions = totalMainQuestions + totalFollowUpQuestions;
-
-            const answeredMainQuestions = Object.keys(answers).filter(key => key.startsWith('q')).length;
-            const answeredFollowUpQuestions = Object.keys(answers).filter(key => !key.startsWith('q')).length;
-            const answeredQuestions = answeredMainQuestions + answeredFollowUpQuestions;
-
-            const progress = ((answeredQuestions) / totalQuestions) * 100;
+            const totalQuestions = questions.length;
+            const progress = ((currentQuestionIndex) / totalQuestions) * 100;
             progressBar.style.width = `${progress}%`;
         }
 
         // Fungsi untuk menghitung diagnosa
         function calculateDiagnosis() {
-            // Implementasi logika berbasis pembobotan
             let diseaseScores = {};
+            let totalScore = 0;
 
             diseases.forEach(disease => {
                 let score = 0;
@@ -563,30 +738,26 @@
                     if (answers[symptom]) {
                         if (typeof answers[symptom] === 'number') {
                             score += disease.symptoms[symptom] * answers[symptom];
-                        } else if (answers[symptom] === 'yes') {
-                            score += disease.symptoms[symptom];
+                        } else if (answers[symptom] === 'yes' || answers[symptom] === true) {
+                            score += disease.symptoms[symptom] * 5; // Asumsi skor untuk jawaban "yes"
                         }
                     }
                 }
                 diseaseScores[disease.name] = score;
+                totalScore += score;
             });
 
-            // Hitung total skor
-            let totalScore = Object.values(diseaseScores).reduce((a, b) => a + b, 0);
-
-            // Hitung persentase
             let diagnosis = [];
             for (let disease in diseaseScores) {
                 let percentage = totalScore > 0 ? ((diseaseScores[disease] / totalScore) * 100).toFixed(2) : 0;
-                diagnosis.push({ 
-                    name: disease, 
-                    percentage, 
-                    icd: getDiseaseICD(disease), 
-                    recommendation: getDiseaseRecommendation(disease) 
+                diagnosis.push({
+                    name: disease,
+                    percentage,
+                    icd: getDiseaseICD(disease),
+                    recommendation: getDiseaseRecommendation(disease)
                 });
             }
 
-            // Urutkan dari yang tertinggi
             diagnosis.sort((a, b) => b.percentage - a.percentage);
 
             displayResults(diagnosis);
@@ -613,26 +784,26 @@
             recommendations.innerHTML = '';
 
             if (diagnosis.every(d => d.percentage === '0.00')) {
-                // Jika tidak ada gejala yang dipilih, tampilkan pesan
-                const noSymptomsMsg = document.createElement('p');
-                noSymptomsMsg.classList.add('text-lg', 'text-gray-700');
-                noSymptomsMsg.textContent = "Tidak ada gejala yang dipilih. Silakan ulangi diagnosa dengan menjawab pertanyaan yang relevan.";
-                recommendations.appendChild(noSymptomsMsg);
+                const healthyMsg = document.createElement('p');
+                healthyMsg.classList.add('text-lg', 'text-gray-700');
+                healthyMsg.textContent = "Gigi Anda tampaknya sehat. Tetap jaga kebersihan mulut dan kunjungi dokter gigi secara rutin.";
+                recommendations.appendChild(healthyMsg);
                 resultContainer.classList.remove('hidden');
                 return;
             }
 
             diagnosis.forEach(d => {
-                if (d.percentage > 0) { // Tampilkan hanya penyakit dengan skor > 0
+                if (d.percentage > 0) {
                     const resultItem = document.createElement('div');
-                    resultItem.classList.add('flex', 'items-center', 'justify-between', 'bg-gray-100', 'p-4', 'rounded-lg', 'shadow-sm', 'animate-fadeIn');
-                    
-                    const diseaseInfo = document.createElement('div');
-                    diseaseInfo.innerHTML = `<p class="text-xl font-semibold text-gray-800">${d.name} <span class="text-sm text-gray-500">(${d.icd})</span></p>`;
-                    
-                    const percentage = document.createElement('span');
+                    resultItem.classList.add('p-4', 'bg-gray-100', 'rounded-lg', 'shadow-sm', 'transition', 'transform', 'hover:scale-105');
+
+                    const diseaseInfo = document.createElement('p');
+                    diseaseInfo.classList.add('text-xl', 'font-semibold', 'text-gray-800');
+                    diseaseInfo.innerHTML = `${d.name} <span class="text-sm text-gray-500">(${d.icd})</span>`;
+
+                    const percentage = document.createElement('p');
                     percentage.classList.add('text-teal-600', 'font-bold', 'text-lg');
-                    percentage.textContent = `${d.percentage}%`;
+                    percentage.textContent = `Kemungkinan: ${d.percentage}%`;
 
                     resultItem.appendChild(diseaseInfo);
                     resultItem.appendChild(percentage);
@@ -640,34 +811,17 @@
                 }
             });
 
-            // Tampilkan rekomendasi untuk penyakit dengan persentase tertinggi
-            const topDiseases = diagnosis.filter(d => d.percentage > 0).slice(0, 3); // Tampilkan hingga 3 penyakit teratas
+            const topDiseases = diagnosis.filter(d => d.percentage > 0).slice(0, 3);
             if (topDiseases.length > 0) {
                 topDiseases.forEach(d => {
                     const recommendationText = document.createElement('p');
-                    recommendationText.classList.add('text-lg', 'text-gray-700', 'mb-2');
+                    recommendationText.classList.add('text-lg', 'text-gray-700', 'mb-2', 'animate-fadeIn');
                     recommendationText.innerHTML = `<strong>${d.name}:</strong> ${d.recommendation}`;
                     recommendations.appendChild(recommendationText);
                 });
             }
 
             resultContainer.classList.remove('hidden');
-
-            // Simpan diagnosa
-            saveDiagnosis(diagnosis);
-        }
-
-        // Fungsi untuk menyimpan hasil diagnosa
-        function saveDiagnosis(diagnosis) {
-            if (confirm("Apakah Anda ingin menyimpan hasil diagnosa ini?")) {
-                let savedDiagnoses = JSON.parse(localStorage.getItem('diagnoses')) || [];
-                savedDiagnoses.push({
-                    timestamp: new Date(),
-                    diagnosis: diagnosis
-                });
-                localStorage.setItem('diagnoses', JSON.stringify(savedDiagnoses));
-                alert("Hasil diagnosa berhasil disimpan.");
-            }
         }
 
         // Event listener untuk tombol cetak
@@ -675,15 +829,69 @@
             window.print();
         });
 
+        // Event listener untuk tombol ulangi diagnosa
+        restartButton.addEventListener('click', () => {
+            startQuiz();
+        });
+
         // Event listener untuk tombol accept disclaimer
         acceptButton.addEventListener('click', () => {
             disclaimerModal.classList.add('hidden');
             appContainer.classList.remove('hidden');
+            homeSection.classList.remove('hidden');
+        });
+
+        // Navigation Event Listeners
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('home');
+        });
+        diagnosisLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('diagnosis');
+            startQuiz();
+        });
+        faqLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('faq');
+        });
+        startDiagnosisButton.addEventListener('click', () => {
+            showSection('diagnosis');
             startQuiz();
         });
 
-        // Mulai quiz saat halaman dimuat setelah menerima disclaimer
-        // Tidak diperlukan karena modal tampil terlebih dahulu
+        // Fungsi untuk menampilkan section yang dipilih
+        function showSection(section) {
+            homeSection.classList.add('hidden');
+            diagnosisSection.classList.add('hidden');
+            faqSection.classList.add('hidden');
+
+            if (section === 'home') {
+                homeSection.classList.remove('hidden');
+            } else if (section === 'diagnosis') {
+                diagnosisSection.classList.remove('hidden');
+            } else if (section === 'faq') {
+                faqSection.classList.remove('hidden');
+            }
+        }
+
+        // Accordion Functionality for FAQ
+        const accordions = document.querySelectorAll('.faq-card button');
+
+        accordions.forEach(acc => {
+            acc.addEventListener('click', () => {
+                const parent = acc.parentElement;
+                parent.classList.toggle('accordion-active');
+                const icon = acc.querySelector('i');
+                if (parent.classList.contains('accordion-active')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
     </script>
 </body>
 </html>
