@@ -3,226 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UKOM By: UFS Terapis Gigi Dan Mulut D4</title>
+    <title>Uji Kompetensi Modern | UFS</title>
+    
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Canvas Confetti for celebration -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
     <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background: #0f172a; /* bg-slate-900 */
+            background-color: #0f172a; /* bg-slate-900 */
             color: #e2e8f0; /* text-slate-200 */
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            box-sizing: border-box;
         }
-        .quiz-container {
-            background-color: #1e293b; /* bg-slate-800 */
-            border: 1px solid #334155; /* border-slate-700 */
-            animation: fadeIn 0.5s ease-out;
-            width: 100%;
-            max-width: 960px;
-            margin: auto;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-        }
-        @media (min-width: 640px) {
-            .quiz-container {
-                padding: 2rem;
-            }
-        }
-        .option-btn {
-            background-color: #334155; /* bg-slate-700 */
-            border: 1px solid #475569; /* border-slate-600 */
-            color: #cbd5e1; /* text-slate-300 */
-            transition: all 0.2s ease-in-out;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            font-size: 1rem;
-        }
-        .option-btn:hover {
-            background-color: #475569; /* bg-slate-600 */
-            border-color: #64748b; /* border-slate-500 */
-            color: #ffffff; /* text-white */
-            transform: scale(1.02);
-        }
-        .option-btn.selected {
-            background-color: #4338ca; /* bg-indigo-700 */
-            border-color: #6366f1; /* border-indigo-500 */
-            color: #ffffff;
-        }
-        .option-btn.correct {
-            background-color: #15803d; /* bg-green-700 */
-            border-color: #22c55e; /* border-green-500 */
-            color: #ffffff;
-        }
-        .option-btn.incorrect {
-            background-color: #b91c1c; /* bg-red-700 */
-            border-color: #ef4444; /* border-red-500 */
-            color: #ffffff;
-        }
-        .explanation-box, .feedback-message {
-            animation: slideUp 0.5s ease-out;
-        }
-        #question-area {
-             animation: slideIn 0.5s forwards;
-             opacity: 0;
-        }
-        .question-nav-btn {
-            background-color: #334155; /* bg-slate-700 */
-            color: #cbd5e1; /* text-slate-300 */
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .question-nav-btn.answered {
-            background-color: #15803d; /* bg-green-700 */
-            color: white;
-        }
-        .question-nav-btn.skipped {
-            background-color: #ca8a04; /* bg-yellow-600 */
-            color: white;
-        }
-        .question-nav-btn.current {
-            background-color: #4f46e5; /* bg-indigo-600 */
-            color: white;
-            transform: scale(1.1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        .transition-all {
+            transition: all 0.3s ease-in-out;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes slideIn {
-             from { opacity: 0; transform: translateX(-20px); }
-             to { opacity: 1; transform: translateX(0); }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
         }
-        h1 {
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        .option-btn {
+            background-color: #334155;
+            border-color: #475569;
         }
-        .main-nav-btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .main-nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .main-nav-btn.bg-indigo-600:hover {
-            background-color: #4f46e5;
-        }
-        .main-nav-btn.bg-green-600:hover {
-            background-color: #16a34a;
-        }
-        .main-nav-btn.bg-yellow-600:hover {
-            background-color: #d97706;
-        }
-        .main-nav-btn.bg-slate-600:hover {
+        .option-btn:hover {
             background-color: #475569;
+            border-color: #64748b;
+            transform: translateY(-2px);
         }
+        .option-btn.correct {
+            background-color: #166534;
+            border-color: #22c55e;
+            color: white;
+        }
+        .option-btn.correct .option-label {
+            background-color: #22c55e;
+            color: #14532d;
+        }
+        .option-btn.incorrect {
+            background-color: #991b1b;
+            border-color: #ef4444;
+            color: white;
+        }
+        .option-btn.incorrect .option-label {
+            background-color: #ef4444;
+            color: #7f1d1d;
+        }
+        .question-nav-btn.answered { background-color: #166534; color: white; }
+        .question-nav-btn.skipped { background-color: #a16207; color: white; }
+        .question-nav-btn.current {
+            background-color: #4f46e5;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body>
 
-    <div id="quiz-container" class="quiz-container w-full max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl">
-        <!-- Header -->
-        <div class="text-center mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-white">UKOM Terapis Gigi Dan Mulut D4</h1>
-            <p class="text-sm text-slate-400 mt-1">By: UFS</p>
+    <div class="w-full h-full p-4 sm:p-6 md:p-8 flex flex-col">
+        <!-- Start Screen -->
+        <div id="start-screen" class="w-full h-full flex flex-col justify-center items-center">
+             <div class="text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 fade-in w-full max-w-2xl">
+                <h1 class="text-3xl md:text-4xl font-bold text-white">Uji Kompetensi TGM D4</h1>
+                <p class="mt-2 text-slate-400">Platform By: <span class="font-semibold text-slate-300">UFS</span></p>
+                
+                <p class="mt-8 text-slate-300">Selamat datang di media Uji Kompetensi. Platform ini dirancang sebagai sarana latihan dan evaluasi untuk kalangan terbatas.</p>
+                
+                <div class="mt-6 text-xs text-slate-400 bg-slate-900/50 border border-slate-700 rounded-lg p-3">
+                    <strong>Perhatian:</strong> Materi soal yang digunakan bersumber dari referensi eksternal dan hanya ditujukan untuk tujuan pembelajaran, bukan untuk penggunaan komersial. UFS adalah pengembang platform kuis ini, bukan pemilik hak cipta materi soal.
+                </div>
+
+                <button id="start-btn" class="mt-8 w-full md:w-auto bg-indigo-600 text-white font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-105">
+                    Mulai Kuis
+                </button>
+            </div>
         </div>
 
-        <!-- Quiz Content Area -->
-        <div id="quiz-content">
-            <!-- Top Bar -->
-            <div class="mb-4 flex flex-col sm:flex-row justify-between items-center sm:items-end gap-2">
-                <span class="text-base font-medium text-slate-300">Soal <span id="question-counter"></span></span>
-                <span id="timer" class="text-lg sm:text-xl font-bold text-white bg-slate-700 px-3 py-1 rounded-lg">00:00</span>
-                <span class="text-base font-medium text-slate-300">Skor: <span id="score">0</span></span>
-            </div>
-            <div class="w-full bg-slate-700 rounded-full h-2.5">
-                <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-out"></div>
-            </div>
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden h-full flex flex-col">
+            <div class="bg-slate-800 p-6 md:p-8 rounded-2xl shadow-2xl border border-slate-700 flex flex-col flex-grow overflow-hidden">
+                <!-- Header -->
+                <div class="flex-shrink-0">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm font-semibold text-slate-300">Soal <span id="question-counter">1/10</span></div>
+                        <div class="text-sm font-semibold text-slate-300">Skor: <span id="score">0</span></div>
+                        <div id="timer" class="text-sm font-bold bg-slate-700 text-indigo-300 px-3 py-1 rounded-full">00:00</div>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2 mb-6">
+                        <div id="progress-bar" class="bg-indigo-500 h-2 rounded-full transition-all duration-300"></div>
+                    </div>
+                </div>
 
-            <!-- Question -->
-            <div id="question-area" class="mt-8 min-h-[150px] sm:min-h-[120px]">
-                <p id="question-text" class="text-slate-100 text-lg sm:text-xl leading-relaxed font-medium"></p>
-            </div>
-
-            <!-- Options -->
-            <div id="options-area" class="mt-6 space-y-3">
-                <!-- Options will be dynamically inserted here -->
-            </div>
-
-            <!-- Explanation -->
-            <div id="explanation-area" class="mt-6 hidden">
-                <div id="feedback-message" class="text-center font-bold p-3 rounded-lg mb-4 flex items-center justify-center"></div>
-                <div class="explanation-box bg-slate-900 p-4 rounded-lg border border-slate-700">
-                    <h3 class="font-bold text-white mb-2">Pembahasan:</h3>
-                    <p id="explanation-text" class="text-slate-300 leading-relaxed"></p>
+                <!-- Main Content Area with Two-Column Layout -->
+                <div class="flex-grow flex flex-col md:flex-row md:gap-8 overflow-hidden">
+                    <!-- Left Column: Question & Explanation -->
+                    <div class="w-full md:w-1/2 lg:w-7/12 flex flex-col overflow-y-auto custom-scrollbar pr-4">
+                        <h2 class="text-lg md:text-xl font-medium text-white mb-6 flex-shrink-0">Pertanyaan:</h2>
+                        <p id="question-text" class="text-xl md:text-2xl text-slate-100 leading-relaxed"></p>
+                        <div id="explanation-area" class="hidden mt-auto pt-6 border-t border-slate-700">
+                            <h3 class="font-bold text-white mb-2">Pembahasan:</h3>
+                            <p id="explanation-text" class="text-slate-300 leading-relaxed"></p>
+                        </div>
+                    </div>
+                    <!-- Right Column: Answer Options -->
+                    <div id="options-area" class="w-full md:w-1/2 lg:w-5/12 mt-8 md:mt-0 space-y-3 overflow-y-auto custom-scrollbar pr-4"></div>
                 </div>
             </div>
 
             <!-- Navigation -->
-            <div id="navigation-area" class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <button id="prev-btn" class="main-nav-btn bg-slate-600 text-white w-full sm:w-auto">
-                    Sebelumnya
-                </button>
-                <button id="skip-btn" class="main-nav-btn bg-yellow-600 text-white w-full sm:w-auto">
-                    Lewati
-                </button>
-                <button id="next-btn" class="main-nav-btn bg-indigo-600 text-white w-full sm:w-auto">
-                    Berikutnya
-                </button>
-            </div>
-             <!-- Question Navigation -->
-            <div id="question-nav-overview" class="mt-8 pt-4 border-t border-slate-700">
-                <h3 class="text-center text-slate-400 mb-3 font-semibold">Navigasi Soal</h3>
-                <div id="question-nav-container" class="flex flex-wrap gap-2 justify-center">
-                    <!-- Nav buttons will be inserted here -->
+            <div class="mt-4 flex-shrink-0">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button id="prev-btn" class="bg-slate-700 text-slate-300 font-semibold py-3 px-4 rounded-lg hover:bg-slate-600 transition-all col-span-1">Sebelumnya</button>
+                    <button id="skip-btn" class="bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-yellow-700 transition-all col-span-1">Lewati</button>
+                    <button id="nav-toggle-btn" class="bg-slate-700 text-slate-300 font-semibold py-3 px-4 rounded-lg hover:bg-slate-600 transition-all col-span-2 md:col-span-1">Navigasi Soal</button>
+                    <button id="next-btn" class="bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-all col-span-2 md:col-span-1">Berikutnya</button>
+                </div>
+                <div id="question-nav-overview" class="hidden mt-4 bg-slate-800 p-4 rounded-xl border border-slate-700 fade-in">
+                    <div id="question-nav-container" class="flex flex-wrap gap-2 justify-center"></div>
                 </div>
             </div>
         </div>
 
         <!-- Results Screen -->
-        <div id="results-screen" class="hidden text-center py-8">
-            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Ujian Selesai!</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6 text-white">
-                <div class="bg-slate-700 p-4 rounded-lg">
-                    <p class="text-slate-300 text-lg">Skor Akhir Anda</p>
-                    <p id="final-score" class="text-4xl sm:text-5xl font-extrabold"></p>
+        <div id="results-screen" class="hidden w-full h-full flex flex-col justify-center items-center">
+            <div class="text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 w-full max-w-xl">
+                <h2 class="text-3xl font-bold text-white">Ujian Selesai!</h2>
+                <div class="mt-6 flex flex-col md:flex-row gap-4 justify-center">
+                    <div class="bg-slate-700 p-4 rounded-lg flex-1"><p class="text-sm text-slate-400">Skor Akhir</p><p id="final-score" class="text-3xl font-bold text-indigo-400"></p></div>
+                    <div class="bg-slate-700 p-4 rounded-lg flex-1"><p class="text-sm text-slate-400">Waktu Selesai</p><p id="total-time" class="text-3xl font-bold text-indigo-400"></p></div>
                 </div>
-                <div class="bg-slate-700 p-4 rounded-lg">
-                    <p class="text-slate-300 text-lg">Waktu Rata-rata</p>
-                    <p id="avg-time" class="text-4xl sm:text-5xl font-extrabold"></p>
-                </div>
+                <button id="restart-btn" class="mt-8 w-full md:w-auto bg-indigo-600 text-white font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-105">Ulangi Ujian</button>
             </div>
-            <button id="restart-btn" class="main-nav-btn bg-indigo-600 text-white px-10">
-                Ulangi Ujian
-            </button>
         </div>
     </div>
 
     <script>
-        // --- DATA SOAL ---
-        // Array ini sekarang berisi semua 180 soal.
+        const startScreen = document.getElementById('start-screen'), quizScreen = document.getElementById('quiz-screen'), resultsScreen = document.getElementById('results-screen');
+        const startBtn = document.getElementById('start-btn'), restartBtn = document.getElementById('restart-btn');
+        const questionCounterEl = document.getElementById('question-counter'), scoreEl = document.getElementById('score'), timerEl = document.getElementById('timer');
+        const progressBarEl = document.getElementById('progress-bar'), questionTextEl = document.getElementById('question-text'), optionsAreaEl = document.getElementById('options-area');
+        const explanationAreaEl = document.getElementById('explanation-area'), explanationTextEl = document.getElementById('explanation-text');
+        const prevBtn = document.getElementById('prev-btn'), skipBtn = document.getElementById('skip-btn'), navToggleBtn = document.getElementById('nav-toggle-btn'), nextBtn = document.getElementById('next-btn');
+        const questionNavOverview = document.getElementById('question-nav-overview'), questionNavContainer = document.getElementById('question-nav-container');
+        const finalScoreEl = document.getElementById('final-score'), totalTimeEl = document.getElementById('total-time');
+        
         const quizData = [
             // Kasus 1
             {
@@ -2566,304 +2510,133 @@
                 explanation: "Glassplate yang dingin dimaksudkan agar dapat meresap panas yang dikeluarkan dari reaksi pengadukan bubuk dan cairan zinc phosphate cement. Reaksi panas tersebut merupakan reaksi eksotermis yang keluar pada saat bubuk dan cairan dimanipulasi."
             }
         ];
-
-
-        // --- ELEMEN DOM ---
-        const quizContentEl = document.getElementById('quiz-content');
-        const resultsScreenEl = document.getElementById('results-screen');
-        const questionCounterEl = document.getElementById('question-counter');
-        const scoreEl = document.getElementById('score');
-        const timerEl = document.getElementById('timer');
-        const progressBarEl = document.getElementById('progress-bar');
-        const questionTextEl = document.getElementById('question-text');
-        const optionsAreaEl = document.getElementById('options-area');
-        const explanationAreaEl = document.getElementById('explanation-area');
-        const feedbackMessageEl = document.getElementById('feedback-message');
-        const explanationTextEl = document.getElementById('explanation-text');
-        const prevBtnEl = document.getElementById('prev-btn');
-        const skipBtnEl = document.getElementById('skip-btn');
-        const nextBtnEl = document.getElementById('next-btn');
-        const restartBtnEl = document.getElementById('restart-btn');
-        const finalScoreEl = document.getElementById('final-score');
-        const avgTimeEl = document.getElementById('avg-time');
-        const questionNavContainerEl = document.getElementById('question-nav-container');
-
-        // --- STATE APLIKASI ---
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let userAnswers = [];
-        let timerInterval;
-        let totalSeconds = 0;
-        let timePerQuestion = [];
-        let questionStartTime = 0;
-        let shuffledQuizData = []; // Array untuk menyimpan soal yang sudah diacak
-
-        // --- FUNGSI-FUNGSI ---
         
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
+        let shuffledQuestions = [], userAnswers = [], currentQuestionIndex = 0, score = 0, timerInterval, totalSeconds = 0;
 
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; }
+        }
         function startTimer() {
-            questionStartTime = Date.now();
+            totalSeconds = 0; timerEl.textContent = '00:00'; clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 totalSeconds++;
-                timerEl.textContent = formatTime(totalSeconds);
+                const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+                const secs = (totalSeconds % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${mins}:${secs}`;
             }, 1000);
         }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
+        function startQuiz() {
+            startScreen.classList.add('hidden'); resultsScreen.classList.add('hidden'); quizScreen.classList.remove('hidden'); quizScreen.classList.add('fade-in');
+            shuffledQuestions = [...quizData]; shuffle(shuffledQuestions);
+            currentQuestionIndex = 0; score = 0; userAnswers = new Array(shuffledQuestions.length).fill(null); scoreEl.textContent = score;
+            startTimer(); loadQuestion();
         }
-
-        function updateQuestionNav() {
-            questionNavContainerEl.innerHTML = '';
-            shuffledQuizData.forEach((_, index) => {
-                const button = document.createElement('button');
-                button.textContent = index + 1;
-                button.className = 'question-nav-btn w-10 h-10 rounded-md font-bold transition-all duration-200 flex-shrink-0';
-                if (index === currentQuestionIndex) {
-                    button.classList.add('current');
-                } else if (userAnswers[index] !== null) {
-                    button.classList.add(userAnswers[index].isSkipped ? 'skipped' : 'answered');
-                }
-                button.addEventListener('click', () => goToQuestion(index));
-                questionNavContainerEl.appendChild(button);
-            });
-        }
-
-        function goToQuestion(index) {
-            if (index < 0 || index >= shuffledQuizData.length) return;
-            
-            if(questionStartTime > 0 && userAnswers[currentQuestionIndex] === null) {
-                 const timeSpent = Math.round((Date.now() - questionStartTime) / 1000);
-                 timePerQuestion[currentQuestionIndex] += timeSpent;
-            }
-           
-            currentQuestionIndex = index;
-            loadQuestion();
-        }
-
         function loadQuestion() {
-            const currentQuestion = shuffledQuizData[currentQuestionIndex];
-            const answer = userAnswers[currentQuestionIndex];
-            const isAnswered = answer !== null && !answer.isSkipped;
-
-            explanationAreaEl.classList.add('hidden');
-            
-            const questionArea = document.getElementById('question-area');
-            questionArea.style.animation = 'none';
-            questionArea.offsetHeight;
-            questionArea.style.animation = null; 
-            
-            questionCounterEl.textContent = `${currentQuestionIndex + 1}/${shuffledQuizData.length}`;
-            questionTextEl.textContent = currentQuestion.question;
-            
+            explanationAreaEl.classList.add('hidden'); optionsAreaEl.innerHTML = '';
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const isAnswered = userAnswer !== null;
+            questionCounterEl.textContent = `${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
             const answeredCount = userAnswers.filter(a => a !== null).length;
-            progressBarEl.style.width = `${(answeredCount / shuffledQuizData.length) * 100}%`;
-            
-            optionsAreaEl.innerHTML = '';
-
+            progressBarEl.style.width = `${(answeredCount / shuffledQuestions.length) * 100}%`;
+            questionTextEl.textContent = currentQuestion.question;
             currentQuestion.options.forEach(option => {
                 const button = document.createElement('button');
-                button.className = 'option-btn w-full text-left p-4 rounded-lg flex items-center space-x-4';
-                button.innerHTML = `
-                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-slate-600 rounded-md border border-slate-500 font-bold text-slate-200">${option.label}</div>
-                    <div class="flex-1">${option.text}</div>
-                `;
-                if (isAnswered) {
+                button.className = 'option-btn w-full text-left p-3 border-2 rounded-lg flex items-center space-x-4 transition-all';
+                button.innerHTML = `<span class="option-label flex-shrink-0 w-8 h-8 flex items-center justify-center bg-slate-600 rounded-md font-bold text-slate-300">${option.label}</span><span class="flex-1">${option.text}</span>`;
+                if(isAnswered) {
                     button.disabled = true;
-                    if (option.label === answer.selected) {
-                        button.classList.add(answer.isCorrect ? 'correct' : 'incorrect');
-                    } else if (option.label === currentQuestion.correctAnswer) {
-                        if (!answer.isCorrect) {
-                           button.classList.add('correct');
-                        }
-                    }
+                    if(userAnswer.selected === option.label) button.classList.add(userAnswer.isCorrect ? 'correct' : 'incorrect');
+                    else if (option.label === currentQuestion.correctAnswer) button.classList.add('correct');
                 } else {
-                     button.addEventListener('click', () => selectAnswer(option.label));
+                    button.addEventListener('click', () => selectAnswer(option.label));
                 }
                 optionsAreaEl.appendChild(button);
             });
-
-            if (isAnswered) {
-                showExplanation(answer.isCorrect);
+            if(isAnswered) {
+                explanationTextEl.textContent = currentQuestion.explanation;
+                explanationAreaEl.classList.remove('hidden');
             }
-
-            prevBtnEl.disabled = currentQuestionIndex === 0;
-            const allAnswered = userAnswers.filter(a => a === null).length === 0;
-            if (allAnswered) {
-                nextBtnEl.textContent = "Selesai";
-                nextBtnEl.classList.remove('bg-indigo-600');
-                nextBtnEl.classList.add('bg-green-600');
-                nextBtnEl.onclick = showResults;
-            } else {
-                nextBtnEl.textContent = "Berikutnya";
-                nextBtnEl.classList.remove('bg-green-600');
-                nextBtnEl.classList.add('bg-indigo-600');
-                nextBtnEl.disabled = false; // Selalu aktifkan kecuali kondisi lain
-                nextBtnEl.onclick = () => {
-                    const nextUnanswered = findNextUnanswered(currentQuestionIndex);
-                    if (nextUnanswered !== -1) {
-                        goToQuestion(nextUnanswered);
-                    } else {
-                        // Jika tidak ada lagi yang belum dijawab, tombol akan menjadi "Selesai"
-                        checkCompletion();
-                    }
-                };
-            }
-             
-            skipBtnEl.style.display = isAnswered ? 'none' : 'block';
-            
-            updateQuestionNav();
-            questionStartTime = Date.now();
+            updateNavButtons(); updateQuestionNav();
         }
-
         function selectAnswer(selectedLabel) {
-            if (userAnswers[currentQuestionIndex] !== null && !userAnswers[currentQuestionIndex].isSkipped) return;
-
-            const timeSpent = Math.round((Date.now() - questionStartTime) / 1000);
-            timePerQuestion[currentQuestionIndex] += timeSpent;
-
-            const currentQuestion = shuffledQuizData[currentQuestionIndex];
+            if (userAnswers[currentQuestionIndex] !== null) return;
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
             const isCorrect = selectedLabel === currentQuestion.correctAnswer;
-            
-            userAnswers[currentQuestionIndex] = {
-                selected: selectedLabel,
-                isCorrect: isCorrect,
-                isSkipped: false
-            };
-
-            if (isCorrect) {
-                score++;
-                scoreEl.textContent = score;
-            }
-            
+            if (isCorrect) score++;
+            userAnswers[currentQuestionIndex] = { selected: selectedLabel, isCorrect: isCorrect, isSkipped: false };
+            scoreEl.textContent = score;
             loadQuestion();
-            checkCompletion();
         }
-
-        function showExplanation(isCorrect) {
-            const correctIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
-            const incorrectIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
-
-            if (isCorrect) {
-                feedbackMessageEl.innerHTML = `${correctIcon} <span>Jawaban Benar!</span>`;
-                feedbackMessageEl.className = 'text-center font-bold p-3 rounded-lg mb-4 flex items-center justify-center bg-green-600/50 text-white';
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            skipBtn.style.display = userAnswers[currentQuestionIndex] !== null ? 'none' : 'block';
+            const allAnswered = userAnswers.every(a => a !== null);
+            if (allAnswered) {
+                 nextBtn.textContent = "Selesai";
+                 nextBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                 nextBtn.classList.add('bg-green-600', 'hover:bg-green-700');
             } else {
-                feedbackMessageEl.innerHTML = `${incorrectIcon} <span>Jawaban Salah!</span>`;
-                feedbackMessageEl.className = 'text-center font-bold p-3 rounded-lg mb-4 flex items-center justify-center bg-red-600/50 text-white';
+                 nextBtn.textContent = "Berikutnya";
+                 nextBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                 nextBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
             }
-            
-            explanationTextEl.textContent = shuffledQuizData[currentQuestionIndex].explanation;
-            explanationAreaEl.classList.remove('hidden');
         }
-        
+        function updateQuestionNav() {
+            questionNavContainer.innerHTML = '';
+            shuffledQuestions.forEach((_, index) => {
+                const button = document.createElement('button');
+                button.textContent = index + 1;
+                button.className = 'question-nav-btn w-10 h-10 rounded-md font-bold transition-all duration-200 flex-shrink-0 bg-slate-700 text-slate-300';
+                if (index === currentQuestionIndex) button.classList.add('current');
+                else if (userAnswers[index] !== null) {
+                    if (userAnswers[index].isSkipped) button.classList.add('skipped');
+                    else button.classList.add('answered');
+                }
+                button.addEventListener('click', () => { 
+                    currentQuestionIndex = index; loadQuestion(); questionNavOverview.classList.add('hidden');
+                });
+                questionNavContainer.appendChild(button);
+            });
+        }
         function showResults() {
-            stopTimer();
-            quizContentEl.classList.add('hidden');
-            resultsScreenEl.classList.remove('hidden');
-            resultsScreenEl.style.animation = 'fadeIn 1s ease-out';
-            
-            const answeredCount = userAnswers.filter(a => a !== null && !a.isSkipped).length;
-            const totalTimeSpentOnAnswered = timePerQuestion.reduce((acc, time, index) => {
-                if(userAnswers[index] !== null && !userAnswers[index].isSkipped) {
-                    return acc + time;
-                }
-                return acc;
-            }, 0);
-            
-            const avgTime = answeredCount > 0 ? Math.round(totalTimeSpentOnAnswered / answeredCount) : 0;
-
-            finalScoreEl.textContent = `${score} / ${shuffledQuizData.length}`;
-            avgTimeEl.textContent = `${avgTime} detik`;
-            
-            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+            clearInterval(timerInterval); quizScreen.classList.add('hidden'); resultsScreen.classList.remove('hidden'); resultsScreen.classList.add('fade-in');
+            finalScoreEl.textContent = `${score} / ${shuffledQuestions.length}`;
+            totalTimeEl.textContent = timerEl.textContent;
+            if ((score / shuffledQuestions.length) >= 0.7) confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
         }
-        
-        function initializeQuiz() {
-            // **Fungsi untuk mengacak soal (Fisher-Yates shuffle)**
-            shuffledQuizData = [...quizData]; // Salin array asli
-            for (let i = shuffledQuizData.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledQuizData[i], shuffledQuizData[j]] = [shuffledQuizData[j], shuffledQuizData[i]];
+        startBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', () => {
+            resultsScreen.classList.add('hidden'); startScreen.classList.remove('hidden'); startScreen.classList.add('fade-in');
+        });
+        nextBtn.addEventListener('click', () => {
+            if (nextBtn.textContent === "Selesai") { showResults(); return; } 
+            const nextUnanswered = userAnswers.findIndex((answer, index) => answer === null && index > currentQuestionIndex);
+            if (nextUnanswered !== -1) currentQuestionIndex = nextUnanswered;
+            else {
+                const firstUnanswered = userAnswers.findIndex(answer => answer === null);
+                if (firstUnanswered !== -1) currentQuestionIndex = firstUnanswered;
+                else if (currentQuestionIndex < shuffledQuestions.length - 1) currentQuestionIndex++;
             }
-
-            currentQuestionIndex = 0;
-            score = 0;
-            userAnswers = new Array(shuffledQuizData.length).fill(null);
-            timePerQuestion = new Array(shuffledQuizData.length).fill(0);
-            totalSeconds = 0;
-            scoreEl.textContent = '0';
-            timerEl.textContent = '00:00';
-            resultsScreenEl.classList.add('hidden');
-            quizContentEl.classList.remove('hidden');
-            if(timerInterval) clearInterval(timerInterval);
-            startTimer();
             loadQuestion();
-        }
-
-        function findNextUnanswered(startIndex) {
-            for (let i = startIndex + 1; i < shuffledQuizData.length; i++) {
-                if (userAnswers[i] === null) {
-                    return i;
-                }
-            }
-            for (let i = 0; i < startIndex; i++) {
-                if (userAnswers[i] === null) {
-                    return i;
-                }
-            }
-            return -1; // Tidak ada lagi soal yang belum dijawab
-        }
-
-        function checkCompletion() {
-             const unanswered = userAnswers.filter(a => a === null).length;
-             if (unanswered === 0) {
-                nextBtnEl.textContent = "Selesai";
-                nextBtnEl.classList.remove('bg-indigo-600');
-                nextBtnEl.classList.add('bg-green-600');
-                nextBtnEl.onclick = showResults;
-             }
-        }
-
-        // --- EVENT LISTENERS ---
-        nextBtnEl.onclick = () => {
-             const nextUnanswered = findNextUnanswered(currentQuestionIndex);
-             if(nextUnanswered !== -1) {
-                 goToQuestion(nextUnanswered);
-             } else {
-                 checkCompletion();
-             }
-        };
-
-        prevBtnEl.addEventListener('click', () => {
-             goToQuestion(currentQuestionIndex - 1);
         });
-        
-        skipBtnEl.addEventListener('click', () => {
-            if (userAnswers[currentQuestionIndex] === null) {
-                userAnswers[currentQuestionIndex] = { selected: null, isCorrect: false, isSkipped: true };
-            }
-            const nextUnanswered = findNextUnanswered(currentQuestionIndex);
-            if (nextUnanswered !== -1) {
-                goToQuestion(nextUnanswered);
-            } else {
-                checkCompletion();
-                // Jika tidak ada lagi, coba pergi ke soal berikutnya secara berurutan
-                if(currentQuestionIndex < shuffledQuizData.length - 1) {
-                    goToQuestion(currentQuestionIndex + 1);
-                }
+        prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; loadQuestion(); } });
+        skipBtn.addEventListener('click', () => {
+            if (userAnswers[currentQuestionIndex] === null) userAnswers[currentQuestionIndex] = { selected: null, isCorrect: false, isSkipped: true };
+            if (userAnswers.every(a => a !== null)) { loadQuestion(); return; }
+            nextBtn.click();
+        });
+        navToggleBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); // Mencegah event ini memicu listener di document
+            questionNavOverview.classList.toggle('hidden');
+        });
+        document.addEventListener('click', function(event) {
+            const isNavVisible = !questionNavOverview.classList.contains('hidden');
+            const isClickInsideNav = questionNavOverview.contains(event.target);
+            if (isNavVisible && !isClickInsideNav) {
+                questionNavOverview.classList.add('hidden');
             }
         });
-
-        restartBtnEl.addEventListener('click', initializeQuiz);
-
-        // --- INISIALISASI ---
-        document.addEventListener('DOMContentLoaded', initializeQuiz);
     </script>
-
 </body>
 </html>
