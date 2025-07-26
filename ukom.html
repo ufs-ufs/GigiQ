@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UKOM By: UFS Terapis Gigi Dan Mulut D4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a; /* bg-slate-900 */
+            color: #e2e8f0; /* text-slate-200 */
+            /* Ensure body takes full height and uses flexbox for centering */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem; /* Add some padding around the edges */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+        .quiz-container {
+            background-color: #1e293b; /* bg-slate-800 */
+            border: 1px solid #334155; /* border-slate-700 */
+            animation: fadeIn 0.5s ease-out;
+            /* Responsive width and padding */
+            width: 100%;
+            max-width: 960px; /* Max width for larger screens */
+            margin: auto; /* Center horizontally */
+            padding: 1.5rem; /* Default padding */
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+        }
+        @media (min-width: 640px) { /* Small screens and up */
+            .quiz-container {
+                padding: 2rem; /* Larger padding on small screens */
+            }
+        }
+        .option-btn {
+            background-color: #334155; /* bg-slate-700 */
+            border: 1px solid #475569; /* border-slate-600 */
+            color: #cbd5e1; /* text-slate-300 */
+            transition: all 0.2s ease-in-out;
+            border-radius: 0.5rem; /* Rounded corners for buttons */
+            padding: 1rem; /* More padding for better touch targets */
+            font-size: 1rem; /* Default font size */
+        }
+        .option-btn:hover {
+            background-color: #475569; /* bg-slate-600 */
+            border-color: #64748b; /* border-slate-500 */
+            color: #ffffff; /* text-white */
+            transform: scale(1.02);
+        }
+        .option-btn.selected {
+            background-color: #4338ca; /* bg-indigo-700 */
+            border-color: #6366f1; /* border-indigo-500 */
+            color: #ffffff;
+        }
+        .option-btn.correct {
+            background-color: #15803d; /* bg-green-700 */
+            border-color: #22c55e; /* border-green-500 */
+            color: #ffffff;
+        }
+        .option-btn.incorrect {
+            background-color: #b91c1c; /* bg-red-700 */
+            border-color: #ef4444; /* border-red-500 */
+            color: #ffffff;
+        }
+        .explanation-box, .feedback-message {
+            animation: slideUp 0.5s ease-out;
+        }
+        #question-area {
+             animation: slideIn 0.5s forwards;
+             opacity: 0;
+        }
+        .question-nav-btn {
+            background-color: #334155; /* bg-slate-700 */
+            color: #cbd5e1; /* text-slate-300 */
+            border-radius: 0.375rem; /* Rounded corners */
+            font-size: 0.875rem; /* Smaller font for number */
+            width: 2.5rem; /* Fixed width */
+            height: 2.5rem; /* Fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0; /* Prevent shrinking on smaller screens */
+        }
+        .question-nav-btn.answered {
+            background-color: #15803d; /* bg-green-700 */
+            color: white;
+        }
+        .question-nav-btn.skipped {
+            background-color: #ca8a04; /* bg-yellow-600 */
+            color: white;
+        }
+        .question-nav-btn.current {
+            background-color: #4f46e5; /* bg-indigo-600 */
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+             from { opacity: 0; transform: translateX(-20px); }
+             to { opacity: 1; transform: translateX(0); }
+        }
+        h1 {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        /* Style for main navigation buttons */
+        .main-nav-btn {
+            padding: 0.75rem 1.5rem; /* Adjust padding */
+            border-radius: 0.5rem; /* Rounded corners */
+            font-weight: 700; /* Bold font */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .main-nav-btn:hover {
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .main-nav-btn.bg-indigo-600:hover {
+            background-color: #4f46e5; /* Darker indigo */
+        }
+        .main-nav-btn.bg-green-600:hover {
+            background-color: #16a34a; /* Darker green */
+        }
+        .main-nav-btn.bg-yellow-600:hover {
+            background-color: #d97706; /* Darker yellow */
+        }
+        .main-nav-btn.bg-slate-600:hover {
+            background-color: #475569; /* Darker slate */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div id="quiz-container" class="quiz-container w-full max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl shadow-2xl">
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-white">UKOM Terapis Gigi Dan Mulut D4</h1>
+            <p class="text-sm text-slate-400 mt-1">By: UFS</p>
+        </div>
+
+        <!-- Quiz Content Area -->
+        <div id="quiz-content">
+            <!-- Top Bar -->
+            <div class="mb-4 flex flex-col sm:flex-row justify-between items-center sm:items-end gap-2">
+                <span class="text-base font-medium text-slate-300">Soal <span id="question-counter"></span></span>
+                <span id="timer" class="text-lg sm:text-xl font-bold text-white bg-slate-700 px-3 py-1 rounded-lg">00:00</span>
+                <span class="text-base font-medium text-slate-300">Skor: <span id="score">0</span></span>
+            </div>
+            <div class="w-full bg-slate-700 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 ease-out"></div>
+            </div>
+
+            <!-- Question -->
+            <div id="question-area" class="mt-8 min-h-[150px] sm:min-h-[120px]">
+                <p id="question-text" class="text-slate-100 text-lg sm:text-xl leading-relaxed font-medium"></p>
+            </div>
+
+            <!-- Options -->
+            <div id="options-area" class="mt-6 space-y-3">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+
+            <!-- Explanation -->
+            <div id="explanation-area" class="mt-6 hidden">
+                <div id="feedback-message" class="text-center font-bold p-3 rounded-lg mb-4 flex items-center justify-center"></div>
+                <div class="explanation-box bg-slate-900 p-4 rounded-lg border border-slate-700">
+                    <h3 class="font-bold text-white mb-2">Pembahasan:</h3>
+                    <p id="explanation-text" class="text-slate-300 leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="navigation-area" class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <button id="prev-btn" class="main-nav-btn bg-slate-600 text-white w-full sm:w-auto">
+                    Sebelumnya
+                </button>
+                <button id="skip-btn" class="main-nav-btn bg-yellow-600 text-white w-full sm:w-auto">
+                    Lewati
+                </button>
+                <button id="next-btn" class="main-nav-btn bg-indigo-600 text-white w-full sm:w-auto">
+                    Berikutnya
+                </button>
+            </div>
+             <!-- Question Navigation -->
+            <div id="question-nav-overview" class="mt-8 pt-4 border-t border-slate-700">
+                <h3 class="text-center text-slate-400 mb-3 font-semibold">Navigasi Soal</h3>
+                <div id="question-nav-container" class="flex flex-wrap gap-2 justify-center">
+                    <!-- Nav buttons will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden text-center py-8">
+            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Ujian Selesai!</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6 text-white">
+                <div class="bg-slate-700 p-4 rounded-lg">
+                    <p class="text-slate-300 text-lg">Skor Akhir Anda</p>
+                    <p id="final-score" class="text-4xl sm:text-5xl font-extrabold"></p>
+                </div>
+                <div class="bg-slate-700 p-4 rounded-lg">
+                    <p class="text-slate-300 text-lg">Waktu Rata-rata</p>
+                    <p id="avg-time" class="text-4xl sm:text-5xl font-extrabold"></p>
+                </div>
+            </div>
+            <button id="restart-btn" class="main-nav-btn bg-indigo-600 text-white px-10">
+                Ulangi Ujian
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA SOAL ---
+        const quizData = [
+            // Kasus 1
+            {
+                question: "Seorang pasien anak perempuan berusia 12 tahun dirujuk ke puskesmas karena ditemukan karies agak dalam di permukaan oklusal pada gigi molar pertama kanan bawah, dan linu bila minum yang dingin sejak 2 minggu yang lalu. Berdasarkan hasil pemeriksaan intra oral, ditemukan gigi 46 karies mencapai dentin dengan keluhan tambahan beberapa permukaan gigi terasa kasar dan gusi mudah berdarah. Oral hygiene index simplified kriteria sedang. Apakah rencana yang tepat dilakukan kepada pasien tersebut?",
+                options: [
+                    { label: "A", text: "Penambalan ART dan scaling" },
+                    { label: "B", text: "Perawatan saluran akar dan scaling" },
+                    { label: "C", text: "Penambalan light curing dan scaling" },
+                    { label: "D", text: "Penutupan fissure sealant dan scaling" },
+                    { label: "E", text: "Penambalan glass ionomer dan scaling" }
+                ],
+                correctAnswer: "E",
+                explanation: "Bahan restorasi yang sering digunakan untuk merestorasi baik gigi sulung maupun gigi tetap adalah bahan restorasi adhesif sewarna gigi seperti Glass Ionomer Cement (GIC). GIC juga dapat melepaskan fluor yang baik untuk mencegah karies lebih lanjut. Scaling diperlukan karena OHI-S sedang dan ada keluhan gusi mudah berdarah."
+            },
+            // Kasus 2
+            {
+                question: "Seorang anak perempuan berumur 10 tahun diantar ibunya ke klinik gigi setelah dirujuk dari sekolah dasarnya ke puskesmas. Pada anak tersebut ditemukan karies dalam di permukaan oklusal gigi molar pertama kiri bawah sulung. Tidak ada keluhan linu dan tidak ada keluhan sakit. Hasil pemeriksaan intra oral ditemukan pada gigi 75 karies mencapai pulpa dan mengalami kegoyangan derajat 3, serta oral hygiene pasien kriteria baik. Apakah rencana yang tepat dilakukan terhadap pasien tersebut?",
+                options: [
+                    { label: "A", text: "Pencabutan gigi" },
+                    { label: "B", text: "Penambalan ART" },
+                    { label: "C", text: "Penambalan light curing" },
+                    { label: "D", text: "Penutupan fissure sealant" },
+                    { label: "E", text: "Penambalan glass ionomer" }
+                ],
+                correctAnswer: "A",
+                explanation: "Gigi 75 adalah gigi sulung yang kariesnya sudah mencapai pulpa dan goyang derajat 3. Gigi penggantinya (gigi 35) kemungkinan akan segera erupsi. Oleh karena itu, tindakan yang paling tepat adalah pencabutan untuk mencegah infeksi lebih lanjut dan memberi ruang bagi gigi permanen."
+            },
+            // Kasus 3
+            {
+                question: "Seorang pasien perempuan berusia 35 tahun datang ke puskesmas di daerah terpencil yang belum ada listrik dengan keluhan gigi belakang bawah kanan berlubang dan terasa linu saat minum dingin. Berdasarkan hasil pemeriksaan klinis, gigi 46 karies mencapai dentin dengan akses instrumen yang baik. Apakah tindakan yang paling tepat dilakukan untuk mengatasi kasus tersebut?",
+                options: [
+                    { label: "A", text: "Merujuk ke rumah sakit" },
+                    { label: "B", text: "Merujuk ke puskesmas lain" },
+                    { label: "C", text: "Atraumatic restorative treatment" },
+                    { label: "D", text: "Penambalan menggunakan amalgam" },
+                    { label: "E", text: "Penambalan menggunakan resin komposit" }
+                ],
+                correctAnswer: "C",
+                explanation: "Atraumatic Restorative Treatment (ART) adalah prosedur yang direkomendasikan WHO untuk daerah dengan fasilitas terbatas (tanpa listrik dan bor). Teknik ini menggunakan instrumen tangan untuk membersihkan karies dan menambalnya dengan bahan adhesif seperti GIC."
+            },
+            // Kasus 4
+            {
+                question: "Seorang operator di sebuah rumah sakit telah selesai melakukan tindakan pada pasien dengan kasus pencabutan. Alat yang digunakan adalah diagnosis set dan tang pencabutan gigi anterior rahang atas susu. Apakah tindakan yang harus dilakukan pertama kali pada alat yang telah digunakan pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Dicuci" },
+                    { label: "B", text: "Sterilisasi" },
+                    { label: "C", text: "Dekontaminasi" },
+                    { label: "D", text: "Rendam alkohol" },
+                    { label: "E", text: "Desinfeksi tingkat tinggi" }
+                ],
+                correctAnswer: "C",
+                explanation: "Langkah pertama setelah menggunakan alat medis yang terkontaminasi darah atau saliva adalah dekontaminasi. Tujuannya adalah untuk membuat alat lebih aman untuk ditangani oleh petugas sebelum dicuci dan disterilkan. Biasanya dilakukan dengan merendam dalam larutan desinfektan."
+            },
+            // Kasus 5
+            {
+                question: "Seorang pasien anak perempuan berusia 11 tahun diantar ibunya datang ke poli gigi dengan keluhan sakit gigi. Berdasarkan hasil anamnesis, sakit saat makan karena gigi lubang dan goyang. Dari hasil pemeriksaan, gigi 54 goyang derajat 4, gigi 14 sudah erupsi, gigi 63 karies pada enamel goyang derajat 2, gigi 23 erupsi, dan 75 karies sampai dentin. Apakah yang dilakukan seorang terapis gigi pada gigi molar kanan sulung pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Penambalan sementara" },
+                    { label: "B", text: "Penambalan dengan GIC" },
+                    { label: "C", text: "Penambalan dengan teknik ART" },
+                    { label: "D", text: "Pencabutan dengan teknik topikal" },
+                    { label: "E", text: "Pencabutan dengan teknik infiltrasi" }
+                ],
+                correctAnswer: "D",
+                explanation: "Pada kasus gigi sulung yang goyang derajat 4 (gigi 54), pencabutan adalah tindakan yang tepat. Mengingat ini adalah gigi sulung dan goyang, anestesi topikal seringkali sudah cukup untuk memberikan kenyamanan pada anak selama prosedur pencabutan."
+            },
+            // Kasus 6
+            {
+                question: "Seorang pasien anak perempuan berusia 11 tahun datang ke klinik gigi bersama ibunya untuk menambal gigi. Berdasarkan hasil anamnesis, gigi tersebut sering kemasukan makanan dan jika digunakan untuk mengunyah terasa sangat ngilu. Pemeriksaan intra oral, gigi 26 KMD bagian oklusal. Bahan yang digunakan untuk menumpat karies adalah bahan yang dapat melepaskan fluor. Apakah tindakan yang tepat dilakukan pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Preparasi, base dan bahan silikat" },
+                    { label: "B", text: "Restorasi langsung dengan bahan fissure sealant" },
+                    { label: "C", text: "Preparasi dahulu baru ditumpat dengan bahan glass ionomer" },
+                    { label: "D", text: "Preparasi dahulu, base kemudian direstorasi dengan bahan amalgam" },
+                    { label: "E", text: "Preparasi dahulu kemudian ditumpat langsung dengan bahan komposit" }
+                ],
+                correctAnswer: "C",
+                explanation: "Gigi 26 adalah gigi molar permanen dengan karies mencapai dentin (KMD). Bahan yang dapat melepaskan fluor dan cocok untuk restorasi gigi posterior adalah Glass Ionomer Cement (GIC). Prosedurnya adalah membersihkan jaringan karies (preparasi) terlebih dahulu, kemudian menambalnya dengan GIC."
+            },
+            // Kasus 7
+            {
+                question: "Seorang pasien anak laki-laki berusia 8 tahun datang bersama ibunya untuk mencabut gigi anak. Berdasarkan pemeriksaan klinis, terlihat gigi 11 sudah tumbuh (persistensi). Sementara itu, anak tersebut tidak mau dilakukan pencabutan karena takut. Apakah tindakan yang seharusnya dilakukan oleh seorang terapis gigi dengan kasus tersebut?",
+                options: [
+                    { label: "A", text: "Melakukan pencabutan dengan paksa karena permintaan ibunya" },
+                    { label: "B", text: "Membiarkan saja tanpa melakukan usaha komunikasi terapeutik" },
+                    { label: "C", text: "Membujuk sehingga anak tersebut berani dan mau dilakukan pencabutan" },
+                    { label: "D", text: "Menyarankan ibu untuk membujuk pasien di luar klinik gigi terlebih dahulu sampai anaknya mau dicabut" },
+                    { label: "E", text: "Bekerja sama dengan ibunya untuk dilakukan pencabutan dengan paksa karena gigi sudah waktunya dicabut" }
+                ],
+                correctAnswer: "C",
+                explanation: "Kunci keberhasilan perawatan pada anak adalah pengelolaan perilaku. Terapis gigi harus menggunakan pendekatan komunikasi terapeutik untuk membujuk dan membangun kepercayaan anak agar kooperatif, bukan dengan paksaan yang dapat menimbulkan trauma."
+            },
+            // Kasus 8
+            {
+                question: "Seorang pasien anak laki-laki berusia 10 tahun datang dengan keluhan giginya sewaktu kecil banyak yang berlubang. Pada gigi bagian belakang sebelah kiri telah tumbuh gigi permanen. Orang tua pasien menginginkan apakah gigi anaknya tersebut dijaga agar tidak berlubang. Berdasarkan hasil pemeriksaan objektif, gigi 36 sudah erupsi dan mahkota hampir erupsi sempurna dengan celah dalam bagian oklusal. Apakah tindakan yang tepat pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Scaling" },
+                    { label: "B", text: "Pencabutan" },
+                    { label: "C", text: "Penambalan" },
+                    { label: "D", text: "Fissure sealant" },
+                    { label: "E", text: "Oral profilaksis" }
+                ],
+                correctAnswer: "D",
+                explanation: "Fissure sealant adalah tindakan preventif untuk gigi permanen yang baru erupsi dengan pit dan fisura yang dalam. Tujuannya adalah menutup celah tersebut untuk mencegah penumpukan sisa makanan dan bakteri, sehingga mengurangi risiko karies."
+            },
+            // Kasus 9
+            {
+                question: "Seorang pasien perempuan berusia 30 tahun datang ke klinik gigi dengan keluhan bau mulut yang tidak enak dan gusi sering berdarah. Berdasarkan hasil anamnesis, pasien kurang percaya diri saat berbicara. Dari hasil pemeriksaan, kalkulus subgingival pada gigi 14, 15, 16, 17, 44, 45, 46, dan 47. Apakah instruksi yang tepat berdasarkan kasus di atas?",
+                options: [
+                    { label: "A", text: "Sikat gigi 1 kali sehari" },
+                    { label: "B", text: "Minum minuman bersoda" },
+                    { label: "C", text: "Minum menggunakan gelas" },
+                    { label: "D", text: "Mengunyah di kedua sisi rahang" },
+                    { label: "E", text: "Konsumsi makanan yang manis dan lengket" }
+                ],
+                correctAnswer: "D",
+                explanation: "Mengunyah makanan di kedua sisi rahang secara seimbang dapat membantu proses pembersihan alami (self-cleansing) pada permukaan gigi. Ini membantu mengurangi penumpukan plak dan sisa makanan, yang merupakan salah satu penyebab bau mulut dan masalah gusi."
+            },
+            // Kasus 10
+            {
+                question: "Seorang pasien perempuan berusia 40 tahun datang ke poli gigi di puskesmas dengan keluhan gigi molar belakang bawah kiri terasa linu jika digunakan untuk makan dan berkumur. Pada pemeriksaan klinis, ternyata gigi 37 tersebut berlubang mencapai dentin dan sudah mendekati pulpa. Apakah tindakan yang tepat dilakukan sebagai TGM yang baik?",
+                options: [
+                    { label: "A", text: "Memberikan analgetik" },
+                    { label: "B", text: "Melakukan penumpatan gigi 37 dengan amalgam" },
+                    { label: "C", text: "Merujuk ke dokter gigi untuk dilakukan pulp capping" },
+                    { label: "D", text: "Melakukan penumpatan gigi 37 dengan semen ionomer kaca" },
+                    { label: "E", text: "Melakukan rujukan ke dokter gigi untuk dilakukan perawatan saluran akar" }
+                ],
+                correctAnswer: "C",
+                explanation: "Ketika karies sudah sangat dalam dan mendekati pulpa, ada risiko pulpa terbuka saat preparasi. Pulp capping adalah perawatan untuk melindungi pulpa dan mempertahankan vitalitasnya. Ini merupakan kompetensi dokter gigi, sehingga TGM harus merujuk pasien."
+            },
+            // Kasus 11
+            {
+                question: "Seorang pasien perempuan berusia 17 tahun datang ke poli gigi dengan keluhan gigi depan kanan atas terasa ngilu sejak 1 minggu yang lalu. Keluhan dirasakan terutama ketika mengonsumsi makanan atau minuman yang dingin. Gejala tersebut sudah mulai dirasakan sejak 6 bulan yang lalu hilang timbul, dan belum pernah diperiksa ke unit pelayanan gigi. Pada pemeriksaan klinis, gigi 11 lubang, sondase (+), thermis (+), perkusi (-), dan mobiliti (-). Apakah tindakan yang tepat untuk pasien pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Penambalan dengan GI" },
+                    { label: "B", text: "Penambalan dengan ART" },
+                    { label: "C", text: "Penambalan dengan amalgam" },
+                    { label: "D", text: "Penambalan dengan resin komposit" },
+                    { label: "E", text: "Penambalan dengan zinc phosphate cement" }
+                ],
+                correctAnswer: "D",
+                explanation: "Kasus ini adalah karies pada gigi anterior (gigi 11) yang membutuhkan estetika yang baik. Resin komposit adalah bahan tambal sewarna gigi yang memiliki nilai estetik paling baik dan kekuatan yang cukup untuk gigi depan, sehingga menjadi pilihan utama."
+            },
+            // Kasus 12
+            {
+                question: "Seorang ibu mengantarkan anak perempuannya yang berusia 11 tahun ke puskesmas. Pada anak tersebut ditemukan karies agak dalam di permukaan oklusal gigi molar pertama kiri bawah, dan ada keluhan linu bila minum-minuman yang dingin, tapi tidak ada rasa sakit. Berdasarkan hasil pemeriksaan intra oral, ditemukan gigi 36 karies mencapai dentin dengan oral hygiene pasien kriteria sedang. Apakah rencana perawatan yang paling rasional pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Pencabutan gigi" },
+                    { label: "B", text: "Pemberian obat" },
+                    { label: "C", text: "Penambalan ART" },
+                    { label: "D", text: "Perawatan saluran akar" },
+                    { label: "E", text: "Penambalan glass ionomer" }
+                ],
+                correctAnswer: "E",
+                explanation: "Untuk karies yang mencapai dentin pada gigi molar permanen anak, penambalan dengan Glass Ionomer Cement (GIC) adalah pilihan yang rasional karena sifatnya yang adhesif, melepaskan fluor, dan biokompatibel."
+            },
+            // Kasus 13
+            {
+                question: "Seorang pasien remaja laki-laki berusia 17 tahun datang ke klinik gigi dan ingin memeriksakan kesehatan giginya. Berdasarkan hasil anamnesis, terlihat gigi sebelah lingual servikal gigi terdapat pewarnaan gigi berupa coklat muda sampai coklat tua bahkan ada yang berwarna hitam di gigi-gigi rahang bawah. Pasien ingin agar giginya terlihat mengkilap, halus, bersih, dan sehat. Apakah hal yang tepat dilakukan sebagai seorang terapis gigi dan mulut?",
+                options: [
+                    { label: "A", text: "Melakukan scaling" },
+                    { label: "B", text: "Pasien menggosok gigi" },
+                    { label: "C", text: "Pemberian bahan sealant" },
+                    { label: "D", text: "Pengolesan fluor gel pada gigi" },
+                    { label: "E", text: "Melakukan finishing and polishing pada gigi tersebut" }
+                ],
+                correctAnswer: "E",
+                explanation: "Pewarnaan ekstrinsik pada permukaan gigi yang sudah ada restorasi (atau bahkan gigi alami) dapat dihilangkan dengan prosedur finishing dan polishing untuk mendapatkan permukaan yang lebih halus, mengkilap, dan mengurangi retensi noda di kemudian hari."
+            },
+            // Kasus 14
+            {
+                question: "Seorang pasien laki-laki berusia 20 tahun datang ke klinik gigi dengan keluhan gigi premolar pertama rahang atas kanan terasa linu. Berdasarkan hasil anamnesis, ada rasa linu jika beberapa menit setelah minum minuman dingin. Dari hasil pemeriksaan, gigi 16 karies bagian approksimal. Apakah tindakan yang tepat untuk kasus tersebut?",
+                options: [
+                    { label: "A", text: "Scaling" },
+                    { label: "B", text: "Rujukan" },
+                    { label: "C", text: "Pencabutan" },
+                    { label: "D", text: "Penambalan" },
+                    { label: "E", text: "Perawatan endodontik" }
+                ],
+                correctAnswer: "D",
+                explanation: "Keluhan linu akibat rangsang dingin dan adanya karies menunjukkan adanya kerusakan pada struktur gigi yang perlu diperbaiki. Tindakan yang tepat adalah membersihkan karies dan melakukan penambalan untuk mengembalikan fungsi dan bentuk gigi serta menghilangkan keluhan."
+            },
+            // Kasus 15
+            {
+                question: "Seorang pasien perempuan berusia 28 tahun datang ke klinik gigi dengan keluhan gusi terasa sakit berdenyut. Berdasarkan hasil anamnesis, gusi terasa panas, dan mulut tidak nyaman. Dari hasil pemeriksaan, nyeri lokal yang progresif, pembentukan kantong pus, jaringan gingival menjadi merah dan bengkak. Terapis gigi melakukan tindakan kegawatdaruratan sampai tahap drainase melalui celah gingiva sederhana pada abses. Apakah langkah selanjutnya yang tepat dilakukan pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Konseling diet" },
+                    { label: "B", text: "Kolaborasi pemberian antibiotik" },
+                    { label: "C", text: "Irigasi dengan larutan garam/NaCL" },
+                    { label: "D", text: "Konseling kebersihan rongga mulut" },
+                    { label: "E", text: "Debridement permukaan atau pembersihan karang gigi" }
+                ],
+                correctAnswer: "D",
+                explanation: "Setelah tindakan darurat pada abses gingiva, edukasi atau konseling mengenai cara menjaga kebersihan rongga mulut sangat penting untuk mencegah kekambuhan. Pasien perlu diajarkan cara menyikat gigi yang benar dan metode pembersihan lainnya untuk mengontrol plak."
+            },
+            // Kasus 16
+            {
+                question: "Di dalam pengelolaan klinik gigi dilakukan berbagai macam tindakan terhadap penggunaan peralatan dan barang. Supaya barang, peralatan, dan bahan tidak rusak, tidak hilang, dan mudah ditemukan, maka sebagai seorang terapis gigi harus melakukan bentuk etika terhadap pengelolaan hal tersebut. Bagaimanakah sikap yang tepat dilakukan?",
+                options: [
+                    { label: "A", text: "Bila rusak atau hilang mengajukan permohonan alat" },
+                    { label: "B", text: "Bertanggung jawab dan memahami SOP alat atau barang" },
+                    { label: "C", text: "Biar praktis dilakukan sterilisasi tanpa membedakan jenis alat" },
+                    { label: "D", text: "Menggunakan alat yang tidak sesuai untuk menangani kasus" },
+                    { label: "E", text: "Agar mudah mencarinya maka penyimpanan bahan dan alat dijadikan satu" }
+                ],
+                correctAnswer: "B",
+                explanation: "Sikap profesional dalam pengelolaan alat dan bahan di klinik gigi mencakup rasa tanggung jawab penuh dan pemahaman serta kepatuhan terhadap Standar Operasional Prosedur (SOP) untuk setiap alat dan bahan guna menjaga kualitas pelayanan dan keamanan."
+            },
+            // Kasus 17
+            {
+                question: "Seorang pasien laki-laki berusia 15 tahun datang dengan keluhan gigi insisivus kanan atas fraktur 1 bulan yang lalu. Berdasarkan hasil anamnesis, bau mulut tidak sedap, dan perubahan warna kehitaman. Dari hasil pemeriksaan, gigi 11 patah 1/3 bagian, nekrosis dan tidak ada keluhan. Apakah rencana tindakan dari kasus tersebut?",
+                options: [
+                    { label: "A", text: "Scaling" },
+                    { label: "B", text: "Pencabutan" },
+                    { label: "C", text: "Penambalan" },
+                    { label: "D", text: "Pemberian obat kumur" },
+                    { label: "E", text: "Dirujuk ke dokter gigi untuk endodontik" }
+                ],
+                correctAnswer: "E",
+                explanation: "Gigi yang fraktur, mengalami perubahan warna menjadi kehitaman, dan terdiagnosis nekrosis (pulpa mati) memerlukan perawatan saluran akar (endodontik) untuk membersihkan jaringan nekrotik dan mencegah infeksi lebih lanjut. Ini adalah kompetensi dokter gigi."
+            },
+            // Kasus 18
+            {
+                question: "Seorang pasien anak perempuan berusia 15 tahun diantar oleh ibunya ke klinik gigi untuk memeriksakan gigi pasien setiap 6 bulan sekali. Berdasarkan hasil pemeriksaan subjektif, pasien ingin gigi depannya lebih bersih dan permukaan gigi agar halus dan tidak kasar. Berdasarkan hasil pemeriksaan objektif, terdapat karang gigi supragingival pada gigi anterior rahang atas dan bawah. Apakah tindakan yang tepat sesuai kasus di atas?",
+                options: [
+                    { label: "A", text: "Scaling" },
+                    { label: "B", text: "Pemutihan gigi" },
+                    { label: "C", text: "Topikal aplikasi" },
+                    { label: "D", text: "Penambalan ART" },
+                    { label: "E", text: "Penambalan sinar" }
+                ],
+                correctAnswer: "A",
+                explanation: "Adanya karang gigi (kalkulus) supragingival adalah indikasi utama untuk dilakukan pembersihan karang gigi atau scaling. Tindakan ini akan membuat permukaan gigi menjadi bersih, halus, dan sehat."
+            },
+            // Kasus 19
+            {
+                question: "Seorang pasien perempuan berusia 35 tahun datang ke klinik gigi dengan keluhan mulut bau. Pada permukaan gigi rahang bawah di bagian dalam terasa kasar bila disentuh dengan lidah. Setelah dilakukan pemeriksaan intra oral, ternyata ada kalkulus supragingival dan subgingival sehingga perlu dilakukan tindakan scaling. Terapis gigi menjelaskan kepada pasien tentang alat-alat yang akan digunakan pada tindakan scaling tersebut. Pasien mendengarkan dengan serius dan memberi reaksi mengerti dengan anggukan kepala. Apakah nama tahap komunikasi terapeutik yang sesuai dengan kasus di atas?",
+                options: [
+                    { label: "A", text: "Tahap awal" },
+                    { label: "B", text: "Tahap kerja" },
+                    { label: "C", text: "Tahap orientasi" },
+                    { label: "D", text: "Tahap terminasi" },
+                    { label: "E", text: "Tahap prainteraksi" }
+                ],
+                correctAnswer: "B",
+                explanation: "Tahap kerja dalam komunikasi terapeutik adalah fase di mana tindakan keperawatan dilakukan. Menjelaskan alat dan prosedur yang akan dilakukan kepada pasien adalah bagian dari tahap kerja untuk menjaga pasien tetap terinformasi dan kooperatif."
+            },
+            // Kasus 20
+            {
+                question: "Seorang pasien laki-laki berusia 28 tahun datang ke klinik gigi dengan keluhan ingin memeriksakan giginya. Setelah dilakukan pemeriksaan oleh terapis gigi, terdapat dua lubang pada gigi molar bawah kanan yang sudah besar dan pada gigi molar bawah kiri hanya tinggal akar saja, sedangkan pada permukaan lingual gigi anterior terdapat karang gigi. Terapis gigi menceritakan seluruh kasus yang ada di dalam rongga mulut pasien dengan menggunakan media flipchart. Kemudian, membuat prioritas kasus yang perlu ditangani terlebih dahulu. Terapis gigi juga meminta persetujuan untuk perawatan yang akan dilakukan pada pasien. Apakah nama tahap komunikasi terapeutik yang tepat pada kasus di atas?",
+                options: [
+                    { label: "A", text: "Tahap awal" },
+                    { label: "B", text: "Tahap kerja" },
+                    { label: "C", text: "Tahap orientasi" },
+                    { label: "D", text: "Tahap terminasi" },
+                    { label: "E", text: "Tahap prainteraksi" }
+                ],
+                correctAnswer: "C",
+                explanation: "Tahap orientasi adalah tahap awal interaksi dengan pasien, di mana terapis gigi mengidentifikasi masalah, menjelaskan kondisi, merumuskan rencana perawatan, menentukan prioritas, dan meminta persetujuan (informed consent) dari pasien."
+            },
+            // Kasus 21
+            {
+                question: "Seorang pasien berusia 35 tahun datang ke klinik gigi dengan membawa anaknya yang berusia 4 tahun dengan keluhan sakit gigi. Pasien tersebut ketakutan untuk dilakukan pemeriksaan dan terapis gigi merasa kesulitan untuk melakukan anamnesis langsung kepada anak tersebut. Bagaimanakah prosedur yang tepat dilakukan sebagai terapis gigi sesuai kasus di atas?",
+                options: [
+                    { label: "A", text: "Perawat mendiagnosis langsung gigi anak tersebut" },
+                    { label: "B", text: "Perawat melakukan pencabutan pada gigi anak tersebut" },
+                    { label: "C", text: "Perawat melakukan penambalan pada gigi anak tersebut" },
+                    { label: "D", text: "Perawat berkomunikasi dengan cara membujuk, merayu anak tersebut" },
+                    { label: "E", text: "Perawat berkomunikasi dengan ibunya tentang keluhan sakit gigi anaknya" }
+                ],
+                correctAnswer: "E",
+                explanation: "Pada pasien anak yang sangat muda dan takut (non-kooperatif), anamnesis dapat dilakukan melalui orang tuanya (alloanamnesis). Orang tua dapat memberikan informasi yang akurat mengenai keluhan dan riwayat sakit anak."
+            },
+            // Kasus 22
+            {
+                question: "Sebelum mengantarkan pasien ke ruang klinik, terapis gigi harus menyiapkan pengetahuan, penampilan, dan mempersiapkan alat-alat yang akan digunakan untuk memeriksa pasien. Hal ini merupakan salah satu persiapan perawat dalam melakukan tindakan keperawatan gigi pada pasien. Apakah tahap komunikasi terapeutik yang digunakan dalam kasus di atas?",
+                options: [
+                    { label: "A", text: "Tahap awal" },
+                    { label: "B", text: "Tahap kerja" },
+                    { label: "C", text: "Tahap orientasi" },
+                    { label: "D", text: "Tahap terminasi" },
+                    { label: "E", text: "Tahap prainteraksi" }
+                ],
+                correctAnswer: "E",
+                explanation: "Tahap prainteraksi adalah fase persiapan yang dilakukan oleh tenaga kesehatan sebelum bertemu langsung dengan pasien. Ini mencakup persiapan mental (pengetahuan), fisik (penampilan), dan teknis (alat)."
+            },
+            // Kasus 23
+            {
+                question: "Terapis gigi menjelaskan kepada pasien laki-laki berusia 27 tahun bahwa gigi yang berlubang akan dibersihkan dan dibor terlebih dahulu agar tahan terhadap daya kunyah serta tidak mudah lepas dengan menggunakan bor. Kemudian, baru dilakukan penambalan. Komunikasi yang dilakukan oleh terapis gigi tersebut merupakan komunikasi terapeutik pada tahap kerja. Manakah bagian dari tahap kerja yang dilakukan terapis gigi pada di atas?",
+                options: [
+                    { label: "A", text: "Menjelaskan langkah-langkah kerja" },
+                    { label: "B", text: "Meminta persetujuan akan perawatan" },
+                    { label: "C", text: "Menjelaskan guna alat yang akan di pakai secara umum" },
+                    { label: "D", text: "Mengatasi penolakan pasien dengan sabar dan menjelaskan manfaat yang diterima" },
+                    { label: "E", text: "Berkomunikasi kepada pasien pada setiap langkah pekerjaan terutama bila ada keluhan" }
+                ],
+                correctAnswer: "A",
+                explanation: "Penjelasan mengenai prosedur yang akan dilakukan secara berurutan (dibersihkan, dibor, ditambal) merupakan tindakan menjelaskan langkah-langkah kerja kepada pasien, yang merupakan bagian penting dari tahap kerja."
+            },
+            // Kasus 24
+            {
+                question: "Terapis gigi melakukan penyuluhan tentang pendidikan kesehatan gigi pada guru-guru di sekolah dasar dengan jumlah 15 orang. Guru SD sangat membantu program pemerintah dalam hal kesehatan gigi dan mulut murid SD. Kegiatan ini sangat diperlukan karena pada usia sekolah dasar pertumbuhan gigi permanen sedang berlangsung dan adanya gigi bercampur (gigi susu dan permanen), serta anak-anak yang sangat rentan terkena karies. Apakah komunikasi yang digunakan dengan metode penyuluhan tersebut?",
+                options: [
+                    { label: "A", text: "Komunikasi publik" },
+                    { label: "B", text: "Komunikasi efektif" },
+                    { label: "C", text: "Komunikasi terapeutik" },
+                    { label: "D", text: "Komunikasi interpersonal" },
+                    { label: "E", text: "Komunikasi intrapersonal" }
+                ],
+                correctAnswer: "A",
+                explanation: "Komunikasi yang ditujukan kepada sekelompok orang (khalayak) dalam suatu forum atau acara terencana seperti penyuluhan disebut komunikasi publik. Meskipun sasarannya spesifik (guru), formatnya adalah komunikasi kepada audiens yang lebih dari satu orang."
+            },
+            // Kasus 25
+            {
+                question: "Seorang pasien perempuan berusia 29 tahun datang ke klinik gigi untuk melakukan penambalan gigi yang berlubang. Terapis gigi memeriksa gigi tersebut yang ternyata terdapat lubang kecil sehingga harus dilakukan penambalan sesuai indikasi. Setelah dilakukan penambalan terapis gigi menginstruksikan kepada pasien untuk datang kembali esok hari agar dapat dilakukan pemolesan pada gigi yang telah ditambal. Percakapan di atas merupakan bagian dari tahap komunikasi terapeutik pada tahap terminasi. Apakah bagian tahap terminasi yang sesuai dengan kasus di atas?",
+                options: [
+                    { label: "A", text: "Menyimpulkan tindakan yang telah dilakukan" },
+                    { label: "B", text: "Memberikan instruksi sesuai tindakan yang dilakukan" },
+                    { label: "C", text: "Mendorong pasien untuk bertanya tentang kesehatan gigi secara umum" },
+                    { label: "D", text: "Membuat kesan perpisahan dengan tulus dan mengantarkan pasien sampai pintu" },
+                    { label: "E", text: "Memberikan nasehat tentang kasus-kasus pada gigi pasien yang belum dilakukan perawatan" }
+                ],
+                correctAnswer: "B",
+                explanation: "Instruksi untuk kunjungan berikutnya (kontrol untuk pemolesan) adalah bagian dari tahap terminasi, di mana terapis gigi memberikan instruksi pasca-perawatan dan merencanakan tindak lanjut."
+            },
+            // Kasus 26
+            {
+                question: "Seorang ibu membawa putrinya yang berusia 5 tahun ke poliklinik gigi dengan keluhan gigi molar bawah berlubang. Dilihat dari bahasa tubuhnya, pasien merasakan kesakitan yang teramat sangat. Terapis gigi melakukan pemeriksaan oral, namun kesulitan dalam hal menentukan penyakitnya karena pasien kurang kooperatif. Bagaimanakah cara yang tepat untuk berkomunikasi oleh terapis gigi?",
+                options: [
+                    { label: "A", text: "Perawat mendiagnosis langsung gigi anak tersebut" },
+                    { label: "B", text: "Perawat melakukan pencabutan pada gigi anak tersebut" },
+                    { label: "C", text: "Perawat melakukan penambalan pada gigi anak tersebut" },
+                    { label: "D", text: "Perawat berkomunikasi dengan cara membujuk/merayu anak tersebut" },
+                    { label: "E", text: "Perawat berkomunikasi dengan ibunya tentang keluhan sakit gigi anaknya" }
+                ],
+                correctAnswer: "E",
+                explanation: "Ketika pasien anak tidak kooperatif karena sakit atau takut, mendapatkan informasi dari orang tua (alloanamnesis) adalah cara yang paling efektif dan efisien untuk mengetahui keluhan utama dan riwayat penyakitnya."
+            },
+            // Kasus 27
+            {
+                question: "Seorang pasien perempuan berusia 55 tahun datang ke klinik gigi untuk memeriksakan kondisi oral mulutnya. Berdasarkan hasil anamnesis, pasien merasa gatal gusinya dan bau mulut, ada karang gigi terasa kasar, dan mengganggu lidah saat makan. Sementara itu, berdasarkan hasil pemeriksaan, pada pemeriksaan klinis ditemukan kalkulus supragingival pada seluruh permukaan lingual dan labial gigi anterior rahang bawah. Terapis gigi bermaksud melakukan perawatan scaling. Sebelum dilakukan perawatan, terlebih dahulu pasien diberi penyuluhan dengan tujuan untuk meningkatkan pengetahuan dan kesadaran dalam menjaga kesehatan gigi dan mulut. Apakah metode penyuluhan yang tepat dilakukan dengan kondisi di atas?",
+                options: [
+                    { label: "A", text: "Ceramah" },
+                    { label: "B", text: "Konseling" },
+                    { label: "C", text: "Demonstrasi" },
+                    { label: "D", text: "Chair side talk" },
+                    { label: "E", text: "Brain storming" }
+                ],
+                correctAnswer: "D",
+                explanation: "Chair side talk adalah metode penyuluhan individual yang dilakukan langsung di samping kursi gigi (dental chair). Metode ini sangat efektif untuk memberikan edukasi yang personal dan relevan dengan kondisi spesifik pasien saat itu juga."
+            },
+            // Kasus 28
+            {
+                question: "Seorang pasien laki-laki berusia 46 tahun datang ke klinik gigi untuk periksa kesehatan gigi dan mulutnya. Berdasarkan hasil anamnesis, gigi terasa ngilu saat menyikat gigi. Berdasarkan hasil pemeriksaan intra oral, terlihat hilangnya struktur gigi secara mekanis yang bukan disebabkan oleh bakteri, cekungan di sepanjang garis gusi dan gingiva area bukal, karies kelas V di 1/3 servikal. Hal ini disebabkan karena menyikat gigi yang terlalu kuat. Sebelum dilakukan penambalan, terapis gigi dan mulut akan melakukan penyuluhan terlebih dahulu dengan menggunakan media phantom agar pasien dapat mempraktikkan cara menyikat gigi dengan baik dan benar di rumahnya. Apakah kegiatan yang dilakukan oleh terapis gigi dan mulut pada kasus di atas?",
+                options: [
+                    { label: "A", text: "Ceramah" },
+                    { label: "B", text: "Konseling" },
+                    { label: "C", text: "Wawancara" },
+                    { label: "D", text: "Demonstrasi" },
+                    { label: "E", text: "Chair side talk" }
+                ],
+                correctAnswer: "D",
+                explanation: "Menggunakan model (phantom) untuk menunjukkan dan melatih pasien cara menyikat gigi yang benar adalah metode demonstrasi. Tujuannya adalah untuk meningkatkan keterampilan (skill) pasien."
+            },
+            // Kasus 29
+            {
+                question: "Seorang pasien laki-laki berusia 29 tahun datang ke klinik gigi untuk memeriksakan giginya. Berdasarkan hasil anamnesis, pasien merasa malu saat tersenyum dan terasa kasar pada gigi bagian depan serta mengganggu bagian bibir pada saat makan. Berdasarkan hasil pemeriksaan intra oral, gigi 21, 22, 23 terdapat karang gigi bagian anterior. Terapis gigi bermaksud untuk melakukan scaling pada bagian proksimal daerah anterior. Sebelum dilakukan tindakan scaling, TGM meminta agar pasien mendengarkan edukasi penyuluhan seputar karang gigi. Selama proses komunikasi, tampak pasien agak bingung mendengar penjelasan TGM tersebut. Dalam hal ini, sebaiknya dilakukan 'clarification' sehingga materi yang disampaikan dapat diterima dengan baik oleh pasien. Bagaimanakah tindakan yang tepat dilakukan sebagai terapis gigi dan mulut dalam 'clarification'?",
+                options: [
+                    { label: "A", text: "Memberikan empati pada pasien" },
+                    { label: "B", text: "Memberikan simpati pada pasien" },
+                    { label: "C", text: "Membuat materi yang mudah dipahami oleh pasien" },
+                    { label: "D", text: "Mengajarkan cara menyikat gigi yang baik dan benar" },
+                    { label: "E", text: "Meminta pasien untuk meninggalkan kebiasaan buruk" }
+                ],
+                correctAnswer: "C",
+                explanation: "Klarifikasi (clarification) dalam komunikasi berarti memperjelas pesan. Jika pasien bingung, tindakan yang tepat adalah mengulangi penjelasan dengan menggunakan kata-kata atau materi yang lebih sederhana dan mudah dipahami oleh pasien."
+            },
+            // Kasus 30
+            {
+                question: "Pada pemeriksaan gigi di suatu posyandu desa yang tidak ada aliran listrik terdapat 40 orang ibu hamil. Berdasarkan hasil pemeriksaan, diperoleh data rata-rata: DMF-T = 1,2 OHI-S = 3,3 dengan kriteria buruk dan terdapat kelainan pada jaringan periodontal atau CPITN. Untuk menjaga kesehatan gigi mereka, maka terapis gigi perlu melakukan penyuluhan kesehatan gigi. Apakah media yang tepat digunakan untuk penyuluhan ini?",
+                options: [
+                    { label: "A", text: "Slide" },
+                    { label: "B", text: "Poster" },
+                    { label: "C", text: "Flipchart" },
+                    { label: "D", text: "Flash card" },
+                    { label: "E", text: "Power point" }
+                ],
+                correctAnswer: "C",
+                explanation: "Flipchart (lembar balik) adalah media yang sangat cocok untuk penyuluhan kelompok di lokasi tanpa listrik. Media ini portabel, tidak memerlukan proyektor, dan efektif untuk menyampaikan informasi secara visual kepada audiens."
+            },
+            // Kasus 31
+            {
+                question: "Seorang pasien anak perempuan berusia 8 tahun diantar oleh kakaknya datang ke klinik gigi promotif dan preventif. Pasien ini rajin memeriksakan giginya setiap 6 bulan sekali. Setelah dilakukan pemeriksaan intra oral, ditemukan giginya bebas karies. Apakah rencana perawatan yang tepat dilakukan untuk pasien tersebut?",
+                options: [
+                    { label: "A", text: "Scaling" },
+                    { label: "B", text: "Pengkajian" },
+                    { label: "C", text: "Melakukan pemeriksaan kebersihan gigi dan mulut" },
+                    { label: "D", text: "Pasien disuruh menyikat gigi dan dilakukan tindakan fissure sealant" },
+                    { label: "E", text: "Melakukan dental health education sebelum dilakukan tindakan topikal aplikasi flouride" }
+                ],
+                correctAnswer: "E",
+                explanation: "Untuk pasien anak yang bebas karies, tindakan preventif seperti aplikasi fluor topikal sangat dianjurkan untuk memperkuat enamel gigi. Sebelum tindakan, memberikan Dental Health Education (DHE) adalah langkah yang baik untuk mempertahankan motivasi pasien dalam menjaga kebersihan gigi."
+            },
+            // Kasus 32
+            {
+                question: "Seorang TGM sedang bertugas di puskesmas tanpa adanya seorang dokter gigi yang menemani. Kemudian, datang seorang pasien laki-laki yang berusia 33 tahun dengan keluhan gusi sakit dan bengkak. Dari hasil anamnesis, diketahui bahwa gusi mudah berdarah sejak 1 minggu yang lalu dan pasien menderita diabetes melitus. Pada pemeriksaan klinis ditemukan subgingival kalkulus pada seluruh permukaan lingual dan bukal rahang bawah. Apakah tindakan yang paling tepat dilakukan untuk kasus tersebut?",
+                options: [
+                    { label: "A", text: "Scaling" },
+                    { label: "B", text: "Pencabutan gigi" },
+                    { label: "C", text: "Dirujuk ke dokter gigi" },
+                    { label: "D", text: "Tindakan fissure sealant" },
+                    { label: "E", text: "Dental health education dan scaling" }
+                ],
+                correctAnswer: "C",
+                explanation: "Pasien dengan penyakit sistemik seperti Diabetes Melitus memerlukan penanganan khusus dan kolaborasi dengan dokter gigi. Kondisi diabetes yang tidak terkontrol dapat mempengaruhi kesehatan periodontal dan penyembuhan luka. Oleh karena itu, merujuk ke dokter gigi adalah tindakan yang paling tepat dan aman."
+            },
+            // Kasus 33
+            {
+                question: "Seorang pasien anak laki-laki usia 3 tahun datang ke klinik gigi diantar oleh ibunya untuk memeriksakan giginya. Berdasarkan hasil anamnesis, gigi depan rahang atas terasa sakit bila minum dan makan yang dingin. Berdasarkan hasil pemeriksaan, gigi 52, 51, 61, 62 KMA. Anak tersebut mempunyai kebiasaan minum susu formula menggunakan botol dan gigi tidak langsung dibersihkan. Apakah tindakan yang paling tepat dilakukan untuk kasus tersebut?",
+                options: [
+                    { label: "A", text: "Penambalan" },
+                    { label: "B", text: "Fissure sealant" },
+                    { label: "C", text: "Topikal aplikasi flour" },
+                    { label: "D", text: "Pencabutan gigi susu" },
+                    { label: "E", text: "Dental health education ke orang tua" }
+                ],
+                correctAnswer: "E",
+                explanation: "Kasus ini adalah karies botol (nursing bottle caries) yang disebabkan oleh kebiasaan minum susu dengan botol. Akar masalahnya adalah kebiasaan tersebut. Oleh karena itu, tindakan paling penting adalah memberikan edukasi (DHE) kepada orang tua untuk mengubah kebiasaan dan cara membersihkan gigi anak."
+            },
+            // Kasus 34
+            {
+                question: "Seorang pasien laki-laki berusia 56 tahun datang ke klinik gigi untuk memeriksakan giginya. Berdasarkan hasil anamnesis, gusinya sering berdarah spontan. Berdasarkan hasil pemeriksaan, diperoleh ada saku dangkal pada sekstan kanan bawah, sementara sekstan lainnya ditemukan karang gigi. Setelah dibimbing cara menyikat gigi yang baik dan benar serta dilakukan scaling pada keenam sekstan, selanjutnya giginya diolesi antiseptik dan diberi instruksi pasca tindakan scaling. Apakah instruksi yang paling tepat diberikan pada pasien tersebut?",
+                options: [
+                    { label: "A", text: "Menyikat gigi saat mandi" },
+                    { label: "B", text: "Perbanyak minum air putih" },
+                    { label: "C", text: "Periksa ke klinik gigi minimal 6 bulan sekali" },
+                    { label: "D", text: "Perbanyak makanan yang manis dan lengket" },
+                    { label: "E", text: "Mengonsumsi makanan yang berserat dan berair" }
+                ],
+                correctAnswer: "E",
+                explanation: "Makanan yang berserat dan berair (seperti buah dan sayur) dapat membantu proses pembersihan alami (self-cleansing) pada gigi saat mengunyah. Ini merupakan instruksi diet yang baik untuk membantu menjaga kebersihan gigi pasca scaling."
+            },
+            // Kasus 35
+            {
+                question: "Seorang TGM ditugaskan oleh atasan untuk melakukan penyuluhan di suatu poli. Terdapat 15 orang pasien yang sedang memeriksakan giginya. Berdasarkan hasil pemeriksaan, diperoleh data rata-rata: DMF-T = 1,4. OHI-S = 3,4 dengan kriteria buruk. Untuk menjaga kesehatan gigi mereka, maka terapis gigi perlu melakukan penyuluhan kesehatan gigi. Apakah materi yang tepat untuk kegiatan penyuluhan tersebut?",
+                options: [
+                    { label: "A", text: "Penyuluhan tentang karang gigi" },
+                    { label: "B", text: "Penyuluhan tentang gigi berlubang" },
+                    { label: "C", text: "Penyuluhan tentang pencabutan gigi" },
+                    { label: "D", text: "Penyuluhan tentang penambalan gigi" },
+                    { label: "E", text: "Penyuluhan tentang penutupan fissure dalam" }
+                ],
+                correctAnswer: "A",
+                explanation: "Data menunjukkan OHI-S rata-rata 3,4 (kriteria buruk), yang sangat erat kaitannya dengan akumulasi plak dan karang gigi. Oleh karena itu, materi penyuluhan yang paling relevan dan mendesak adalah tentang penyebab, akibat, dan cara pencegahan karang gigi."
+            },
+            // Kasus 36
+            {
+                question: "Seorang pasien laki-laki berusia 65 tahun datang ke klinik gigi untuk memeriksakan giginya. Dari hasil anamnesis, pada gigi depan rahang bawah terasa goyang dan tidak nyaman saat digunakan untuk makan. Dari hasil pemeriksaan intra oral, gigi 31 goyang derajat 3 dan terdapat kalkulus subgingival dan supragingival. Pasien tidak memiliki penyakit sistemik. Terapis gigi dan mulut akan melakukan tindakan ekstraksi gigi 31. Setelah dilakukan tindakan, hal yang dilakukan adalah edukasi instruksi pasca pencabutan. Apakah instruksi yang paling tepat dilakukan pasca pencabutan?",
+                options: [
+                    { label: "A", text: "Berolahraga berat" },
+                    { label: "B", text: "Makan dan minum yang panas-panas" },
+                    { label: "C", text: "Berkumur dengan keras selama 24 jam" },
+                    { label: "D", text: "Makan dan minum yang dingin dan lengket" },
+                    { label: "E", text: "Menggigit tampon/kapas yang telah diolesi Povidone iodine" }
+                ],
+                correctAnswer: "E",
+                explanation: "Instruksi utama pasca pencabutan adalah mengontrol perdarahan dengan menggigit tampon steril selama kurang lebih 1 jam untuk membantu pembentukan bekuan darah yang stabil di dalam soket."
+            },
+            // Kasus 37
+            {
+                question: "Seorang ibu mengantar anak laki-lakinya yang berusia 10 tahun untuk memeriksakan kesehatan pada gigi dan mulutnya di klinik gigi. Setelah dilakukan pemeriksaan objektif, kondisi oral hygiene dalam kategori baik. Akan tetapi, ditemukan celah yang dalam di permukaan oklusal gigi molar satu bawah kanan dan kiri. Apakah tindakan yang paling tepat dilakukan pada kasus anak tersebut?",
+                options: [
+                    { label: "A", text: "Fissure sealant" },
+                    { label: "B", text: "Oral physioterapy" },
+                    { label: "C", text: "Pembersihan plak dan kalkulus" },
+                    { label: "D", text: "Penambalan gigi dengan amalgam" },
+                    { label: "E", text: "Penambalan gigi dengan komposit" }
+                ],
+                correctAnswer: "A",
+                explanation: "Meskipun OH baik, adanya pit dan fisura yang dalam pada gigi molar permanen merupakan faktor risiko tinggi untuk karies. Tindakan preventif yang paling tepat adalah aplikasi fissure sealant untuk menutup celah tersebut."
+            },
+            // Kasus 38
+            {
+                question: "Tenaga kesehatan TGM puskesmas melakukan pemeriksaan kesehatan gigi pada kelompok ibu hamil pada trimester 3. Berdasarkan pemeriksaan intra oral, diketahui bahwa skor OHI-S rata-rata = 4,1. Pada gigi geligi terdapat banyak karang gigi supragingival. Sementara karies gigi rata-rata 4 gigi per orang. Sebagian besar ibu hamil mengeluh jika mulutnya menimbulkan bau yang tidak sedap. Mereka mengatakan sering mengalami perdarahan pada rongga mulutnya saat menggosok gigi. Apakah tindakan preventif yang tepat untuk mengatasi masalah pada sasaran tersebut?",
+                options: [
+                    { label: "A", text: "Scaling" },
+                    { label: "B", text: "Flouridasi" },
+                    { label: "C", text: "Fissure sealant" },
+                    { label: "D", text: "Topical application" },
+                    { label: "E", text: "Oral physiotherapy" }
+                ],
+                correctAnswer: "E",
+                explanation: "Oral physiotherapy adalah istilah luas yang mencakup edukasi dan instruksi cara menjaga kebersihan mulut, termasuk cara menyikat gigi yang benar. Dengan OHI-S 4,1 (buruk) dan keluhan gusi berdarah, mengajarkan cara membersihkan plak secara efektif adalah tindakan preventif mendasar yang harus dilakukan."
+            },
+            // Kasus 39
+            {
+                question: "Seorang pasien perempuan berusia 45 tahun rutin setiap 6 bulan sekali memeriksakan kesehatan giginya di puskesmas agar dapat mendeteksi sedini mungkin kerusakan-kerusakan, kelainan gigi, dan mulut. Perawatan yang dilakukan antara lain, pembersihan karang gigi (scaling) yang dapat menghindari terjadinya kerusakan jaringan pendukung gigi dan pemeriksaan lainnya. Apakah jenis aktivitas pemeliharaan yang dilakukan pasien tersebut?",
+                options: [
+                    { label: "A", text: "Perawatan rutin" },
+                    { label: "B", text: "Perawatan periodik" },
+                    { label: "C", text: "Perawatan promotif" },
+                    { label: "D", text: "Perawatan bertahap" },
+                    { label: "E", text: "Perawatan kesehatan gigi" }
+                ],
+                correctAnswer: "B",
+                explanation: "Aktivitas pemeliharaan kesehatan yang dilakukan dalam interval waktu tertentu yang teratur (misalnya setiap 6 bulan sekali) disebut sebagai perawatan periodik."
+            },
+            // Kasus 40
+            {
+                question: "Seorang pasien laki-laki berusia 32 tahun datang ke poli gigi puskesmas dengan keluhan gigi depan bawah kanan sakit sejak 3 hari yang lalu dan pasien ingin gigi tersebut dicabut. Berdasarkan hasil pemeriksaan intra oral, gigi 43 karies mencapai pulpa perkusi (+). Ada pembengkakan pada mucolabial gigi 43. Palpasi lunak dan sakit. Apakah diagnosis yang tepat pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "KME" },
+                    { label: "B", text: "KMP" },
+                    { label: "C", text: "KMD" },
+                    { label: "D", text: "Abses" },
+                    { label: "E", text: "Gangren radiks" }
+                ],
+                correctAnswer: "D",
+                explanation: "Gejala klinis seperti karies mencapai pulpa, sakit saat diperkusi (+), dan adanya pembengkakan yang lunak dan sakit saat dipalpasi merupakan tanda-tanda klasik dari abses periapikal, yaitu kumpulan nanah di ujung akar gigi akibat infeksi bakteri."
+            },
+            // Kasus 41
+            {
+                question: "Seorang pasien perempuan berusia 29 tahun datang ke klinik ingin memeriksakan giginya. Berdasarkan hasil anamnesis, makanan sering tersangkut. Berdasarkan hasil pemeriksaan lainnya, terdapat karies pada permukaan enamel gigi. Apakah tindakan yang tepat sesuai kasus tersebut?",
+                options: [
+                    { label: "A", text: "Restorasi untuk gigi" },
+                    { label: "B", text: "Pit and fissure sealant" },
+                    { label: "C", text: "Topikal aplikasi fluoride" },
+                    { label: "D", text: "Penambalan dengan ART" },
+                    { label: "E", text: "Scaling dan root planning" }
+                ],
+                correctAnswer: "B",
+                explanation: "Karies yang masih pada tahap awal di permukaan pit dan fisura (enamel) pada pasien dengan risiko karies (makanan sering tersangkut) merupakan indikasi ideal untuk aplikasi pit and fissure sealant sebagai tindakan pencegahan agar karies tidak berlanjut."
+            },
+            // Kasus 42
+            {
+                question: "Seorang pasien perempuan berusia 32 tahun datang ke poli gigi untuk memeriksakan gigi geliginya. Berdasarkan hasil pemeriksaan, adanya lubang gigi pada approksimal gigi premolar bawah kanan dan pada permukaan mesial gigi molar satu bawah kanan. Apakah jenis klasifikasi karies pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Kelas II dan I" },
+                    { label: "B", text: "Kelas I dan II" },
+                    { label: "C", text: "Kelas III dan II" },
+                    { label: "D", text: "Kelas II dan III" },
+                    { label: "E", text: "Kelas III dan IV" }
+                ],
+                correctAnswer: "A",
+                explanation: "Karies pada permukaan proksimal (approksimal) gigi posterior (premolar dan molar) diklasifikasikan sebagai karies Kelas II. Karies pada permukaan oklusal (termasuk mesial pit) gigi molar diklasifikasikan sebagai Kelas I. Jadi urutannya adalah Kelas II dan Kelas I."
+            },
+            // Kasus 43
+            {
+                question: "Seorang pasien laki-laki berusia 30 tahun datang ke poli gigi untuk memeriksakan giginya. Berdasarkan hasil pemeriksaan, adanya karies mengenai permukaan proksimal gigi 11 tetapi belum mengenai tepi insisal dan karies mengenai cusp gigi molar satu bawah kanan. Apakah jenis klasifikasi karies pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Kelas I dan II" },
+                    { label: "B", text: "Kelas II dan I" },
+                    { label: "C", text: "Kelas III dan II" },
+                    { label: "D", text: "Kelas III dan IV" },
+                    { label: "E", text: "Kelas III dan VI" }
+                ],
+                correctAnswer: "E",
+                explanation: "Karies pada permukaan proksimal gigi anterior (gigi 11) yang tidak melibatkan tepi insisal adalah Kelas III. Karies yang mengenai puncak cusp gigi molar adalah Kelas VI."
+            },
+            // Kasus 44
+            {
+                question: "Seorang pasien laki-laki berusia 32 tahun datang ke klinik gigi untuk cek kebersihan gigi dan mulut. Berdasarkan hasil pemeriksaan, nilai skor OHI-S = 3,1. Terapis gigi menganjurkan agar menjaga kebersihan gigi dan mulut dan kontrol setiap 6 bulan sekali. Apakah kriteria status kebersihan gigi dan mulut pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Baik" },
+                    { label: "B", text: "Buruk" },
+                    { label: "C", text: "Sedang" },
+                    { label: "D", text: "Baik sekali" },
+                    { label: "E", text: "Buruk sekali" }
+                ],
+                correctAnswer: "B",
+                explanation: "Menurut kriteria skor OHI-S (Greene and Vermillion), nilai antara 3,1 - 6,0 dikategorikan sebagai 'Buruk' (Poor)."
+            },
+            // Kasus 45
+            {
+                question: "Seorang pasien laki-laki 30 tahun datang ke poli gigi untuk memeriksakan giginya. Berdasarkan hasil pemeriksaan, adanya karies mengenai bagian proksimal termasuk tepi insisal gigi 21 dan karies mengenai 1/3 gingiva dari permukaan fasial pada gigi 34. Apakah jenis klasifikasi karies pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Kelas I dan II" },
+                    { label: "B", text: "Kelas II dan III" },
+                    { label: "C", text: "Kelas V dan VI" },
+                    { label: "D", text: "Kelas IV dan V" },
+                    { label: "E", text: "Kelas III dan IV" }
+                ],
+                correctAnswer: "D",
+                explanation: "Karies pada proksimal gigi anterior (gigi 21) yang sudah melibatkan tepi insisal adalah Kelas IV. Karies pada 1/3 servikal/gingival permukaan fasial gigi posterior (gigi 34) adalah Kelas V."
+            },
+            // Kasus 46
+            {
+                question: "Seorang pasien laki-laki berusia 32 tahun datang ke klinik gigi untuk cek kebersihan gigi dan mulut. Berdasarkan hasil pemeriksaan, nilai skor OHI-S: 2,5. Terapis gigi menganjurkan agar menjaga kebersihan gigi dan mulut dan kontrol setiap 6 bulan sekali. Apakah kriteria status kebersihan gigi dan mulut pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Baik" },
+                    { label: "B", text: "Buruk" },
+                    { label: "C", text: "Sedang" },
+                    { label: "D", text: "Baik sekali" },
+                    { label: "E", text: "Buruk sekali" }
+                ],
+                correctAnswer: "C",
+                explanation: "Menurut kriteria skor OHI-S (Greene and Vermillion), nilai antara 1,3 - 3,0 dikategorikan sebagai 'Sedang' (Fair)."
+            },
+            // Kasus 47
+            {
+                question: "Seorang pasien laki-laki berusia 32 tahun datang ke klinik gigi untuk cek kebersihan gigi dan mulut. Berdasarkan hasil pemeriksaan, nilai skor OHI-S = 1,1. Terapis gigi menganjurkan agar menjaga kebersihan gigi dan mulut, serta kontrol setiap 6 bulan sekali. Apakah kriteria status kebersihan gigi dan mulut pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Baik" },
+                    { label: "B", text: "Buruk" },
+                    { label: "C", text: "Sedang" },
+                    { label: "D", text: "Baik sekali" },
+                    { label: "E", text: "Buruk sekali" }
+                ],
+                correctAnswer: "A",
+                explanation: "Menurut kriteria skor OHI-S (Greene and Vermillion), nilai antara 0 - 1,2 dikategorikan sebagai 'Baik' (Good)."
+            },
+            // Kasus 48
+            {
+                question: "Seorang TGM bekerja di suatu puskesmas. Salah satu tugasnya adalah melaksanakan upaya promotif kesehatan gigi. Dalam melaksanakan upaya promotif tersebut, TGM melakukan survei tentang pengetahuan kesehatan gigi dan pemeriksaan kesehatan gigi pada ibu-ibu hamil yang datang ke puskesmas. Apakah nama tahapan asuhan kesehatan gigi masyarakat pada ibu hamil tersebut?",
+                options: [
+                    { label: "A", text: "Evaluasi" },
+                    { label: "B", text: "Diagnosis" },
+                    { label: "C", text: "Pengkajian" },
+                    { label: "D", text: "Perencanaan" },
+                    { label: "E", text: "Implementasi" }
+                ],
+                correctAnswer: "C",
+                explanation: "Tahap pertama dalam proses asuhan kesehatan gigi masyarakat adalah pengkajian, yaitu proses pengumpulan data melalui survei, wawancara, dan pemeriksaan untuk mengidentifikasi kebutuhan dan masalah kesehatan pada komunitas target."
+            },
+            // Kasus 49
+            {
+                question: "Seorang TGM di puskesmas melakukan asuhan kesehatan gigi pada kelompok ibu hamil pada trimester 3. Berdasarkan pemeriksaan intra oral, diketahui bahwa skor OHI-S rata-rata = 4,2. Pada gigi geligi terdapat banyak karang gigi supragingival. Sebagian besar ibu hamil mengeluh jika mulutnya menimbulkan bau yang tidak sedap. Mereka mengatakan sering mengalami perdarahan pada rongga mulutnya saat menggosok gigi. Apakah standar pengumpulan data yang harus dipenuhi oleh TGM pada sasaran tersebut?",
+                options: [
+                    { label: "A", text: "Standar CPITN" },
+                    { label: "B", text: "Standar Pemeriksaan def-t" },
+                    { label: "C", text: "Standar pemeriksaan OHI-S" },
+                    { label: "D", text: "Standar Pemeriksaan DMF-T" },
+                    { label: "E", text: "Standar penjaringan data kesehatan gigi dan mulut" }
+                ],
+                correctAnswer: "C",
+                explanation: "OHI-S (Oral Hygiene Index-Simplified) adalah indeks standar yang digunakan untuk mengukur status kebersihan mulut seseorang berdasarkan skor debris dan kalkulus. Karena data yang disajikan adalah skor OHI-S, maka standar pengumpulan data yang digunakan adalah standar pemeriksaan OHI-S."
+            },
+            // Kasus 50
+            {
+                question: "Survei dalam rangka kegiatan UKGS pada siswa-siswi kelas 2 sekolah dasar diketahui bahwa angka pertumbuhan gigi siswa-siswi tersebut tinggi. Berdasarkan wawancara dengan beberapa anak, diketahui bahwa ada beberapa yang memiliki gigi yang baru tumbuh. Hampir seluruh siswa mengatakan bahwa mereka tidak pernah diajarkan cara menyikat gigi oleh guru maupun orang tua. Apakah teknik yang dilakukan TGM agar gigi anak yang baru erupsi di dalam mulut untuk memperkuat lapisan enamel gigi?",
+                options: [
+                    { label: "A", text: "Topikal aplikasi" },
+                    { label: "B", text: "Pencabutan gigi" },
+                    { label: "C", text: "Penambalan gigi" },
+                    { label: "D", text: "Dental health education" },
+                    { label: "E", text: "Tindakan kegawatdaruratan" }
+                ],
+                correctAnswer: "A",
+                explanation: "Aplikasi fluor secara topikal adalah metode preventif yang efektif untuk memperkuat struktur enamel gigi yang baru erupsi, membuatnya lebih tahan terhadap serangan asam dan risiko karies."
+            },
+            // Kasus 51
+            {
+                question: "Sebagai TGM, Dia ditugaskan melakukan promotif di TK dengan target untuk meningkatkan status kesehatan gigi prasekolah. Proses yang dilakukan, yaitu dimana suatu peniruan dari boneka yang terlihat nyata beserta keadaan sekelilingnya agar anak prasekolah tersebut dapat dengan mudah mengerti materi yang diberikan. Apakah metode penyuluhan yang tepat yang digunakan untuk memberikan informasi kepada kelompok tersebut?",
+                options: [
+                    { label: "A", text: "Simulasi" },
+                    { label: "B", text: "Ceramah" },
+                    { label: "C", text: "Demonstrasi" },
+                    { label: "D", text: "Chair side talk" },
+                    { label: "E", text: "One way method" }
+                ],
+                correctAnswer: "A",
+                explanation: "Menggunakan boneka atau model untuk menirukan situasi nyata (misalnya, kunjungan ke dokter gigi atau cara menyikat gigi) adalah metode simulasi. Ini sangat efektif untuk anak-anak karena bersifat interaktif dan mudah dipahami."
+            },
+            // Kasus 52
+            {
+                question: "Dalam sebuah penyuluhan di tingkat kelurahan tentang dampak rokok terhadap kebersihan gigi dan mulut berjalan dengan lancar dan penuh dengan tanya jawab antar warga dan pemateri, dalam pemaparan materi ada komunikasi antara pihak yang menyampaikan pesan dengan pihak penerima. Apakah nama metode penyuluhan tersebut?",
+                options: [
+                    { label: "A", text: "Simulasi" },
+                    { label: "B", text: "Ceramah" },
+                    { label: "C", text: "Demonstrasi" },
+                    { label: "D", text: "Chair side talk" },
+                    { label: "E", text: "Two way method" }
+                ],
+                correctAnswer: "E",
+                explanation: "Metode penyuluhan di mana terjadi interaksi aktif dan tanya jawab antara pemateri (penyampai pesan) dan audiens (penerima pesan) disebut metode dua arah (two-way method). Ini berbeda dengan ceramah (one-way) di mana komunikasi cenderung satu arah."
+            },
+            // Kasus 53
+            {
+                question: "Seorang anak perempuan berumur 6 tahun datang ke klinik gigi diantar oleh ibunya dengan maksud ingin memeriksakan giginya. Setelah dilakukan pemeriksaan, ternyata anak tersebut tidak terdapat karies gigi, namun terdapat banyak sisa makanan di dalam rongga mulut. Apakah saran yang tepat kepada si ibu agar kebersihan gigi anaknya menjadi lebih baik?",
+                options: [
+                    { label: "A", text: "Beri sikat gigi yang menarik" },
+                    { label: "B", text: "Membimbing menyikat gigi" },
+                    { label: "C", text: "Membantu menyikat gigi anak" },
+                    { label: "D", text: "Belajar menyikat gigi yang baik" },
+                    { label: "E", text: "Anak selalu menyikat gigi pagi dan malam" }
+                ],
+                correctAnswer: "B",
+                explanation: "Pada anak usia 6 tahun, kemampuan motorik halusnya masih berkembang. Orang tua perlu berperan aktif dengan cara membimbing dan mengawasi anak saat menyikat gigi untuk memastikan semua permukaan gigi bersih secara efektif."
+            },
+            // Kasus 54
+            {
+                question: "Seorang pasien laki-laki berusia 25 tahun mengeluh gigi depan atas kanan ngilu ketika minum-minuman dingin. Berdasarkan hasil pemeriksaan intra oral, terdapat karies dentin yang belum mengenai pulpa pada aspek mesial menjalar sampai palatinal gigi 13 dan belum ada keluhan spontan. Manakah kategori kelas karies yang sesuai dengan kasus tersebut sesuai dengan banyaknya permukaan yang terkena karies?",
+                options: [
+                    { label: "A", text: "Kelas III simple mesio dental" },
+                    { label: "B", text: "Kelas III simple mesial palatinal" },
+                    { label: "C", text: "Kelas III complex mesio palatinal" },
+                    { label: "D", text: "Kelas III compound palatino mesial" },
+                    { label: "E", text: "Kelas III compound mesio palatinal" }
+                ],
+                correctAnswer: "E",
+                explanation: "Karies pada gigi anterior (13) yang mengenai permukaan proksimal (mesial) adalah Kelas III. Karena karies melibatkan dua permukaan (mesial dan palatinal), maka klasifikasinya adalah 'compound'. Jadi, diagnosis lengkapnya adalah Kelas III compound mesio-palatinal."
+            },
+            // Kasus 55
+            {
+                question: "Seorang pasien laki-laki berusia 56 tahun datang ke klinik gigi dengan keluhan kesulitan untuk mengunyah makanan semenjak dua hari yang lalu. Berdasarkan hasil anamnesis, gigi palsunya mulai terasa longgar dan sering lepas saat makan, dan pasien belum pernah menggunakan perekat gigi palsu. Berdasarkan hasil pemeriksaan, full denture rahang atas dan bawah, serta terdapat celah yang cukup renggang antara protesa dan gusinya. Manakah diagnosis asuhan kesehatan gigi dan mulut yang paling tepat pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Tidak terpenuhinya bebas dari ketakutan/stres" },
+                    { label: "B", text: "Tidak terpenuhinya bebas dari nyeri pada leher dan kepala" },
+                    { label: "C", text: "Tidak terpenuhinya konseptualisasi dan pemecahan masalah" },
+                    { label: "D", text: "Tidak terpenuhinya tanggung jawab kesehatan gigi dan mulutnya" },
+                    { label: "E", text: "Tidak terpenuhinya kondisi biologis dan fungsi gigi geligi yang baik" }
+                ],
+                correctAnswer: "E",
+                explanation: "Kata kunci pada soal dapat dilihat pada hasil pemeriksaan, yaitu gigi tiruan penuh rahang atas dan bawah, dan terdapat celah yang cukup renggang antara protesa dan gusinya. Jadi apabila dikaitkan dengan diagnosis kesehatan gigi dan mulut, maka tidak terpenuhinya kondisi biologis gigi geligi yang baik sehubungan dengan kesulitan mengunyah, gigi tiruan/perawatan ortho yang tidak baik, tambalan yang tidak baik, abrasi, gigi karies/kelainan, dan gigi hilang."
+            },
+            // Kasus 56
+            {
+                question: "Seorang pasien perempuan berusia 26 tahun datang ke klinik gigi untuk memeriksakan giginya. Berdasarkan hasil anamnesis, yakni gigi yang menghadap ke lidah terasa kasar dan ada beberapa gusi yang turun. Sementara itu, hasil pemeriksaan intra oral, terdapat kalkulus supragingival. Terapis gigi menganjurkan untuk membersihkan daerah resesi gusi yang parah dengan bulat-bulat secara perlahan dan sedikit demi sedikit menekuk bulu sikat tanpa mengakibatkan trauma pada gusi. Apakah metode menyikat gigi yang diajarkan pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Metode roll" },
+                    { label: "B", text: "Metode bass" },
+                    { label: "C", text: "Metode fones" },
+                    { label: "D", text: "Metode charter" },
+                    { label: "E", text: "Metode stillman modifikasi" }
+                ],
+                correctAnswer: "E",
+                explanation: "Kata kunci pada soal dapat dilihat pada arahan terapis gigi dan mulut untuk membersihkan daerah resesi gusi yang parah dengan bulat-bulat secara perlahan dan sedikit demi sedikit menekuk bulu sikat tanpa mengakibatkan trauma pada gusi. Jadi, metode menyikat gigi yang tepat adalah metode stillman modifikasi."
+            },
+            // Kasus 57
+            {
+                question: "Seorang pasien anak laki-laki berusia 9 tahun diantar ke klinik gigi untuk memeriksakan giginya. Berdasarkan hasil anamnesis, gigi yang menghadap ke lidah terasa kasar, sedangkan berdasarkan hasil pemeriksaan intra oral, terdapat kalkulus supragingival 1/3 permukaan. Terapis gigi mengedukasi untuk melakukan penyikatan gigi secara teratur, yaitu pagi setelah makan dan malam sebelum tidur. Apakah materi edukasi yang tepat digunakan pada kasus tersebut?",
+                options: [
+                    { label: "A", text: "Bentuk sikat gigi" },
+                    { label: "B", text: "Pemakaian sikat gigi" },
+                    { label: "C", text: "Waktu menyikat gigi" },
+                    { label: "D", text: "Lamanya menyikat gigi" },
+                    { label: "E", text: "Frekuensi menyikat gigi" }
+                ],
+                correctAnswer: "C",
+                explanation: "Kata kunci pada soal dapat dilihat pada ketika terapis gigi mengedukasi untuk melakukan penyikatan gigi secara teratur, yaitu pagi setelah makan dan malam sebelum tidur. Jadi, materi edukasi yang tepat untuk diterapkan pada kasus tersebut adalah waktu menyikat gigi."
+            }
+        ];
+
+        // --- ELEMEN DOM ---
+        const quizContentEl = document.getElementById('quiz-content');
+        const resultsScreenEl = document.getElementById('results-screen');
+        const questionCounterEl = document.getElementById('question-counter');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const progressBarEl = document.getElementById('progress-bar');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsAreaEl = document.getElementById('options-area');
+        const explanationAreaEl = document.getElementById('explanation-area');
+        const feedbackMessageEl = document.getElementById('feedback-message');
+        const explanationTextEl = document.getElementById('explanation-text');
+        const prevBtnEl = document.getElementById('prev-btn');
+        const skipBtnEl = document.getElementById('skip-btn');
+        const nextBtnEl = document.getElementById('next-btn');
+        const restartBtnEl = document.getElementById('restart-btn');
+        const finalScoreEl = document.getElementById('final-score');
+        const avgTimeEl = document.getElementById('avg-time');
+        const questionNavContainerEl = document.getElementById('question-nav-container');
+
+        // --- STATE APLIKASI ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let timerInterval;
+        let totalSeconds = 0;
+        let timePerQuestion = [];
+        let questionStartTime = 0;
+
+        // --- FUNGSI-FUNGSI ---
+        
+        // Formats seconds into MM:SS string
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Starts the quiz timer
+        function startTimer() {
+            questionStartTime = Date.now(); // Record start time for current question
+            timerInterval = setInterval(() => {
+                totalSeconds++; // Increment total time
+                timerEl.textContent = formatTime(totalSeconds); // Update timer display
+            }, 1000); // Update every second
+        }
+
+        // Stops the quiz timer
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Updates the navigation buttons for questions (1, 2, 3...)
+        function updateQuestionNav() {
+            questionNavContainerEl.innerHTML = ''; // Clear existing buttons
+            quizData.forEach((_, index) => {
+                const button = document.createElement('button');
+                button.textContent = index + 1; // Display question number
+                // Apply base styles and responsive classes
+                button.className = 'question-nav-btn w-10 h-10 rounded-md font-bold transition-all duration-200 flex-shrink-0';
+                if (index === currentQuestionIndex) {
+                    button.classList.add('current'); // Highlight current question
+                } else if (userAnswers[index] !== null) {
+                    // Mark as skipped or answered
+                    button.classList.add(userAnswers[index].isSkipped ? 'skipped' : 'answered');
+                }
+                button.addEventListener('click', () => goToQuestion(index)); // Add click listener to navigate
+                questionNavContainerEl.appendChild(button);
+            });
+        }
+
+        // Navigates to a specific question by index
+        function goToQuestion(index) {
+            // Validate index
+            if (index < 0 || index >= quizData.length) return;
+            
+            // If current question was not skipped, record time spent
+            if(questionStartTime > 0 && userAnswers[currentQuestionIndex] === null) {
+                 const timeSpent = Math.round((Date.now() - questionStartTime) / 1000);
+                 timePerQuestion[currentQuestionIndex] += timeSpent;
+            }
+           
+            currentQuestionIndex = index; // Update current question index
+            loadQuestion(); // Load the new question
+        }
+
+        // Loads the current question's data and renders it
+        function loadQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            const answer = userAnswers[currentQuestionIndex];
+            const isAnswered = answer !== null && !answer.isSkipped;
+
+            explanationAreaEl.classList.add('hidden'); // Hide explanation initially
+            
+            // Reset animation for question area to trigger new animation on load
+            const questionArea = document.getElementById('question-area');
+            questionArea.style.animation = 'none';
+            questionArea.offsetHeight; // Trigger reflow
+            questionArea.style.animation = null; 
+            
+            // Update question counter and text
+            questionCounterEl.textContent = `${currentQuestionIndex + 1}/${quizData.length}`;
+            questionTextEl.textContent = currentQuestion.question;
+            
+            // Update progress bar based on answered questions
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            progressBarEl.style.width = `${(answeredCount / quizData.length) * 100}%`;
+            
+            optionsAreaEl.innerHTML = ''; // Clear previous options
+
+            // Render options for the current question
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full text-left p-4 rounded-lg flex items-center space-x-4';
+                button.innerHTML = `
+                    <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-slate-600 rounded-md border border-slate-500 font-bold text-slate-200">${option.label}</div>
+                    <div class="flex-1">${option.text}</div>
+                `;
+                if (isAnswered) {
+                    button.disabled = true; // Disable if already answered
+                    if (option.label === answer.selected) {
+                        // Highlight user's selected answer
+                        button.classList.add(answer.isCorrect ? 'correct' : 'incorrect');
+                    } else if (option.label === currentQuestion.correctAnswer) {
+                        // Highlight correct answer if user was wrong
+                        if (!answer.isCorrect) {
+                           button.classList.add('correct');
+                        }
+                    }
+                } else {
+                     button.addEventListener('click', () => selectAnswer(option.label)); // Add click listener for selection
+                }
+                optionsAreaEl.appendChild(button);
+            });
+
+            if (isAnswered) {
+                showExplanation(answer.isCorrect); // Show explanation if answered
+            }
+
+            // Update navigation button states
+            prevBtnEl.disabled = currentQuestionIndex === 0; // Disable 'Previous' on first question
+            const allAnswered = userAnswers.filter(a => a === null).length === 0; // Check if all questions are answered/skipped
+            if (allAnswered) {
+                nextBtnEl.textContent = "Selesai"; // Change 'Next' to 'Selesai'
+                nextBtnEl.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+                nextBtnEl.classList.add('bg-green-600', 'hover:bg-green-500');
+                nextBtnEl.onclick = showResults; // Change action to show results
+            } else {
+                nextBtnEl.textContent = "Berikutnya"; // Keep 'Berikutnya'
+                nextBtnEl.classList.remove('bg-green-600', 'hover:bg-green-500');
+                nextBtnEl.classList.add('bg-indigo-600', 'hover:bg-indigo-500');
+                nextBtnEl.disabled = currentQuestionIndex === quizData.length - 1; // Disable 'Next' on last question
+                nextBtnEl.onclick = () => goToQuestion(currentQuestionIndex + 1); // Default next action
+            }
+             
+            skipBtnEl.style.display = isAnswered ? 'none' : 'block'; // Hide skip button if answered
+            
+            updateQuestionNav(); // Update question navigation overview
+            questionStartTime = Date.now(); // Reset start time for the new question
+        }
+
+        // Handles user selecting an answer
+        function selectAnswer(selectedLabel) {
+            // Prevent re-answering if already answered or skipped
+            if (userAnswers[currentQuestionIndex] !== null && !userAnswers[currentQuestionIndex].isSkipped) return;
+
+            // Record time spent on this question
+            const timeSpent = Math.round((Date.now() - questionStartTime) / 1000);
+            timePerQuestion[currentQuestionIndex] += timeSpent;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedLabel === currentQuestion.correctAnswer;
+            
+            // Store user's answer
+            userAnswers[currentQuestionIndex] = {
+                selected: selectedLabel,
+                isCorrect: isCorrect,
+                isSkipped: false
+            };
+
+            if (isCorrect) {
+                score++; // Increment score if correct
+                scoreEl.textContent = score; // Update score display
+            }
+            
+            loadQuestion(); // Reload question to update UI (show explanation, disable options)
+            checkCompletion(); // Check if quiz is completed
+        }
+
+        // Shows the explanation for the current question
+        function showExplanation(isCorrect) {
+            // Icons for correct/incorrect feedback
+            const correctIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            const incorrectIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+
+            // Update feedback message and styling
+            if (isCorrect) {
+                feedbackMessageEl.innerHTML = `${correctIcon} <span>Jawaban Benar!</span>`;
+                feedbackMessageEl.className = 'text-center font-bold p-3 rounded-lg mb-4 flex items-center justify-center bg-green-600/50 text-white';
+            } else {
+                feedbackMessageEl.innerHTML = `${incorrectIcon} <span>Jawaban Salah!</span>`;
+                feedbackMessageEl.className = 'text-center font-bold p-3 rounded-lg mb-4 flex items-center justify-center bg-red-600/50 text-white';
+            }
+            
+            explanationTextEl.textContent = quizData[currentQuestionIndex].explanation; // Set explanation text
+            explanationAreaEl.classList.remove('hidden'); // Show explanation area
+        }
+        
+        // Displays the final results screen
+        function showResults() {
+            stopTimer(); // Stop the quiz timer
+            quizContentEl.classList.add('hidden'); // Hide quiz content
+            resultsScreenEl.classList.remove('hidden'); // Show results screen
+            resultsScreenEl.style.animation = 'fadeIn 1s ease-out'; // Add fade-in animation
+            
+            // Calculate average time per answered question
+            const answeredCount = userAnswers.filter(a => a !== null && !a.isSkipped).length;
+            const totalTimeSpentOnAnswered = timePerQuestion.reduce((acc, time, index) => {
+                if(userAnswers[index] !== null && !userAnswers[index].isSkipped) {
+                    return acc + time;
+                }
+                return acc;
+            }, 0);
+            
+            const avgTime = answeredCount > 0 ? Math.round(totalTimeSpentOnAnswered / answeredCount) : 0;
+
+            // Update final score and average time display
+            finalScoreEl.textContent = `${score} / ${quizData.length}`;
+            avgTimeEl.textContent = `${avgTime} detik`;
+            
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } }); // Trigger confetti animation
+        }
+        
+        // Initializes/resets the quiz to its starting state
+        function initializeQuiz() {
+            currentQuestionIndex = 0; // Reset current question index
+            score = 0; // Reset score
+            userAnswers = new Array(quizData.length).fill(null); // Reset user answers
+            timePerQuestion = new Array(quizData.length).fill(0); // Reset time per question
+            totalSeconds = 0; // Reset total time
+            scoreEl.textContent = '0'; // Update score display
+            timerEl.textContent = '00:00'; // Update timer display
+            resultsScreenEl.classList.add('hidden'); // Hide results screen
+            quizContentEl.classList.remove('hidden'); // Show quiz content
+            if(timerInterval) clearInterval(timerInterval); // Clear any existing timer
+            startTimer(); // Start new timer
+            loadQuestion(); // Load the first question
+        }
+
+        // Checks if all questions have been answered or skipped
+        function checkCompletion() {
+             const unanswered = userAnswers.filter(a => a === null).length;
+             if (unanswered === 0) {
+                // All questions have been touched (answered or skipped)
+                // Change the "Next" button to a "Finish" button
+                nextBtnEl.textContent = "Selesai";
+                nextBtnEl.classList.remove('bg-indigo-600', 'hover:bg-indigo-500');
+                nextBtnEl.classList.add('bg-green-600', 'hover:bg-green-500');
+                nextBtnEl.onclick = showResults; // Change action to show results
+             }
+        }
+
+        // --- EVENT LISTENERS ---
+        // Event listener for the 'Next' button (default action)
+        nextBtnEl.onclick = () => goToQuestion(currentQuestionIndex + 1);
+
+        // Event listener for the 'Previous' button
+        prevBtnEl.addEventListener('click', () => {
+             goToQuestion(currentQuestionIndex - 1);
+        });
+        
+        // Event listener for the 'Skip' button
+        skipBtnEl.addEventListener('click', () => {
+            // Mark current question as skipped if not already answered
+            if (userAnswers[currentQuestionIndex] === null) {
+                userAnswers[currentQuestionIndex] = { selected: null, isCorrect: false, isSkipped: true };
+            }
+            
+            let nextIndex = -1;
+            // Find the next unanswered/unskipped question
+            for (let i = currentQuestionIndex + 1; i < quizData.length; i++) {
+                if (userAnswers[i] === null) {
+                    nextIndex = i;
+                    break;
+                }
+            }
+            // If no unanswered questions ahead, check from the beginning
+            if (nextIndex === -1) {
+                 for (let i = 0; i < currentQuestionIndex; i++) {
+                    if (userAnswers[i] === null) {
+                        nextIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (nextIndex !== -1) {
+                goToQuestion(nextIndex); // Go to the next unanswered question
+            } else {
+                // If no more questions to skip to, check for completion
+                checkCompletion();
+                // Go to next question anyway if not at the end
+                if(currentQuestionIndex < quizData.length - 1) {
+                    goToQuestion(currentQuestionIndex + 1);
+                }
+            }
+        });
+
+        // Event listener for the 'Restart' button
+        restartBtnEl.addEventListener('click', initializeQuiz);
+
+        // --- INISIALISASI ---
+        // Initialize the quiz when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
+    </script>
+
+</body>
+</html>
