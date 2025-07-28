@@ -3,152 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uji Kompetensi Modern | UFS</title>
-    
-    <!-- Tailwind CSS for styling -->
+    <title>Simulasi UKOM | UFS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Canvas Confetti for celebration -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    
     <style>
         html, body { height: 100%; width: 100%; overflow: hidden; }
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
-        .transition-all { transition: all 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        .option-btn { background-color: #334155; border-color: #475569; }
-        .option-btn:hover { background-color: #475569; border-color: #64748b; transform: translateY(-2px); }
-        .option-btn.correct { background-color: #166534; border-color: #22c55e; color: white; }
-        .option-btn.correct .option-label { background-color: #22c55e; color: #14532d; }
-        .option-btn.incorrect { background-color: #991b1b; border-color: #ef4444; color: white; }
-        .option-btn.incorrect .option-label { background-color: #ef4444; color: #7f1d1d; }
-        .question-nav-btn.answered { background-color: #166534; color: white; }
-        .question-nav-btn.skipped { background-color: #a16207; color: white; }
-        .question-nav-btn.current { background-color: #4f46e5; color: white; transform: scale(1.1); box-shadow: 0 0 15px rgba(79, 70, 229, 0.5); }
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .blinking-warning { animation: pulse-red 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            background-image: radial-gradient(circle at 100% 0%, #dbeafe 0%, #f9fafb 40%);
+            color: #1f2937;
+        }
+        .transition-all { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-yellow { 
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); } 
+            50% { transform: scale(1.05); box-shadow: 0 0 10px 5px rgba(234, 179, 8, 0); } 
+        }
+        @keyframes pulse-red-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .animate-fade-in-up { animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .option-btn {
+            background-color: rgba(255, 255, 255, 0.5); border-color: #e5e7eb; color: #374151;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: #a5b4fc; background-color: #eef2ff; transform: translateY(-3px);
+            box-shadow: 0 7px 20px -5px rgba(0, 0, 0, 0.07);
+        }
+        .option-btn.selected {
+            background-color: #4f46e5; border-color: #4f46e5; color: white; transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+        }
+        .option-btn.correct-answer-display {
+            background-color: #16a34a; border-color: #16a34a; color: white; transform: translateY(0);
+            box-shadow: 0 5px 15px -5px rgba(22, 163, 74, 0.3);
+        }
+        .option-btn.incorrect-answer-display {
+            background-color: #dc2626; border-color: #dc2626; color: white; transform: translateY(0);
+            box-shadow: 0 5px 15px -5px rgba(220, 38, 38, 0.3);
+        }
+
+        .option-btn .option-label { background-color: #e5e7eb; color: #4b5563; }
+        .option-btn.selected .option-label, .option-btn.correct-answer-display .option-label, .option-btn.incorrect-answer-display .option-label { background-color: rgba(255, 255, 255, 0.2); color: white; }
+
+        .question-nav-btn { background-color: #e5e7eb; color: #4b5563; }
+        .question-nav-btn:hover { transform: scale(1.1); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .question-nav-btn.answered { background: linear-gradient(to right, #16a34a, #34d399); color: white; }
+        .question-nav-btn.doubtful-unanswered { background: linear-gradient(to right, #dc2626, #f87171); color: white; }
+        .question-nav-btn.doubtful-answered { 
+            background: linear-gradient(to right, #facc15, #f59e0b); color: white; 
+            animation: pulse-yellow 2s infinite;
+        }
+        .question-nav-btn.current {
+            background: linear-gradient(to right, #4f46e5, #818cf8); color: white;
+            transform: scale(1.2); box-shadow: 0 5px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .progress-bar-animated { background: linear-gradient(to right, #818cf8, #4f46e5); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
 </head>
 <body>
-
     <div class="w-full h-full p-4 sm:p-6 md:p-8 flex flex-col">
-        <!-- Start Screen -->
-        <div id="start-screen" class="w-full h-full flex flex-col justify-center items-center">
-             <div class="text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 fade-in w-full max-w-2xl">
-                <h1 class="text-3xl md:text-4xl font-bold text-white">Uji Kompetensi TGM D4</h1>
-                <p class="mt-2 text-slate-400">Platform By: <span class="font-semibold text-slate-300">UFS</span></p>
-                <p class="mt-8 text-slate-300">Selamat datang di media Uji Kompetensi. Platform ini dirancang sebagai sarana latihan dan evaluasi untuk kalangan terbatas.</p>
-                <div class="mt-6 text-xs text-slate-400 bg-slate-900/50 border border-slate-700 rounded-lg p-3">
-                    <strong>Perhatian:</strong> Materi soal yang digunakan bersumber dari referensi eksternal dan hanya ditujukan untuk tujuan pembelajaran, bukan untuk penggunaan komersial. UFS adalah pengembang platform kuis ini, bukan pemilik hak cipta materi soal.
+        <!-- Screens: Login, Quiz, Results, Disqualification -->
+        <div id="login-screen" class="w-full h-full flex flex-col justify-center items-center">
+            <div class="text-center p-8 md:p-12 glass-panel animate-fade-in-up w-full max-w-2xl">
+                <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800">Simulasi UKOM</h1>
+                <p class="mt-2 text-slate-500">Platform By: <span class="font-semibold text-slate-600">UFS</span></p>
+                <p class="mt-8 text-slate-600">Selamat datang! Masukkan nama Anda untuk memulai simulasi ujian.</p>
+                <div class="mt-8">
+                    <input type="text" id="username-input" placeholder="Tulis nama Anda di sini..." class="w-full p-4 text-center text-lg rounded-xl bg-white/70 text-slate-800 border-2 border-transparent focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 transition-all" required>
                 </div>
-                <div class="blinking-warning mt-6 flex items-center justify-center gap-3 rounded-lg border border-red-500/40 bg-red-900/30 p-3 text-sm text-red-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                    <span>Untuk tampilan dan pengalaman terbaik, kami merekomendasikan penggunaan PC atau Laptop.</span>
-                </div>
-                <button id="start-btn" class="mt-8 w-full md:w-auto bg-indigo-600 text-white font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-105">Mulai Kuis</button>
+                <button id="start-quiz-btn" class="mt-8 w-full md:w-auto bg-indigo-600 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 hover:shadow-2xl">MULAI UJIAN</button>
             </div>
         </div>
 
-        <!-- Quiz Screen -->
-        <div id="quiz-screen" class="hidden h-full flex flex-col">
-            <div class="bg-slate-800 p-6 md:p-8 rounded-2xl shadow-2xl border border-slate-700 flex flex-col flex-grow overflow-hidden">
-                <!-- Header -->
-                <div class="flex-shrink-0">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="text-sm font-semibold text-slate-300">Soal <span id="question-counter">1/10</span></div>
-                        <div class="text-sm font-semibold text-slate-300">Skor: <span id="score">0</span></div>
-                        <div id="timer" class="text-sm font-bold bg-slate-700 text-indigo-300 px-3 py-1 rounded-full">00:00</div>
-                    </div>
-                    <div class="w-full bg-slate-700 rounded-full h-2 mb-6"><div id="progress-bar" class="bg-indigo-500 h-2 rounded-full transition-all duration-300"></div></div>
-                </div>
-
-                <!-- Main Content Area -->
-                <div class="flex-grow overflow-y-auto md:overflow-hidden custom-scrollbar -mr-4 pr-4">
-                    <div class="flex flex-col md:flex-row md:h-full md:gap-8">
-                        <!-- Left Column: Question & Explanation -->
-                        <div class="md:w-7/12 flex flex-col md:h-full md:overflow-y-auto custom-scrollbar md:pr-4">
-                            <div class="flex-shrink-0">
-                                <h2 class="text-lg md:text-xl font-medium text-white mb-6">Pertanyaan:</h2>
-                                <p id="question-text" class="text-xl md:text-2xl text-slate-100 leading-relaxed"></p>
-                            </div>
-                            <div id="explanation-area" class="hidden mt-auto pt-6 border-t border-slate-700">
-                                <h3 class="font-bold text-white mb-2">Pembahasan:</h3>
-                                <p id="explanation-text" class="text-slate-300 leading-relaxed"></p>
-                            </div>
-                        </div>
-
-                        <!-- Right Column: Answer Options -->
-                        <div id="options-area" class="w-full mt-8 md:mt-0 md:w-5/12 space-y-3 md:h-full md:overflow-y-auto custom-scrollbar md:pr-4">
-                            <!-- Options will be generated by JS here -->
-                        </div>
+        <div id="quiz-screen" class="hidden h-full">
+            <div class="flex flex-col md:flex-row h-full w-full gap-6">
+                <!-- Left Panel -->
+                <div class="w-full md:w-1/6 flex-shrink-0 flex flex-col items-center p-4 glass-panel text-center animate-fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-500 text-5xl mb-4 shadow-inner"><i class="fas fa-tooth fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i></div>
+                    <p id="user-name-display" class="text-xl font-bold text-slate-800 truncate w-full px-2"></p>
+                    <div class="mt-8 w-full text-sm space-y-3">
+                        <div class="bg-white/50 p-3 rounded-lg flex justify-between items-center"><span class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Dikerjakan</span><span id="answered-count" class="font-bold text-green-600">0</span></div>
+                        <div class="bg-white/50 p-3 rounded-lg flex justify-between items-center"><span class="flex items-center gap-2"><i class="fa-solid fa-circle-notch text-gray-400"></i> Belum</span><span id="unattempted-count" class="font-bold text-slate-500">0</span></div>
+                        <div class="bg-white/50 p-3 rounded-lg flex justify-between items-center"><span class="flex items-center gap-2"><i class="fa-solid fa-flag text-red-500"></i> Ragu-ragu</span><span id="doubtful-count" class="font-bold text-red-600">0</span></div>
                     </div>
                 </div>
-            </div>
+                
+                <!-- Main Content -->
+                <div class="flex-grow flex flex-col md:w-4/6 glass-panel p-6 animate-fade-in-up overflow-y-auto custom-scrollbar">
+                    <div class="flex-shrink-0 mb-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="font-semibold text-slate-600">Soal <span id="question-counter" class="font-bold"></span></div>
+                            <div class="flex items-center space-x-3">
+                                <span class="font-semibold text-slate-600 hidden sm:block">Skor: <span id="score" class="font-bold text-indigo-600">0</span></span>
+                                <span class="font-semibold text-slate-600">Ragu-ragu:</span>
+                                <label class="toggle-switch"><input type="checkbox" id="doubtful-toggle"><span class="toggle-slider"></span></label>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200/70 rounded-full h-2.5"><div id="progress-bar" class="progress-bar-animated h-2.5 rounded-full transition-all"></div></div>
+                    </div>
+                    
+                    <div class="flex-grow flex flex-col">
+                        <div class="flex-grow flex flex-col justify-center">
+                            <p id="question-text" class="text-lg md:text-xl font-medium text-slate-800 leading-relaxed my-6 transition-all opacity-0"></p>
+                            <div id="options-area" class="space-y-2 text-base"></div>
+                        </div>
 
-            <!-- Navigation -->
-            <div class="mt-4 flex-shrink-0">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <button id="prev-btn" class="bg-slate-700 text-slate-300 font-semibold py-3 px-4 rounded-lg hover:bg-slate-600 transition-all col-span-1">Sebelumnya</button>
-                    <button id="skip-btn" class="bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-yellow-700 transition-all col-span-1">Lewati</button>
-                    <button id="nav-toggle-btn" class="bg-slate-700 text-slate-300 font-semibold py-3 px-4 rounded-lg hover:bg-slate-600 transition-all col-span-2 md:col-span-1">Navigasi Soal</button>
-                    <button id="next-btn" class="bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-all col-span-2 md:col-span-1">Berikutnya</button>
+                        <div id="navigation-controls" class="mt-auto pt-6 grid grid-cols-2 gap-4">
+                            <button id="prev-btn" class="bg-white/80 text-slate-700 font-semibold py-3 px-4 rounded-xl border border-gray-200 hover:bg-gray-100 transition-all hover:scale-105">Kembali</button>
+                            <button id="next-btn" class="bg-indigo-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 hover:shadow-xl">Lanjutkan</button>
+                            <button id="finish-quiz-btn" class="hidden bg-green-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-green-700 transition-all hover:scale-105 hover:shadow-xl col-span-2">Selesai Ujian</button>
+                        </div>
+                    </div>
+
+                    <div id="explanation-area" class="hidden pt-6 border-t border-gray-200">
+                        <h3 class="font-bold text-indigo-800 mb-2">Pembahasan:</h3><p id="explanation-text" class="text-slate-600 leading-relaxed"></p>
+                    </div>
                 </div>
-                <div id="question-nav-overview" class="hidden mt-4 bg-slate-800 p-4 rounded-xl border border-slate-700 fade-in max-h-48 overflow-y-auto custom-scrollbar">
-                    <div id="question-nav-container" class="flex flex-wrap gap-2 justify-center"></div>
+
+                <!-- Right Panel -->
+                <div class="w-full md:w-1/6 flex-shrink-0 flex flex-col items-center p-4 glass-panel animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="w-full text-center mb-6">
+                        <i class="fa-solid fa-clock text-indigo-500 text-2xl mb-1"></i>
+                        <div id="timer" class="text-4xl font-extrabold text-slate-800 tracking-wider">00:00:00</div>
+                    </div>
+                    <h3 class="font-bold text-slate-800 mb-4">Navigasi Soal</h3>
+                    <div id="question-nav-container" class="flex flex-wrap gap-2 justify-center custom-scrollbar overflow-y-auto max-h-[calc(100vh-250px)] w-full p-2"></div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Results Screen -->
         <div id="results-screen" class="hidden w-full h-full flex flex-col justify-center items-center">
-            <div class="text-center p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 w-full max-w-xl">
-                <h2 class="text-3xl font-bold text-white">Ujian Selesai!</h2>
-                <div class="mt-6 flex flex-col md:flex-row gap-4 justify-center">
-                    <div class="bg-slate-700 p-4 rounded-lg flex-1"><p class="text-sm text-slate-400">Skor Akhir</p><p id="final-score" class="text-3xl font-bold text-indigo-400"></p></div>
-                    <div class="bg-slate-700 p-4 rounded-lg flex-1"><p class="text-sm text-slate-400">Waktu Selesai</p><p id="total-time" class="text-3xl font-bold text-indigo-400"></p></div>
+            <div class="text-center p-8 md:p-12 glass-panel animate-fade-in-up w-full max-w-2xl">
+                <h2 class="text-3xl md:text-5xl font-extrabold text-slate-800">Hasil Simulasi</h2>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white/50 p-4 rounded-xl"><p class="text-sm text-slate-500">Skor Akhir</p><p id="final-score" class="text-4xl font-bold text-indigo-600"></p></div>
+                    <div class="bg-white/50 p-4 rounded-xl"><p class="text-sm text-slate-500">Waktu Total</p><p id="total-time-spent" class="text-4xl font-bold text-indigo-600"></p></div>
                 </div>
-                <button id="restart-btn" class="mt-8 w-full md:w-auto bg-indigo-600 text-white font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-indigo-700 transition-all transform hover:scale-105">Ulangi Ujian</button>
+                <div class="mt-4 bg-white/50 p-4 rounded-xl">
+                    <p class="text-sm text-slate-500">Rata-rata Waktu per Soal</p>
+                    <p id="avg-time-per-question" class="text-4xl font-bold text-indigo-600"></p>
+                </div>
+                <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+                    <button id="restart-btn" class="w-full sm:w-auto bg-indigo-600 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 hover:shadow-2xl">ULANGI SIMULASI</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disqualification Overlay -->
+        <div id="disqualification-overlay" class="hidden fixed inset-0 bg-red-900 bg-opacity-90 flex items-center justify-center z-50 p-4">
+            <div class="bg-white p-8 md:p-12 rounded-xl shadow-2xl text-center max-w-lg animate-fade-in-up">
+                <i class="fas fa-exclamation-triangle text-red-600 text-6xl mb-6" style="animation: pulse-red-icon 1.5s infinite;"></i>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-red-800 mb-4">Ujian Dibatalkan!</h2>
+                <p class="text-lg text-slate-700">Anda didiskualifikasi dari simulasi ujian UKOM ini karena melanggar aturan.</p>
+                <p class="text-md text-slate-500 mt-2">Dilarang membuka halaman lain atau meninggalkan browser selama ujian berlangsung.</p>
+                <button id="disqualification-ok-btn" class="mt-8 bg-red-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-red-700 transition-all">Oke</button>
             </div>
         </div>
     </div>
 
     <script>
+        // --- INITIAL ALERT (runs once when page loads) ---
+        alert("Gunakan perangkat PC/Laptop agar Simulasi berjalan dengan baik.");
+
         // --- DOM Elements ---
-        const startScreen = document.getElementById('start-screen');
+        const loginScreen = document.getElementById('login-screen');
+        const usernameInput = document.getElementById('username-input');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
         const quizScreen = document.getElementById('quiz-screen');
         const resultsScreen = document.getElementById('results-screen');
-        const startBtn = document.getElementById('start-btn');
-        const restartBtn = document.getElementById('restart-btn');
+        const userNameDisplay = document.getElementById('user-name-display');
+        const answeredCountEl = document.getElementById('answered-count');
+        const unattemptedCountEl = document.getElementById('unattempted-count');
+        const doubtfulCountEl = document.getElementById('doubtful-count');
         const questionCounterEl = document.getElementById('question-counter');
         const scoreEl = document.getElementById('score');
-        const timerEl = document.getElementById('timer');
         const progressBarEl = document.getElementById('progress-bar');
         const questionTextEl = document.getElementById('question-text');
         const optionsAreaEl = document.getElementById('options-area');
         const explanationAreaEl = document.getElementById('explanation-area');
         const explanationTextEl = document.getElementById('explanation-text');
-        const prevBtn = document.getElementById('prev-btn');
-        const skipBtn = document.getElementById('skip-btn');
-        const navToggleBtn = document.getElementById('nav-toggle-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const questionNavOverview = document.getElementById('question-nav-overview');
+        const doubtfulToggle = document.getElementById('doubtful-toggle');
+        const timerEl = document.getElementById('timer');
         const questionNavContainer = document.getElementById('question-nav-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishQuizBtn = document.getElementById('finish-quiz-btn');
         const finalScoreEl = document.getElementById('final-score');
-        const totalTimeEl = document.getElementById('total-time');
+        const totalTimeSpentEl = document.getElementById('total-time-spent');
+        const avgTimePerQuestionEl = document.getElementById('avg-time-per-question');
+        const restartBtn = document.getElementById('restart-btn');
+        const disqualificationOverlay = document.getElementById('disqualification-overlay');
+        const disqualificationOkBtn = document.getElementById('disqualification-ok-btn');
 
-        // ========================================================================
-        // --- DI SINI TEMPAT ANDA MEMASUKKAN SEMUA SOAL ---
-        // ========================================================================
+        // --- Quiz Data ---
         const quizData = [
             // Kasus 1
             {
@@ -2492,190 +2566,362 @@
                 explanation: "Glassplate yang dingin dimaksudkan agar dapat meresap panas yang dikeluarkan dari reaksi pengadukan bubuk dan cairan zinc phosphate cement. Reaksi panas tersebut merupakan reaksi eksotermis yang keluar pada saat bubuk dan cairan dimanipulasi."
             }
         ];
-        // ========================================================================
-        
-        let shuffledQuestions = [], userAnswers = [], currentQuestionIndex = 0, score = 0, timerInterval, totalSeconds = 0;
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+        // --- Quiz State Variables ---
+        let userName = '';
+        let shuffledQuestions = [];
+        let userAnswers = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        const totalQuizTime = 180 * 60; // 180 minutes in seconds
+        let remainingTime = totalQuizTime; // Initialized here, reset in startQuiz
+
+        // --- CBT Rules State Variables ---
+        let warningCount = 0;
+        const maxWarnings = 3;
+        let isDisqualified = false;
+        let isExamActive = false; // Controls if timer and CBT checks are active
+        let isCurrentlyAway = false; // Flag to track if user left the tab/window
+
+        // --- CBT Rules Logic ---
+        const handleAway = () => { 
+            if (isExamActive && !isDisqualified) {
+                isCurrentlyAway = true; 
+            }
+        };
+        const handleReturn = () => { 
+            if (isExamActive && !isDisqualified && isCurrentlyAway) {
+                isCurrentlyAway = false; 
+                // *** PERUBAHAN: Hapus alert() di sini untuk peringatan perantara ***
+                // showWarning(); // Cukup panggil showWarning untuk increment counter dan diskualifikasi
+                // Jika ingin hanya menghitung tanpa alert, cukup lakukan:
+                warningCount++;
+                if (warningCount >= maxWarnings) {
+                    disqualifyUser();
+                }
+            }
+        };
+
+        // Fungsi showWarning sekarang hanya digunakan untuk logika diskualifikasi akhir
+        function showWarning() { 
+            if (isDisqualified) return; 
+
+            // *** PERUBAHAN: Logika alert() peringatan perantara dipindahkan ke handleReturn() jika diinginkan ***
+            // *** Saat ini, fungsi ini hanya akan memicu diskualifikasi tanpa alert perantara ***
+
+            warningCount++; 
+            if (warningCount >= maxWarnings) { 
+                disqualifyUser(); 
+            } 
+            // else { 
+            //     // Ini adalah alert yang dihapus
+            //     alert(`PERINGATAN PELANGGARAN (${warningCount}/${maxWarnings})!\n\nDilarang membuka halaman lain.\n\nSisa kesempatan: ${maxWarnings - warningCount}`); 
+            // } 
+        }
+
+        function disqualifyUser() { 
+            isDisqualified = true; 
+            isExamActive = false; 
+            clearInterval(timerInterval); 
+            removeCbtListeners(); 
+
+            quizScreen.classList.add('hidden'); 
+            resultsScreen.classList.add('hidden'); 
+            disqualificationOverlay.classList.remove('hidden'); 
+        }
+
+        function handleBeforeUnload(e) { 
+            if (isExamActive && !isDisqualified) { 
+                e.preventDefault(); 
+                e.returnValue = 'Anda yakin ingin meninggalkan halaman? Ujian sedang berlangsung dan tindakan ini akan dianggap sebagai pelanggaran.'; 
             }
         }
 
-        function startTimer() {
-            totalSeconds = 0;
-            timerEl.textContent = '00:00';
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                totalSeconds++;
-                const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-                const secs = (totalSeconds % 60).toString().padStart(2, '0');
-                timerEl.textContent = `${mins}:${secs}`;
-            }, 1000);
+        function addCbtListeners() { 
+            window.addEventListener('blur', handleAway); 
+            window.addEventListener('focus', handleReturn); 
+            window.addEventListener('beforeunload', handleBeforeUnload); 
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    handleAway();
+                } else {
+                    handleReturn();
+                }
+            });
         }
 
+        function removeCbtListeners() { 
+            window.removeEventListener('blur', handleAway); 
+            window.removeEventListener('focus', handleReturn); 
+            window.removeEventListener('beforeunload', handleBeforeUnload); 
+            // Untuk visibilitychange, perlu referensi fungsi yang sama saat ditambahkan
+            // Jika tidak disimpan di variabel global, cara sederhana adalah dengan mengganti node DOM (kurang elegan tapi efektif)
+            // document.replaceWith(document.cloneNode(true)); // Jangan pakai ini karena bisa merusak event listener lain
+            // Lebih baik simpan referensi fungsi dalam variabel atau pastikan reset logic yang benar
+        }
+
+        // --- Main Quiz Functions ---
         function startQuiz() {
-            startScreen.classList.add('hidden');
-            resultsScreen.classList.add('hidden');
+            userName = usernameInput.value.trim();
+            if (userName === '') { alert('Nama tidak boleh kosong!'); return; }
+            
+            loginScreen.classList.add('hidden');
             quizScreen.classList.remove('hidden');
-            quizScreen.classList.add('fade-in');
-            shuffledQuestions = [...quizData];
-            shuffle(shuffledQuestions);
-            currentQuestionIndex = 0;
-            score = 0;
-            userAnswers = new Array(shuffledQuestions.length).fill(null);
-            scoreEl.textContent = score;
-            startTimer();
-            loadQuestion();
+            userNameDisplay.textContent = userName;
+            
+            isExamActive = true; 
+            isDisqualified = false;
+            warningCount = 0;
+            isCurrentlyAway = false;
+            disqualificationOverlay.classList.add('hidden');
+            explanationAreaEl.classList.add('hidden');
+
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0; 
+            score = 0; 
+            scoreEl.textContent = score; 
+
+            userAnswers = new Array(shuffledQuestions.length).fill(null).map(() => ({ 
+                selected: null, 
+                isDoubtful: false,
+                isFinalized: false 
+            }));
+            
+            remainingTime = totalQuizTime; // Reset timer for new quiz
+            startTimer(); 
+            loadQuestion(); 
+            addCbtListeners(); 
         }
 
+        function finishQuiz() {
+            if (isDisqualified) return; 
+            isExamActive = false; 
+            clearInterval(timerInterval); 
+            removeCbtListeners(); 
+            
+            let finalScore = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans.selected === shuffledQuestions[i].correctAnswer) {
+                    finalScore++;
+                }
+            });
+
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            
+            const timeElapsed = totalQuizTime - remainingTime;
+            const avgTime = timeElapsed > 0 ? timeElapsed / shuffledQuestions.length : 0;
+            
+            finalScoreEl.textContent = `${finalScore} / ${shuffledQuestions.length}`;
+            totalTimeSpentEl.textContent = formatTime(timeElapsed);
+            avgTimePerQuestionEl.textContent = `${Math.round(avgTime)} detik`;
+
+            if ((finalScore / shuffledQuestions.length) >= 0.7) confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+        }
+        
+        // --- UI and Navigation Functions ---
         function loadQuestion() {
-            explanationAreaEl.classList.add('hidden');
-            optionsAreaEl.innerHTML = '';
+            if (isDisqualified) return; 
+            
             const currentQuestion = shuffledQuestions[currentQuestionIndex];
             const userAnswer = userAnswers[currentQuestionIndex];
-            const isAnswered = userAnswer !== null;
+            
+            explanationAreaEl.classList.add('hidden'); 
+            optionsAreaEl.innerHTML = '';
+            questionTextEl.classList.add('opacity-0'); 
+            
             questionCounterEl.textContent = `${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
-            const answeredCount = userAnswers.filter(a => a !== null).length;
-            progressBarEl.style.width = `${(answeredCount / shuffledQuestions.length) * 100}%`;
-            questionTextEl.textContent = currentQuestion.question;
-            currentQuestion.options.forEach(option => {
+            updateProgressBar();
+            updateStats();
+            
+            setTimeout(() => { questionTextEl.textContent = currentQuestion.question; questionTextEl.classList.remove('opacity-0'); }, 150);
+
+            currentQuestion.options.forEach((option, index) => {
                 const button = document.createElement('button');
-                button.className = 'option-btn w-full text-left p-3 border-2 rounded-lg flex items-center space-x-4 transition-all';
-                button.innerHTML = `<span class="option-label flex-shrink-0 w-8 h-8 flex items-center justify-center bg-slate-600 rounded-md font-bold text-slate-300">${option.label}</span><span class="flex-1">${option.text}</span>`;
-                if (isAnswered) {
-                    button.disabled = true;
-                    if (userAnswer.selected === option.label) {
-                        button.classList.add(userAnswer.isCorrect ? 'correct' : 'incorrect');
-                    } else if (option.label === currentQuestion.correctAnswer) {
-                        button.classList.add('correct');
+                button.className = 'option-btn w-full text-left p-4 border rounded-xl flex items-center space-x-4 transition-all opacity-0 animate-fade-in-up';
+                button.style.animationDelay = `${200 + index * 70}ms`;
+                button.innerHTML = `<span class="option-label flex-shrink-0 w-8 h-8 flex items-center justify-center font-bold rounded-md">${option.label}</span><span class="flex-1">${option.text}</span>`;
+                
+                if (userAnswer.isFinalized) { 
+                    button.disabled = true; 
+                    if (option.label === currentQuestion.correctAnswer) {
+                        button.classList.add('correct-answer-display');
+                    } else if (option.label === userAnswer.selected) {
+                        button.classList.add('incorrect-answer-display');
                     }
-                } else {
+                    explanationTextEl.textContent = currentQuestion.explanation;
+                    explanationAreaEl.classList.remove('hidden');
+                } else { 
                     button.addEventListener('click', () => selectAnswer(option.label));
+                    if (userAnswer.selected === option.label) {
+                        button.classList.add('selected'); 
+                    }
                 }
                 optionsAreaEl.appendChild(button);
             });
-            if (isAnswered) {
-                explanationTextEl.textContent = currentQuestion.explanation;
-                explanationAreaEl.classList.remove('hidden');
-            }
+
+            doubtfulToggle.checked = userAnswer.isDoubtful;
+            doubtfulToggle.disabled = userAnswer.isFinalized; 
+            
             updateNavButtons();
             updateQuestionNav();
         }
 
-        function selectAnswer(selectedLabel) {
-            if (userAnswers[currentQuestionIndex] !== null) return;
-            const currentQuestion = shuffledQuestions[currentQuestionIndex];
-            const isCorrect = selectedLabel === currentQuestion.correctAnswer;
-            if (isCorrect) score++;
-            userAnswers[currentQuestionIndex] = { selected: selectedLabel, isCorrect: isCorrect, isSkipped: false };
-            scoreEl.textContent = score;
-            loadQuestion();
+        function selectAnswer(selectedLabel) { 
+            const userAnswer = userAnswers[currentQuestionIndex];
+
+            if (userAnswer.isFinalized) return; 
+
+            userAnswer.selected = selectedLabel;
+
+            // Jika TIDAK ragu-ragu, langsung finalisasi dan berikan umpan balik
+            if (!userAnswer.isDoubtful) {
+                userAnswer.isFinalized = true; 
+                if (userAnswer.selected === shuffledQuestions[currentQuestionIndex].correctAnswer) {
+                    score++; 
+                    scoreEl.textContent = score; 
+                }
+            }
+            // Jika ragu-ragu, tidak ada umpan balik langsung, isFinalized tetap false
+            
+            loadQuestion(); 
+        }
+
+        function toggleDoubtful() { 
+            const userAnswer = userAnswers[currentQuestionIndex];
+            if (userAnswer.isFinalized) {
+                doubtfulToggle.checked = false; 
+                alert("Tidak dapat mengubah status 'Ragu-ragu' pada soal yang sudah dijawab dan dikoreksi.");
+                return;
+            }
+            userAnswer.isDoubtful = doubtfulToggle.checked; 
+            updateQuestionNav(); 
+            updateStats(); 
         }
 
         function updateNavButtons() {
             prevBtn.disabled = currentQuestionIndex === 0;
-            skipBtn.style.display = userAnswers[currentQuestionIndex] !== null ? 'none' : 'block';
-            const allAnswered = userAnswers.every(a => a !== null);
-            if (allAnswered) {
-                nextBtn.textContent = "Selesai";
-                nextBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                nextBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            nextBtn.textContent = "Lanjutkan"; 
+
+            if (currentQuestionIndex === shuffledQuestions.length - 1) {
+                nextBtn.classList.add('hidden'); 
+                finishQuizBtn.classList.remove('hidden'); 
             } else {
-                nextBtn.textContent = "Berikutnya";
-                nextBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                nextBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                nextBtn.classList.remove('hidden'); 
+                finishQuizBtn.classList.add('hidden'); 
             }
         }
+        
+        function resetToLogin() {
+            [resultsScreen, quizScreen, disqualificationOverlay].forEach(el => el.classList.add('hidden'));
+            loginScreen.classList.remove('hidden');
+            usernameInput.value = '';
 
-        function updateQuestionNav() {
-            questionNavContainer.innerHTML = '';
-            shuffledQuestions.forEach((_, index) => {
-                const button = document.createElement('button');
-                button.textContent = index + 1;
-                button.className = 'question-nav-btn w-10 h-10 rounded-md font-bold transition-all duration-200 flex-shrink-0 bg-slate-700 text-slate-300';
-                if (index === currentQuestionIndex) {
-                    button.classList.add('current');
-                } else if (userAnswers[index] !== null) {
-                    if (userAnswers[index].isSkipped) {
-                        button.classList.add('skipped');
-                    } else {
-                        button.classList.add('answered');
-                    }
+            isExamActive = false;
+            isDisqualified = false;
+            warningCount = 0;
+            isCurrentlyAway = false;
+            clearInterval(timerInterval); 
+            removeCbtListeners(); 
+        }
+
+        // --- Utility Functions ---
+        function formatTime(s) { 
+            const hours = Math.floor(s / 3600).toString().padStart(2, '0'); 
+            const minutes = Math.floor((s % 3600) / 60).toString().padStart(2, '0'); 
+            const seconds = (s % 60).toString().padStart(2, '0'); 
+            return `${hours}:${minutes}:${seconds}`; 
+        }
+
+        function startTimer() { 
+            clearInterval(timerInterval); 
+            timerEl.textContent = formatTime(remainingTime); 
+            timerInterval = setInterval(() => { 
+                if (!isExamActive) { 
+                    clearInterval(timerInterval); 
+                    return; 
+                } 
+                remainingTime--; 
+                timerEl.textContent = formatTime(remainingTime); 
+                if (remainingTime <= 0) { 
+                    alert("Waktu habis!");
+                    finishQuiz(); 
                 }
-                button.addEventListener('click', () => {
-                    currentQuestionIndex = index;
-                    loadQuestion();
-                    questionNavOverview.classList.add('hidden');
-                });
-                questionNavContainer.appendChild(button);
-            });
+            }, 1000); 
         }
 
-        function showResults() {
-            clearInterval(timerInterval);
-            quizScreen.classList.add('hidden');
-            resultsScreen.classList.remove('hidden');
-            resultsScreen.classList.add('fade-in');
-            finalScoreEl.textContent = `${score} / ${shuffledQuestions.length}`;
-            totalTimeEl.textContent = timerEl.textContent;
-            if ((score / shuffledQuestions.length) >= 0.7) {
-                confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
-            }
+        function updateProgressBar() { 
+            const answeredCount = userAnswers.filter(a => a.selected !== null).length; 
+            progressBarEl.style.width = `${(answeredCount / shuffledQuestions.length) * 100}%`; 
         }
 
-        startBtn.addEventListener('click', startQuiz);
-        restartBtn.addEventListener('click', () => {
-            resultsScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-            startScreen.classList.add('fade-in');
+        function updateStats() { 
+            const answered = userAnswers.filter(a => a.selected !== null && !a.isDoubtful).length; // Hanya yang final/tidak ragu
+            const doubtful = userAnswers.filter(a => a.isDoubtful).length; 
+            const unattempted = shuffledQuestions.length - userAnswers.filter(a => a.selected !== null).length; // yang sudah dipilih tapi ragu tetap dihitung dijawab
+
+            answeredCountEl.textContent = answered; 
+            doubtfulCountEl.textContent = doubtful; 
+            unattemptedCountEl.textContent = unattempted; 
+        }
+
+        function updateQuestionNav() { 
+            questionNavContainer.innerHTML = ''; 
+            shuffledQuestions.forEach((_, index) => { 
+                const button = document.createElement('button'); 
+                const answer = userAnswers[index]; 
+                button.textContent = index + 1; 
+                button.className = 'question-nav-btn w-10 h-10 rounded-lg font-bold transition-all flex-shrink-0 flex items-center justify-center'; 
+                
+                if (index === currentQuestionIndex) { 
+                    button.classList.add('current'); 
+                } else if (answer.isDoubtful) { 
+                    button.classList.add('doubtful-answered'); 
+                } else if (answer.isFinalized) { // Perubahan di sini: Hanya 'answered' jika sudah difinalisasi
+                    button.classList.add('answered'); 
+                } 
+                // Jika selected tapi bukan doubtful dan belum final, tetap tidak diberi warna khusus
+                
+                button.addEventListener('click', () => { 
+                    currentQuestionIndex = index; 
+                    loadQuestion(); 
+                }); 
+                questionNavContainer.appendChild(button); 
+            }); 
+        }
+        
+        // --- Event Listeners Setup ---
+        startQuizBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', resetToLogin);
+        disqualificationOkBtn.addEventListener('click', resetToLogin); 
+        
+        nextBtn.addEventListener('click', () => { 
+            if (currentQuestionIndex < shuffledQuestions.length - 1) { 
+                currentQuestionIndex++; 
+                loadQuestion(); 
+            } 
         });
-        nextBtn.addEventListener('click', () => {
-            if (nextBtn.textContent === "Selesai") {
-                showResults();
-                return;
-            }
-            const nextUnanswered = userAnswers.findIndex((answer, index) => answer === null && index > currentQuestionIndex);
-            if (nextUnanswered !== -1) {
-                currentQuestionIndex = nextUnanswered;
+
+        prevBtn.addEventListener('click', () => { 
+            if (currentQuestionIndex > 0) { 
+                currentQuestionIndex--; 
+                loadQuestion(); 
+            } 
+        });
+        
+        finishQuizBtn.addEventListener('click', () => {
+            const hasDoubtfulAnswers = userAnswers.some(answer => answer.isDoubtful);
+            if (hasDoubtfulAnswers) {
+                alert("MASIH ADA SOAL RAGU-RAGU!\n\nHarap periksa kembali soal yang ditandai (berwarna kuning pada navigasi).");
             } else {
-                const firstUnanswered = userAnswers.findIndex(answer => answer === null);
-                if (firstUnanswered !== -1) {
-                    currentQuestionIndex = firstUnanswered;
-                } else if (currentQuestionIndex < shuffledQuestions.length - 1) {
-                    currentQuestionIndex++;
-                }
-            }
-            loadQuestion();
-        });
-        prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion();
+                const confirmFinish = confirm("Anda yakin ingin menyelesaikan ujian?");
+                if (confirmFinish) finishQuiz();
             }
         });
-        skipBtn.addEventListener('click', () => {
-            if (userAnswers[currentQuestionIndex] === null) {
-                userAnswers[currentQuestionIndex] = { selected: null, isCorrect: false, isSkipped: true };
-            }
-            if (userAnswers.every(a => a !== null)) {
-                loadQuestion();
-                return;
-            }
-            nextBtn.click();
-        });
-        navToggleBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            questionNavOverview.classList.toggle('hidden');
-        });
-        document.addEventListener('click', function(event) {
-            const isNavVisible = !questionNavOverview.classList.contains('hidden');
-            const isClickInsideNav = questionNavOverview.contains(event.target);
-            if (isNavVisible && !isClickInsideNav) {
-                questionNavOverview.classList.add('hidden');
-            }
-        });
+
+        doubtfulToggle.addEventListener('change', toggleDoubtful);
+        usernameInput.addEventListener('keypress', (event) => { if (event.key === 'Enter') startQuizBtn.click(); });
     </script>
 </body>
 </html>
