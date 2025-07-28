@@ -85,13 +85,14 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-        /* Mobile-specific adjustments for panels (hidden by default on ALL screen sizes for practice mode) */
-        /* For Simulation mode, these will be overridden by JS adding md:flex */
+        /* Styles for dynamic panel visibility based on mode */
+        /* Initially hidden on all screen sizes, will be changed by JS for simulation mode on md+ */
         .panel-hidden {
             display: none; 
         }
+        /* Main content takes full width by default, will be changed by JS for simulation mode on md+ */
         .main-content-full-width {
-            width: 100% !important; /* Make main content take full width */
+            width: 100% !important; 
         }
     </style>
 </head>
@@ -113,7 +114,7 @@
 
         <div id="quiz-screen" class="hidden h-full">
             <div class="flex flex-col md:flex-row h-full w-full gap-6">
-                <!-- Left Panel (Hidden by default for practice mode, shown for simulation on md+) -->
+                <!-- Left Panel (Hidden by default, shown for simulation on md+) -->
                 <div id="left-panel" class="w-full md:w-1/6 flex-shrink-0 flex-col items-center p-4 glass-panel text-center animate-fade-in-up max-h-[40vh] md:max-h-full overflow-y-auto panel-hidden" style="animation-delay: 0.1s;">
                     <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-500 text-5xl mb-4 shadow-inner"><i class="fas fa-tooth fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i></div>
                     <p id="user-name-display" class="text-xl font-bold text-slate-800 truncate w-full px-2"></p>
@@ -158,7 +159,7 @@
                     </div>
                 </div>
 
-                <!-- Right Panel (Hidden by default for practice mode, shown for simulation on md+) -->
+                <!-- Right Panel (Hidden by default, shown for simulation on md+) -->
                 <div id="right-panel" class="w-full md:w-1/6 flex-shrink-0 flex-col items-center p-4 glass-panel animate-fade-in-up max-h-[40vh] md:max-h-full overflow-y-auto panel-hidden" style="animation-delay: 0.2s;">
                     <!-- TIMER DISPLAY -->
                     <div class="w-full text-center mb-6">
@@ -209,7 +210,7 @@
         const loginScreen = document.getElementById('login-screen');
         const usernameInput = document.getElementById('username-input');
         const startQuizBtn = document.getElementById('start-quiz-btn');
-        const startPracticeBtn = document.getElementById('start-practice-btn'); // New button
+        const startPracticeBtn = document.getElementById('start-practice-btn'); 
         const quizScreen = document.getElementById('quiz-screen');
         const resultsScreen = document.getElementById('results-screen');
         const userNameDisplay = document.getElementById('user-name-display');
@@ -217,15 +218,15 @@
         // Panels that might be hidden based on mode
         const leftPanel = document.getElementById('left-panel');
         const rightPanel = document.getElementById('right-panel');
-        const mainQuizContent = document.getElementById('main-quiz-content'); // Main content area
+        const mainQuizContent = document.getElementById('main-quiz-content'); 
 
         // Elements that show/hide based on mode or state
         const answeredCountEl = document.getElementById('answered-count');
         const unattemptedCountEl = document.getElementById('unattempted-count');
         const doubtfulCountEl = document.getElementById('doubtful-count');
-        const scoreDisplayContainer = document.getElementById('score-display-container'); // Container for 'Skor: X'
+        const scoreDisplayContainer = document.getElementById('score-display-container'); 
         const doubtfulLabel = document.getElementById('doubtful-label');
-        const doubtfulToggleContainer = document.getElementById('doubtful-toggle-container'); // Container for the actual toggle switch
+        const doubtfulToggleContainer = document.getElementById('doubtful-toggle-container'); 
 
         const questionCounterEl = document.getElementById('question-counter');
         const scoreEl = document.getElementById('score');
@@ -2607,24 +2608,26 @@
         let warningCount = 0;
         const maxWarnings = 3;
         let isDisqualified = false;
-        let isExamActive = false; // Controls if timer and CBT checks are active
+        let isExamActive = false; 
         let isCurrentlyAway = false; 
-        let isPracticeMode = false; // NEW: Flag to differentiate modes
+        let isPracticeMode = false; // Flag to differentiate between simulation and practice modes
 
-        // --- Event Listener References (for proper removal) ---
+        // --- Event Listener References (for proper removal of CBT listeners) ---
         let blurHandler = null;
         let focusHandler = null;
         let beforeUnloadHandler = null;
-        let visibilityChangeHandler = null; // This one is on document, not window
+        let visibilityChangeHandler = null; 
 
         // --- CBT Rules Logic (only active in Simulation Mode) ---
         const handleAway = () => { 
-            if (isExamActive && !isDisqualified && !isPracticeMode) { // Only if in active simulation mode
+            // Only activate if in active simulation mode (not practice mode)
+            if (isExamActive && !isDisqualified && !isPracticeMode) { 
                 isCurrentlyAway = true; 
             }
         };
         const handleReturn = () => { 
-            if (isExamActive && !isDisqualified && !isPracticeMode && isCurrentlyAway) { // Only if in active simulation mode
+            // Only activate if in active simulation mode and user was previously away
+            if (isExamActive && !isDisqualified && !isPracticeMode && isCurrentlyAway) { 
                 isCurrentlyAway = false; 
                 warningCount++;
                 if (warningCount >= maxWarnings) {
@@ -2635,32 +2638,28 @@
 
         function disqualifyUser() { 
             isDisqualified = true; 
-            isExamActive = false; // Stop exam
+            isExamActive = false; 
             clearInterval(timerInterval); 
-            removeCbtListeners(); // Remove listeners for cleanliness
+            removeCbtListeners(); 
 
             quizScreen.classList.add('hidden'); 
             resultsScreen.classList.add('hidden'); 
             disqualificationOverlay.classList.remove('hidden'); 
         }
 
-        // Event listener for beforeunload (browser's native confirmation)
         function _handleBeforeUnload(e) { 
-            if (isExamActive && !isDisqualified && !isPracticeMode) { // Only for active simulation mode
+            // Only for active simulation mode
+            if (isExamActive && !isDisqualified && !isPracticeMode) { 
                 e.preventDefault(); 
                 e.returnValue = 'Anda yakin ingin meninggalkan halaman? Ujian sedang berlangsung dan tindakan ini akan dianggap sebagai pelanggaran.'; 
             }
         }
-        beforeUnloadHandler = _handleBeforeUnload; // Assign to global variable for removal
+        beforeUnloadHandler = _handleBeforeUnload; 
 
-        // Central function to add all CBT-related event listeners
         function addCbtListeners() { 
-            // Only add listeners if NOT in practice mode
-            if (!isPracticeMode) {
-                blurHandler = handleAway; // Store reference
-                focusHandler = handleReturn; // Store reference
-                // For visibilitychange, we need a named function or bind to remove it correctly
-                // A common pattern is to make it a direct arrow function or define it outside
+            if (!isPracticeMode) { // Only add CBT listeners if NOT in practice mode
+                blurHandler = handleAway; 
+                focusHandler = handleReturn; 
                 visibilityChangeHandler = () => { 
                     if (document.hidden) { handleAway(); } else { handleReturn(); }
                 };
@@ -2672,19 +2671,16 @@
             }
         }
 
-        // Central function to remove all CBT-related event listeners
         function removeCbtListeners() { 
             if (blurHandler) window.removeEventListener('blur', blurHandler); 
             if (focusHandler) window.removeEventListener('focus', focusHandler); 
             if (beforeUnloadHandler) window.removeEventListener('beforeunload', beforeUnloadHandler); 
             if (visibilityChangeHandler) document.removeEventListener('visibilitychange', visibilityChangeHandler);
 
-            // Reset handlers to null after removal to avoid stale references
             blurHandler = focusHandler = beforeUnloadHandler = visibilityChangeHandler = null;
         }
 
-        // --- Start Quiz Modes ---
-        // Common initialization steps for both modes
+        // --- Start Quiz Modes Common Logic ---
         function initializeQuizCommon() {
             userName = usernameInput.value.trim();
             if (userName === '') { alert('Nama tidak boleh kosong!'); return false; }
@@ -2699,7 +2695,7 @@
             disqualificationOverlay.classList.add('hidden');
             explanationAreaEl.classList.add('hidden');
 
-            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5); // Shuffle questions
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5); 
             currentQuestionIndex = 0; 
             score = 0; 
             scoreEl.textContent = score; 
@@ -2707,7 +2703,7 @@
             userAnswers = new Array(shuffledQuestions.length).fill(null).map(() => ({ 
                 selected: null, 
                 isDoubtful: false,
-                isFinalized: false // true if immediate feedback was given for this question
+                isFinalized: false 
             }));
             
             remainingTime = totalQuizTime; 
@@ -2720,42 +2716,41 @@
         function startSimulationMode() {
             if (!initializeQuizCommon()) return;
             isExamActive = true; 
-            isPracticeMode = false; 
+            isPracticeMode = false; // IMPORTANT: Set to false for simulation mode
             addCbtListeners(); 
 
-            // Show full UI for simulation mode
-            leftPanel.classList.remove('panel-hidden', 'md:w-1/6'); // Remove initial hidden state
-            leftPanel.classList.add('flex', 'md:flex'); // Ensure flex display for left panel
-            rightPanel.classList.remove('panel-hidden', 'md:w-1/6'); // Remove initial hidden state
-            rightPanel.classList.add('flex', 'md:flex'); // Ensure flex display for right panel
+            // Show full UI for simulation mode (panels flex, main content takes 4/6 width)
+            leftPanel.classList.remove('panel-hidden'); // Remove display: none
+            leftPanel.classList.add('flex', 'md:w-1/6'); // Make it flex and specific width for desktop
+            rightPanel.classList.remove('panel-hidden'); // Remove display: none
+            rightPanel.classList.add('flex', 'md:w-1/6'); // Make it flex and specific width for desktop
             
-            mainQuizContent.classList.remove('main-content-full-width'); // Remove full width for desktop
-            mainQuizContent.classList.add('md:w-4/6'); // Apply specific width for desktop
+            mainQuizContent.classList.remove('main-content-full-width'); // Remove full width
+            mainQuizContent.classList.add('md:w-4/6'); // Set desktop width
 
             // Show score and doubtful toggle in simulation mode
             scoreDisplayContainer.classList.remove('hidden'); 
             doubtfulLabel.classList.remove('hidden');
             doubtfulToggleContainer.classList.remove('hidden');
 
-            // Ensure stats and nav are visible
-            updateStats();
-            updateQuestionNav();
-            updateProgressBar();
+            updateStats(); // Update stats display based on simulation logic
+            updateQuestionNav(); // Update navigation buttons based on simulation logic
+            updateProgressBar(); // Update progress bar based on simulation logic
         }
 
         // Mode: Practice (Mobile/Learning)
         function startPracticeMode() {
             if (!initializeQuizCommon()) return;
-            isExamActive = true; // Timer still runs in practice mode
-            isPracticeMode = true; 
+            isExamActive = true; 
+            isPracticeMode = true; // IMPORTANT: Set to true for practice mode
 
             removeCbtListeners(); // Crucial: No CBT listeners in practice mode
 
-            // Hide UI elements not needed for practice mode
-            leftPanel.classList.add('panel-hidden'); // Hide left panel
-            rightPanel.classList.add('panel-hidden'); // Hide right panel
+            // Hide UI elements not needed for practice mode (panels hidden, main content takes full width)
+            leftPanel.classList.add('panel-hidden'); // Hide left panel (display: none)
+            rightPanel.classList.add('panel-hidden'); // Hide right panel (display: none)
             
-            mainQuizContent.classList.remove('md:w-4/6'); // Remove specific desktop width
+            mainQuizContent.classList.remove('md:w-4/6'); // Remove desktop width
             mainQuizContent.classList.add('main-content-full-width'); // Make main content full width
 
             // Hide score and doubtful toggle in practice mode
@@ -2763,13 +2758,16 @@
             doubtfulLabel.classList.add('hidden');
             doubtfulToggleContainer.classList.add('hidden');
 
-            // Clear/reset stats and nav display
-            updateStats();
-            updateQuestionNav();
-            updateProgressBar();
+            // Clear/reset stats and nav display as they are not used visually in practice mode
+            answeredCountEl.textContent = '0';
+            doubtfulCountEl.textContent = '0';
+            unattemptedCountEl.textContent = '0';
+            questionNavContainer.innerHTML = '';
+            progressBarEl.style.width = '0%';
         }
 
         function finishQuiz() {
+            // Disqualification logic only applies to simulation mode
             if (isDisqualified && !isPracticeMode) return; 
 
             isExamActive = false; 
@@ -2778,8 +2776,6 @@
             
             let finalScore = 0;
             userAnswers.forEach((ans, i) => {
-                // If in practice mode, score is calculated here.
-                // If in simulation mode, score was calculated immediately.
                 if (ans.selected === shuffledQuestions[i].correctAnswer) {
                     finalScore++;
                 }
@@ -2800,6 +2796,7 @@
         
         // --- UI and Navigation Functions ---
         function loadQuestion() {
+            // Prevent loading if disqualified and not in practice mode
             if (isDisqualified && !isPracticeMode) return; 
             
             const currentQuestion = shuffledQuestions[currentQuestionIndex];
@@ -2810,21 +2807,21 @@
             questionTextEl.classList.add('opacity-0'); 
             
             questionCounterEl.textContent = `${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
-            updateProgressBar();
-            updateStats();
+            updateProgressBar(); // Updates based on mode
+            updateStats(); // Updates based on mode
             
             setTimeout(() => { questionTextEl.textContent = currentQuestion.question; questionTextEl.classList.remove('opacity-0'); }, 150);
 
             currentQuestion.options.forEach((option, index) => {
                 const button = document.createElement('button');
-                // text-sm for options is applied via CSS class already
-                button.className = 'option-btn w-full text-left p-4 border rounded-xl flex items-center space-x-4 transition-all opacity-0 animate-fade-in-up'; 
+                button.className = 'option-btn w-full text-left p-4 border rounded-xl flex items-center space-x-4 transition-all opacity-0 animate-fade-in-up text-sm'; 
                 button.style.animationDelay = `${200 + index * 70}ms`;
                 button.innerHTML = `<span class="option-label flex-shrink-0 w-8 h-8 flex items-center justify-center font-bold rounded-md">${option.label}</span><span class="flex-1">${option.text}</span>`;
                 
-                // Logic for immediate feedback (Practice Mode) vs. Deferred Feedback (Simulation Mode)
-                if (isPracticeMode || userAnswer.isFinalized) { // Immediate feedback in practice OR if finalized in simulation
-                    button.disabled = true; // Disable interaction with options
+                // --- Feedback logic based on mode ---
+                // If in Practice Mode, OR if the answer is finalized (in Simulation Mode)
+                if (isPracticeMode || userAnswer.isFinalized) { 
+                    button.disabled = true; // Disable interaction with options after feedback
                     if (option.label === currentQuestion.correctAnswer) {
                         button.classList.add('correct-answer-display');
                     } else if (option.label === userAnswer.selected) {
@@ -2832,7 +2829,7 @@
                     }
                     explanationTextEl.textContent = currentQuestion.explanation;
                     explanationAreaEl.classList.remove('hidden');
-                } else { // Standard simulation mode (no immediate feedback unless finalized)
+                } else { // Standard Simulation Mode (no immediate feedback yet)
                     button.addEventListener('click', () => selectAnswer(option.label));
                     if (userAnswer.selected === option.label) {
                         button.classList.add('selected'); 
@@ -2845,38 +2842,35 @@
             if (isPracticeMode) {
                 doubtfulToggle.checked = false; 
                 doubtfulToggle.disabled = true; 
-                doubtfulLabel.classList.add('hidden'); 
-                doubtfulToggleContainer.classList.add('hidden'); 
             } else {
                 doubtfulToggle.checked = userAnswer.isDoubtful;
                 doubtfulToggle.disabled = userAnswer.isFinalized; 
-                doubtfulLabel.classList.remove('hidden');
-                doubtfulToggleContainer.classList.remove('hidden');
             }
             
-            updateNavButtons();
-            updateQuestionNav();
+            updateNavButtons(); // Nav buttons also adjust based on mode (e.g., finish button visibility)
+            updateQuestionNav(); // Nav panel buttons adjust based on mode
         }
 
         function selectAnswer(selectedLabel) { 
             const userAnswer = userAnswers[currentQuestionIndex];
 
-            // Prevent re-answering if already finalized in simulation mode
+            // Prevent re-answering if already finalized in Simulation Mode
             if (userAnswer.isFinalized && !isPracticeMode) return; 
 
             userAnswer.selected = selectedLabel;
 
-            // Finalize and update score if in Practice Mode OR if not doubtful in Simulation Mode
-            if (isPracticeMode || !userAnswer.isDoubtful) {
+            // Finalize and update score logic
+            // In Practice Mode, OR if the question is not marked as doubtful in Simulation Mode
+            if (isPracticeMode || !userAnswer.isDoubtful) { 
                 userAnswer.isFinalized = true; 
-                // Score is only updated for simulation mode (not tracked visually in practice mode)
+                // Score is only tracked/displayed for Simulation Mode
                 if (!isPracticeMode && userAnswer.selected === shuffledQuestions[currentQuestionIndex].correctAnswer) {
                     score++; 
                     scoreEl.textContent = score; 
                 }
             }
             
-            loadQuestion(); // Reload question to show updated state (e.g., feedback or selected option)
+            loadQuestion(); // Reload question to show updated state (feedback/selection)
         }
 
         function toggleDoubtful() { 
@@ -2916,9 +2910,9 @@
             isDisqualified = false;
             warningCount = 0;
             isCurrentlyAway = false;
-            isPracticeMode = false; // Crucial: Reset practice mode flag
+            isPracticeMode = false; // Reset practice mode flag
             clearInterval(timerInterval); 
-            removeCbtListeners(); 
+            removeCbtListeners(); // Clean up listeners
         }
 
         // --- Utility Functions ---
@@ -2947,7 +2941,7 @@
         }
 
         function updateProgressBar() { 
-            // Progress bar is only shown/relevant in simulation mode
+            // Progress bar is only displayed in Simulation Mode
             if (isPracticeMode) { progressBarEl.style.width = '0%'; return; }
 
             const answeredCount = userAnswers.filter(a => a.selected !== null).length; 
@@ -2955,13 +2949,8 @@
         }
 
         function updateStats() { 
-            // Stats are only shown/relevant in simulation mode
-            if (isPracticeMode) {
-                answeredCountEl.textContent = '0';
-                doubtfulCountEl.textContent = '0';
-                unattemptedCountEl.textContent = '0';
-                return;
-            }
+            // Stats are only displayed in Simulation Mode
+            if (isPracticeMode) { return; /* Return without updating if in practice mode, as elements are hidden */ }
 
             const answeredFinalized = userAnswers.filter(a => a.selected !== null && !a.isDoubtful).length; 
             const doubtful = userAnswers.filter(a => a.isDoubtful).length; 
@@ -2973,7 +2962,7 @@
         }
 
         function updateQuestionNav() { 
-            // Question navigation is only shown/relevant in simulation mode
+            // Question navigation is only displayed in Simulation Mode
             if (isPracticeMode) { questionNavContainer.innerHTML = ''; return; }
 
             questionNavContainer.innerHTML = ''; 
@@ -3000,11 +2989,11 @@
         }
         
         // --- Event Listeners Setup ---
-        startQuizBtn.addEventListener('click', startSimulationMode); // Button for full CBT simulation
-        startPracticeBtn.addEventListener('click', startPracticeMode); // Button for lightweight practice mode
+        startQuizBtn.addEventListener('click', startSimulationMode); 
+        startPracticeBtn.addEventListener('click', startPracticeMode); 
 
-        restartBtn.addEventListener('click', resetToLogin); // Restart from results screen
-        disqualificationOkBtn.addEventListener('click', resetToLogin); // OK button on disqualification overlay
+        restartBtn.addEventListener('click', resetToLogin); 
+        disqualificationOkBtn.addEventListener('click', resetToLogin); 
         
         nextBtn.addEventListener('click', () => { 
             if (currentQuestionIndex < shuffledQuestions.length - 1) { 
@@ -3021,7 +3010,7 @@
         });
         
         finishQuizBtn.addEventListener('click', () => {
-            if (isPracticeMode) {
+            if (isPracticeMode) { // Logic for Practice Mode
                 const confirmFinish = confirm("Anda yakin ingin menyelesaikan latihan?");
                 if (confirmFinish) finishQuiz();
             } else { // Logic for Simulation Mode
@@ -3038,7 +3027,6 @@
         doubtfulToggle.addEventListener('change', toggleDoubtful);
         usernameInput.addEventListener('keypress', (event) => { 
             if (event.key === 'Enter') {
-                // Default to simulation mode if Enter is pressed on username input
                 startSimulationMode(); 
             }
         });
