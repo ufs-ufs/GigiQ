@@ -84,6 +84,19 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Mobile-specific adjustments for panels */
+        @media (max-width: 767px) { /* Small screens (mobile) */
+            .panel-left-mobile-hidden {
+                display: none; /* Hide left panel entirely */
+            }
+            .panel-right-mobile-hidden {
+                display: none; /* Hide right panel entirely */
+            }
+            .main-content-full-width-mobile {
+                width: 100% !important; /* Main content takes full width */
+            }
+        }
     </style>
 </head>
 <body>
@@ -93,18 +106,19 @@
             <div class="text-center p-8 md:p-12 glass-panel animate-fade-in-up w-full max-w-2xl">
                 <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800">Simulasi UKOM</h1>
                 <p class="mt-2 text-slate-500">Platform By: <span class="font-semibold text-slate-600">UFS</span></p>
-                <p class="mt-8 text-slate-600">Selamat datang! Masukkan nama Anda untuk memulai simulasi ujian.</p>
-                <div class="mt-8">
+                <p class="mt-8 text-slate-600">Selamat datang! Pilih mode simulasi Anda:</p>
+                <div class="mt-8 space-y-4">
                     <input type="text" id="username-input" placeholder="Tulis nama Anda di sini..." class="w-full p-4 text-center text-lg rounded-xl bg-white/70 text-slate-800 border-2 border-transparent focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 transition-all" required>
+                    <button id="start-quiz-btn" class="w-full bg-indigo-600 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 hover:shadow-2xl">MODE SIMULASI UKOM (Lengkap)</button>
+                    <button id="start-practice-btn" class="w-full bg-blue-600 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-blue-700 transition-all hover:scale-105 hover:shadow-2xl">MODE LATIHAN (Mobile/Belajar)</button>
                 </div>
-                <button id="start-quiz-btn" class="mt-8 w-full md:w-auto bg-indigo-600 text-white font-bold py-4 px-12 rounded-xl shadow-lg hover:bg-indigo-700 transition-all hover:scale-105 hover:shadow-2xl">MULAI UJIAN</button>
             </div>
         </div>
 
         <div id="quiz-screen" class="hidden h-full">
             <div class="flex flex-col md:flex-row h-full w-full gap-6">
-                <!-- Left Panel -->
-                <div class="w-full md:w-1/6 flex-shrink-0 flex flex-col items-center p-4 glass-panel text-center animate-fade-in-up max-h-[40vh] md:max-h-full overflow-y-auto" style="animation-delay: 0.1s;">
+                <!-- Left Panel (Hidden on mobile for practice mode) -->
+                <div id="left-panel" class="w-full md:w-1/6 flex-shrink-0 flex flex-col items-center p-4 glass-panel text-center animate-fade-in-up max-h-[40vh] md:max-h-full overflow-y-auto panel-left-mobile-hidden" style="animation-delay: 0.1s;">
                     <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-500 text-5xl mb-4 shadow-inner"><i class="fas fa-tooth fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i></div>
                     <p id="user-name-display" class="text-xl font-bold text-slate-800 truncate w-full px-2"></p>
                     <div class="mt-8 w-full text-sm space-y-3">
@@ -114,15 +128,15 @@
                     </div>
                 </div>
                 
-                <!-- Main Content -->
-                <div class="flex-grow flex flex-col md:w-4/6 glass-panel p-6 animate-fade-in-up overflow-y-auto custom-scrollbar">
+                <!-- Main Content (takes full width on mobile for practice mode) -->
+                <div id="main-quiz-content" class="flex-grow flex flex-col md:w-4/6 glass-panel p-6 animate-fade-in-up overflow-y-auto custom-scrollbar main-content-full-width-mobile">
                     <div class="flex-shrink-0 mb-4">
                         <div class="flex justify-between items-center mb-4">
                             <div class="font-semibold text-slate-600">Soal <span id="question-counter" class="font-bold"></span></div>
                             <div class="flex items-center space-x-3">
                                 <span class="font-semibold text-slate-600 hidden sm:block">Skor: <span id="score" class="font-bold text-indigo-600">0</span></span>
-                                <span class="font-semibold text-slate-600">Ragu-ragu:</span>
-                                <label class="toggle-switch"><input type="checkbox" id="doubtful-toggle"><span class="toggle-slider"></span></label>
+                                <span class="font-semibold text-slate-600" id="doubtful-label">Ragu-ragu:</span>
+                                <label class="toggle-switch" id="doubtful-toggle-container"><input type="checkbox" id="doubtful-toggle"><span class="toggle-slider"></span></label>
                             </div>
                         </div>
                         <div class="w-full bg-gray-200/70 rounded-full h-2.5"><div id="progress-bar" class="progress-bar-animated h-2.5 rounded-full transition-all"></div></div>
@@ -130,9 +144,9 @@
                     
                     <div class="flex-grow flex flex-col">
                         <div class="flex-grow flex flex-col justify-center">
-                            <!-- MODIFIED QUESTION TEXT SIZE -->
+                            <!-- QUESTION TEXT -->
                             <p id="question-text" class="text-base md:text-xl font-medium text-slate-800 leading-relaxed my-6 transition-all opacity-0"></p>
-                            <!-- MODIFIED OPTIONS AREA BUTTON TEXT SIZE -->
+                            <!-- OPTIONS AREA -->
                             <div id="options-area" class="space-y-2 text-sm"></div>
                         </div>
 
@@ -148,8 +162,8 @@
                     </div>
                 </div>
 
-                <!-- Right Panel -->
-                <div class="w-full md:w-1/6 flex-shrink-0 flex flex-col items-center p-4 glass-panel animate-fade-in-up max-h-[40vh] md:max-h-full overflow-y-auto" style="animation-delay: 0.2s;">
+                <!-- Right Panel (Hidden on mobile for practice mode) -->
+                <div id="right-panel" class="w-full md:w-1/6 flex-shrink-0 flex flex-col items-center p-4 glass-panel animate-fade-in-up max-h-[40vh] md:max-h-full overflow-y-auto panel-right-mobile-hidden" style="animation-delay: 0.2s;">
                     <!-- TIMER DISPLAY -->
                     <div class="w-full text-center mb-6">
                         <i class="fa-solid fa-clock text-indigo-500 text-2xl mb-1"></i>
@@ -193,18 +207,27 @@
 
     <script>
         // --- INITIAL ALERT (runs once when page loads) ---
-        alert("Gunakan perangkat PC/Laptop agar Simulasi berjalan dengan baik.");
+        alert("PEMBERITAHUAN:\n\nUntuk pengalaman terbaik, gunakan perangkat PC/Laptop. Jika Anda menggunakan perangkat seluler, pilih 'MODE LATIHAN' untuk tampilan yang lebih optimal.");
 
         // --- DOM Elements ---
         const loginScreen = document.getElementById('login-screen');
         const usernameInput = document.getElementById('username-input');
         const startQuizBtn = document.getElementById('start-quiz-btn');
+        const startPracticeBtn = document.getElementById('start-practice-btn'); // New button
         const quizScreen = document.getElementById('quiz-screen');
         const resultsScreen = document.getElementById('results-screen');
         const userNameDisplay = document.getElementById('user-name-display');
+        
+        // Panels that might be hidden in practice mode
+        const leftPanel = document.getElementById('left-panel');
+        const rightPanel = document.getElementById('right-panel');
+        const mainQuizContent = document.getElementById('main-quiz-content'); // Main content area
+
+        // Stats specific elements
         const answeredCountEl = document.getElementById('answered-count');
         const unattemptedCountEl = document.getElementById('unattempted-count');
         const doubtfulCountEl = document.getElementById('doubtful-count');
+
         const questionCounterEl = document.getElementById('question-counter');
         const scoreEl = document.getElementById('score');
         const progressBarEl = document.getElementById('progress-bar');
@@ -212,7 +235,12 @@
         const optionsAreaEl = document.getElementById('options-area');
         const explanationAreaEl = document.getElementById('explanation-area');
         const explanationTextEl = document.getElementById('explanation-text');
+        
+        // Doubtful specific elements
+        const doubtfulLabel = document.getElementById('doubtful-label');
+        const doubtfulToggleContainer = document.getElementById('doubtful-toggle-container');
         const doubtfulToggle = document.getElementById('doubtful-toggle');
+        
         const timerEl = document.getElementById('timer');
         const questionNavContainer = document.getElementById('question-nav-container');
         const prevBtn = document.getElementById('prev-btn');
@@ -2586,6 +2614,13 @@
         let isDisqualified = false;
         let isExamActive = false; 
         let isCurrentlyAway = false; 
+        let isPracticeMode = false; // NEW: Flag for practice mode
+
+        // --- Event Listener References (for proper removal) ---
+        let blurHandler = null;
+        let focusHandler = null;
+        let beforeUnloadHandler = null;
+        let visibilityChangeHandler = null;
 
         // --- CBT Rules Logic ---
         const handleAway = () => { 
@@ -2596,17 +2631,12 @@
         const handleReturn = () => { 
             if (isExamActive && !isDisqualified && isCurrentlyAway) {
                 isCurrentlyAway = false; 
-                // Increment warning count and disqualify if max reached
                 warningCount++;
                 if (warningCount >= maxWarnings) {
                     disqualifyUser();
                 }
             }
         };
-
-        // showWarning() is now implicitly handled by handleReturn() for counting violations
-        // and disqualifyUser() for the final action. No separate alert here.
-        // function showWarning() { /* ... removed ... */ }
 
         function disqualifyUser() { 
             isDisqualified = true; 
@@ -2619,89 +2649,119 @@
             disqualificationOverlay.classList.remove('hidden'); 
         }
 
-        // Event listener for beforeunload (browser's native confirmation)
-        function handleBeforeUnload(e) { 
+        function _handleBeforeUnload(e) { // Internal helper function
             if (isExamActive && !isDisqualified) { 
                 e.preventDefault(); 
                 e.returnValue = 'Anda yakin ingin meninggalkan halaman? Ujian sedang berlangsung dan tindakan ini akan dianggap sebagai pelanggaran.'; 
             }
         }
+        beforeUnloadHandler = _handleBeforeUnload; // Assign to global variable
 
-        // Central function to add all CBT-related event listeners
         function addCbtListeners() { 
-            window.addEventListener('blur', handleAway); 
-            window.addEventListener('focus', handleReturn); 
-            window.addEventListener('beforeunload', handleBeforeUnload); 
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    handleAway();
-                } else {
-                    handleReturn();
-                }
-            });
+            // Only add listeners if NOT in practice mode
+            if (!isPracticeMode) {
+                blurHandler = handleAway;
+                focusHandler = handleReturn;
+                visibilityChangeHandler = () => {
+                    if (document.hidden) { handleAway(); } else { handleReturn(); }
+                };
+
+                window.addEventListener('blur', blurHandler); 
+                window.addEventListener('focus', focusHandler); 
+                window.addEventListener('beforeunload', beforeUnloadHandler); 
+                document.addEventListener('visibilitychange', visibilityChangeHandler);
+            }
         }
 
-        // Central function to remove all CBT-related event listeners
         function removeCbtListeners() { 
-            window.removeEventListener('blur', handleAway); 
-            window.removeEventListener('focus', handleReturn); 
-            window.removeEventListener('beforeunload', handleBeforeUnload); 
-            // Note: For document.removeEventListener('visibilitychange', ...), 
-            // you need the exact function reference that was added.
-            // For a simple app, restarting the page effectively clears them.
-            // For robustness, store the actual function in a variable and pass it here.
-            // Example: const visibilityChangeHandler = () => { ... };
-            //          document.addEventListener('visibilitychange', visibilityChangeHandler);
-            //          document.removeEventListener('visibilitychange', visibilityChangeHandler);
+            if (blurHandler) window.removeEventListener('blur', blurHandler); 
+            if (focusHandler) window.removeEventListener('focus', focusHandler); 
+            if (beforeUnloadHandler) window.removeEventListener('beforeunload', beforeUnloadHandler); 
+            if (visibilityChangeHandler) document.removeEventListener('visibilitychange', visibilityChangeHandler);
+
+            // Reset handlers to null after removal
+            blurHandler = focusHandler = beforeUnloadHandler = visibilityChangeHandler = null;
         }
 
-        // --- Main Quiz Functions ---
-        function startQuiz() {
+        // --- Start Quiz Modes ---
+        function initializeQuizCommon() {
             userName = usernameInput.value.trim();
-            if (userName === '') { alert('Nama tidak boleh kosong!'); return; }
+            if (userName === '') { alert('Nama tidak boleh kosong!'); return false; }
             
             loginScreen.classList.add('hidden');
             quizScreen.classList.remove('hidden');
             userNameDisplay.textContent = userName;
             
-            // Reset all quiz and CBT states for a fresh start
-            isExamActive = true; 
             isDisqualified = false;
             warningCount = 0;
             isCurrentlyAway = false;
             disqualificationOverlay.classList.add('hidden');
             explanationAreaEl.classList.add('hidden');
 
-            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5); // Shuffle questions
+            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5); 
             currentQuestionIndex = 0; 
             score = 0; 
             scoreEl.textContent = score; 
 
-            // Initialize user answers array with default states
             userAnswers = new Array(shuffledQuestions.length).fill(null).map(() => ({ 
                 selected: null, 
                 isDoubtful: false,
-                isFinalized: false // true if immediate feedback was given for this question
+                isFinalized: false 
             }));
             
-            remainingTime = totalQuizTime; // Reset timer for new quiz
-            startTimer(); // Start the countdown
-            loadQuestion(); // Load the first question
-            addCbtListeners(); // Attach CBT rule listeners
+            remainingTime = totalQuizTime; 
+            startTimer(); 
+            loadQuestion(); 
+            return true;
+        }
+
+        // Mode: Full CBT Simulation
+        function startSimulationMode() {
+            if (!initializeQuizCommon()) return;
+            isExamActive = true; // Activate exam mode for full CBT rules
+            isPracticeMode = false; // Ensure it's not practice mode
+            addCbtListeners(); // Add CBT rule listeners
+
+            // Show full UI for simulation mode
+            leftPanel.classList.remove('panel-left-mobile-hidden');
+            rightPanel.classList.remove('panel-right-mobile-hidden');
+            mainQuizContent.classList.remove('main-content-full-width-mobile');
+
+            // Show score and doubtful toggle
+            scoreEl.parentElement.classList.remove('hidden'); // Parent of score is the span
+            doubtfulLabel.classList.remove('hidden');
+            doubtfulToggleContainer.classList.remove('hidden');
+        }
+
+        // Mode: Practice (Mobile/Learning)
+        function startPracticeMode() {
+            if (!initializeQuizCommon()) return;
+            isExamActive = true; // Timer still runs
+            isPracticeMode = true; // Activate practice mode
+
+            removeCbtListeners(); // Ensure no CBT listeners are active for practice mode
+
+            // Hide UI elements not needed for practice mode
+            leftPanel.classList.add('panel-left-mobile-hidden'); // This hides it on all screens
+            rightPanel.classList.add('panel-right-mobile-hidden'); // This hides it on all screens
+            mainQuizContent.classList.add('main-content-full-width-mobile'); // Main content takes full width
+
+            // Hide score and doubtful toggle in practice mode
+            scoreEl.parentElement.classList.add('hidden');
+            doubtfulLabel.classList.add('hidden');
+            doubtfulToggleContainer.classList.add('hidden');
         }
 
         function finishQuiz() {
-            if (isDisqualified) return; 
+            // Can be finished from either mode
+            if (isDisqualified && !isPracticeMode) return; // Disqualification only applies to simulation mode
 
             isExamActive = false; 
             clearInterval(timerInterval); 
             removeCbtListeners(); 
             
-            // Final score calculation (sums up all correctly answered questions)
             let finalScore = 0;
             userAnswers.forEach((ans, i) => {
-                // For direct feedback mode questions, score is already updated.
-                // For doubtful questions, we finalize them here for final scoring.
                 if (ans.selected === shuffledQuestions[i].correctAnswer) {
                     finalScore++;
                 }
@@ -2722,32 +2782,30 @@
         
         // --- UI and Navigation Functions ---
         function loadQuestion() {
-            if (isDisqualified) return; 
-            
+            if (isDisqualified && !isPracticeMode) return; // If disqualified in simulation mode, stop loading
+
             const currentQuestion = shuffledQuestions[currentQuestionIndex];
             const userAnswer = userAnswers[currentQuestionIndex];
             
-            explanationAreaEl.classList.add('hidden'); // Hide explanation by default
+            explanationAreaEl.classList.add('hidden'); 
             optionsAreaEl.innerHTML = '';
-            questionTextEl.classList.add('opacity-0'); // For smooth text transition
+            questionTextEl.classList.add('opacity-0'); 
             
             questionCounterEl.textContent = `${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
             updateProgressBar();
-            updateStats();
+            updateStats(); // Updates stats for both modes based on relevance
             
-            // Animate question text in
             setTimeout(() => { questionTextEl.textContent = currentQuestion.question; questionTextEl.classList.remove('opacity-0'); }, 150);
 
             currentQuestion.options.forEach((option, index) => {
                 const button = document.createElement('button');
-                // Added text-sm to option buttons for smaller font
                 button.className = 'option-btn w-full text-left p-4 border rounded-xl flex items-center space-x-4 transition-all opacity-0 animate-fade-in-up text-sm'; 
                 button.style.animationDelay = `${200 + index * 70}ms`;
                 button.innerHTML = `<span class="option-label flex-shrink-0 w-8 h-8 flex items-center justify-center font-bold rounded-md">${option.label}</span><span class="flex-1">${option.text}</span>`;
                 
-                // Logic for immediate feedback vs. normal quiz mode
-                if (userAnswer.isFinalized) { 
-                    button.disabled = true; // Disable all options for this question
+                // --- Feedback logic based on mode ---
+                if (isPracticeMode || userAnswer.isFinalized) { // Immediate feedback in practice OR if finalized in simulation
+                    button.disabled = true; 
                     if (option.label === currentQuestion.correctAnswer) {
                         button.classList.add('correct-answer-display');
                     } else if (option.label === userAnswer.selected) {
@@ -2755,7 +2813,7 @@
                     }
                     explanationTextEl.textContent = currentQuestion.explanation;
                     explanationAreaEl.classList.remove('hidden');
-                } else { 
+                } else { // Standard simulation mode (no immediate feedback unless finalized)
                     button.addEventListener('click', () => selectAnswer(option.label));
                     if (userAnswer.selected === option.label) {
                         button.classList.add('selected'); 
@@ -2764,8 +2822,18 @@
                 optionsAreaEl.appendChild(button);
             });
 
-            doubtfulToggle.checked = userAnswer.isDoubtful;
-            doubtfulToggle.disabled = userAnswer.isFinalized; // Disable toggle if answer is finalized
+            // Adjust doubtful toggle visibility and state based on mode
+            if (isPracticeMode) {
+                doubtfulToggle.checked = false; // Always unchecked
+                doubtfulToggle.disabled = true; // Always disabled
+                doubtfulLabel.classList.add('hidden'); // Hide label
+                doubtfulToggleContainer.classList.add('hidden'); // Hide container
+            } else {
+                doubtfulToggle.checked = userAnswer.isDoubtful;
+                doubtfulToggle.disabled = userAnswer.isFinalized; 
+                doubtfulLabel.classList.remove('hidden');
+                doubtfulToggleContainer.classList.remove('hidden');
+            }
             
             updateNavButtons();
             updateQuestionNav();
@@ -2774,29 +2842,29 @@
         function selectAnswer(selectedLabel) { 
             const userAnswer = userAnswers[currentQuestionIndex];
 
-            // Do nothing if answer is already finalized (feedback given)
-            if (userAnswer.isFinalized) return; 
+            if (userAnswer.isFinalized && !isPracticeMode) return; // Prevent re-answering in simulation mode if finalized
 
             userAnswer.selected = selectedLabel;
 
-            // Apply immediate feedback and finalize if NOT marked as doubtful
-            if (!userAnswer.isDoubtful) {
-                userAnswer.isFinalized = true; // Mark as finalized
-                if (userAnswer.selected === shuffledQuestions[currentQuestionIndex].correctAnswer) {
+            // In practice mode OR if not doubtful in simulation mode, finalize and update score
+            if (isPracticeMode || !userAnswer.isDoubtful) {
+                userAnswer.isFinalized = true; 
+                // Score is only updated for simulation mode (not tracked visually in practice mode)
+                if (!isPracticeMode && userAnswer.selected === shuffledQuestions[currentQuestionIndex].correctAnswer) {
                     score++; 
                     scoreEl.textContent = score; 
                 }
             }
             
-            loadQuestion(); // Reload question to show updated state (e.g., feedback or selected option)
+            loadQuestion(); 
         }
 
         function toggleDoubtful() { 
             const userAnswer = userAnswers[currentQuestionIndex];
-            // Prevent changing doubtful status if the answer is already finalized (feedback given)
-            if (userAnswer.isFinalized) {
-                doubtfulToggle.checked = false; // Force toggle back to unchecked
-                alert("Tidak dapat mengubah status 'Ragu-ragu' pada soal yang sudah dijawab dan dikoreksi.");
+            // Disable toggle logic if in practice mode or if already finalized in simulation mode
+            if (isPracticeMode || userAnswer.isFinalized) {
+                doubtfulToggle.checked = false; // Force toggle back
+                if (!isPracticeMode) alert("Tidak dapat mengubah status 'Ragu-ragu' pada soal yang sudah dijawab dan dikoreksi.");
                 return;
             }
             userAnswer.isDoubtful = doubtfulToggle.checked; 
@@ -2818,22 +2886,21 @@
         }
         
         function resetToLogin() {
-            // Hide all quiz-related screens and show login
             [resultsScreen, quizScreen, disqualificationOverlay].forEach(el => el.classList.add('hidden'));
             loginScreen.classList.remove('hidden');
             usernameInput.value = '';
 
-            // Reset all state variables to default for a clean start
+            // Reset all state variables to default
             isExamActive = false;
             isDisqualified = false;
             warningCount = 0;
             isCurrentlyAway = false;
+            isPracticeMode = false; // Reset practice mode flag
             clearInterval(timerInterval); 
             removeCbtListeners(); 
         }
 
         // --- Utility Functions ---
-        // Formats seconds into HH:MM:SS
         function formatTime(s) { 
             const hours = Math.floor(s / 3600).toString().padStart(2, '0'); 
             const minutes = Math.floor((s % 3600) / 60).toString().padStart(2, '0'); 
@@ -2841,37 +2908,42 @@
             return `${hours}:${minutes}:${seconds}`; 
         }
 
-        // Starts the countdown timer
         function startTimer() { 
             clearInterval(timerInterval); 
             timerEl.textContent = formatTime(remainingTime); 
             timerInterval = setInterval(() => { 
-                if (!isExamActive) { // If exam is not active, stop the timer
+                if (!isExamActive) { 
                     clearInterval(timerInterval); 
                     return; 
                 } 
                 remainingTime--; 
                 timerEl.textContent = formatTime(remainingTime); 
-                if (remainingTime <= 0) { // If time runs out
+                if (remainingTime <= 0) { 
                     alert("Waktu habis!");
                     finishQuiz(); 
                 }
             }, 1000); 
         }
 
-        // Updates progress bar based on answered questions
         function updateProgressBar() { 
-            // Progress bar based on any selected answer (whether finalized or doubtful)
+            // Progress bar is only relevant in simulation mode
+            if (isPracticeMode) { progressBarEl.style.width = '0%'; return; }
+
             const answeredCount = userAnswers.filter(a => a.selected !== null).length; 
             progressBarEl.style.width = `${(answeredCount / shuffledQuestions.length) * 100}%`; 
         }
 
-        // Updates counts for answered, unattempted, and doubtful questions
         function updateStats() { 
-            // 'Dikerjakan' hanya menghitung yang sudah dijawab dan difinalisasi (bukan ragu-ragu)
+            // Stats are only relevant in simulation mode
+            if (isPracticeMode) {
+                answeredCountEl.textContent = '0';
+                doubtfulCountEl.textContent = '0';
+                unattemptedCountEl.textContent = '0';
+                return;
+            }
+
             const answeredFinalized = userAnswers.filter(a => a.selected !== null && !a.isDoubtful).length; 
             const doubtful = userAnswers.filter(a => a.isDoubtful).length; 
-            // 'Belum' menghitung yang belum dipilih sama sekali
             const unattempted = shuffledQuestions.length - userAnswers.filter(a => a.selected !== null).length; 
 
             answeredCountEl.textContent = answeredFinalized; 
@@ -2879,8 +2951,10 @@
             unattemptedCountEl.textContent = unattempted; 
         }
 
-        // Updates the question navigation buttons in the right panel
         function updateQuestionNav() { 
+            // Question navigation is only relevant in simulation mode
+            if (isPracticeMode) { questionNavContainer.innerHTML = ''; return; }
+
             questionNavContainer.innerHTML = ''; 
             shuffledQuestions.forEach((_, index) => { 
                 const button = document.createElement('button'); 
@@ -2891,13 +2965,11 @@
                 if (index === currentQuestionIndex) { 
                     button.classList.add('current'); 
                 } else if (answer.isDoubtful) { 
-                    button.classList.add('doubtful-answered'); // Soal ragu-ragu akan berwarna kuning
+                    button.classList.add('doubtful-answered'); 
                 } else if (answer.isFinalized) { 
-                    button.classList.add('answered'); // Soal yang sudah dijawab dan dikoreksi akan hijau
+                    button.classList.add('answered'); 
                 } 
-                // Jika selected tapi belum final (mode ragu-ragu aktif), tidak diberi warna khusus di nav
-
-                // Add click listener to navigate to selected question
+                
                 button.addEventListener('click', () => { 
                     currentQuestionIndex = index; 
                     loadQuestion(); 
@@ -2907,7 +2979,9 @@
         }
         
         // --- Event Listeners Setup ---
-        startQuizBtn.addEventListener('click', startQuiz);
+        startQuizBtn.addEventListener('click', startSimulationMode); // Use new function for full mode
+        startPracticeBtn.addEventListener('click', startPracticeMode); // New button for practice mode
+
         restartBtn.addEventListener('click', resetToLogin);
         disqualificationOkBtn.addEventListener('click', resetToLogin); 
         
@@ -2926,17 +3000,28 @@
         });
         
         finishQuizBtn.addEventListener('click', () => {
-            const hasDoubtfulAnswers = userAnswers.some(answer => answer.isDoubtful);
-            if (hasDoubtfulAnswers) {
-                alert("MASIH ADA SOAL RAGU-RAGU!\n\nHarap periksa kembali soal yang ditandai (berwarna kuning pada navigasi).");
-            } else {
-                const confirmFinish = confirm("Anda yakin ingin menyelesaikan ujian?");
+            if (isPracticeMode) {
+                const confirmFinish = confirm("Anda yakin ingin menyelesaikan latihan?");
                 if (confirmFinish) finishQuiz();
+            } else { // Simulation mode logic
+                const hasDoubtfulAnswers = userAnswers.some(answer => answer.isDoubtful);
+                if (hasDoubtfulAnswers) {
+                    alert("MASIH ADA SOAL RAGU-RAGU!\n\nHarap periksa kembali soal yang ditandai (berwarna kuning pada navigasi).");
+                } else {
+                    const confirmFinish = confirm("Anda yakin ingin menyelesaikan ujian?");
+                    if (confirmFinish) finishQuiz();
+                }
             }
         });
 
         doubtfulToggle.addEventListener('change', toggleDoubtful);
-        usernameInput.addEventListener('keypress', (event) => { if (event.key === 'Enter') startQuizBtn.click(); });
+        usernameInput.addEventListener('keypress', (event) => { 
+            if (event.key === 'Enter') {
+                // Determine which button to click based on current state or preference
+                // For simplicity, let's make it default to full simulation for Enter
+                startSimulationMode(); 
+            }
+        });
     </script>
 </body>
 </html>
