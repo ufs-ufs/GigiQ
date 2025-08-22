@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UKOM D4 TGM – 50 Soal (Restorasi, Scaling, Posisi, Instrumen)</title>
+  <!-- Tailwind via CDN (lebih stabil di v3 lewat script) -->
+  <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js" crossorigin="anonymous"></script>
+  <style>
+    html,body{background:#f7fafc}
+    [x-cloak]{display:none!important}
+    .choice[disabled]{cursor:not-allowed;opacity:.9}
+  </style>
+</head>
+<body class="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+  <main x-data="quizApp()" x-cloak class="max-w-4xl mx-auto font-sans">
+    <header class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold text-sky-800">UKOM D4 TGM – Bank Soal 50</h1>
+      <p class="text-gray-600">Topik: kelas tambalan, instrument tray/rak, scaling manual, posisi operator &amp; asisten, isolasi, dsb.</p>
+      <div id="errorBox" class="hidden mt-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 p-3 text-sm"></div>
+    </header>
+
+    <template x-if="!started">
+      <section class="bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 class="text-xl font-bold">Cara bermain</h2>
+        <ul class="list-disc ml-6 text-gray-700">
+          <li>50 soal pilihan ganda, acak.</li>
+          <li>Lihat pembahasan setelah jawab.</li>
+          <li>Skor dihitung otomatis.</li>
+        </ul>
+        <div class="flex gap-3 pt-2">
+          <button @click="start(true)" class="px-5 py-2 rounded-xl bg-sky-600 text-white font-semibold hover:bg-sky-700">Mulai (Acak)</button>
+          <button @click="start(false)" class="px-5 py-2 rounded-xl bg-gray-800 text-white font-semibold hover:bg-black">Mulai (Urut)</button>
+          <button @click="toggleTests()" class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">Jalankan Tes</button>
+        </div>
+        <!-- Panel Hasil Tes -->
+        <div x-show="showTests" class="mt-4 rounded-xl border bg-emerald-50 border-emerald-200 p-4">
+          <h3 class="font-bold text-emerald-700">Hasil Pengujian</h3>
+          <template x-if="tests.length">
+            <ul class="mt-2 space-y-1 text-sm">
+              <template x-for="t in tests" :key="t.name">
+                <li :class="t.pass ? 'text-emerald-700' : 'text-rose-700'">
+                  <span class="font-semibold" x-text="t.pass ? 'LULUS' : 'GAGAL'"></span> – <span x-text="t.name"></span>
+                  <template x-if="t.message">
+                    <span class="block text-gray-600" x-text="t.message"></span>
+                  </template>
+                </li>
+              </template>
+            </ul>
+          </template>
+          <template x-if="!tests.length">
+            <p class="text-gray-700 text-sm">Belum ada hasil. Klik <b>Jalankan Tes</b>.</p>
+          </template>
+        </div>
+      </section>
+    </template>
+
+    <template x-if="started &amp;&amp; !finished">
+      <section class="space-y-4">
+        <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
+          <div class="flex items-center justify-between text-sm text-gray-500">
+            <span>Soal <span class="font-semibold" x-text="idx+1"></span> / <span x-text="questions.length"></span></span>
+            <span>Skor: <b x-text="score"></b></span>
+          </div>
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mt-3" x-text="current.question"></h2>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <template x-for="(opt,i) in current.options" :key="i">
+            <button
+              class="choice text-left bg-white border rounded-xl p-4 hover:border-sky-400 hover:bg-sky-50 transition"
+              :class="answered ? (opt===current.answer ? 'border-2 border-emerald-500 bg-emerald-50' : (opt===picked ? 'border-2 border-rose-500 bg-rose-50' : 'opacity-80')) : ''"
+              :disabled="answered"
+              @click="select(opt)">
+              <span class="font-semibold text-sky-700" x-text="letterFor(i)"></span>
+              <span class="ml-2" x-text="opt"></span>
+            </button>
+          </template>
+        </div>
+
+        <template x-if="answered">
+          <div class="bg-white rounded-2xl shadow p-5 border border-gray-100">
+            <h3 class="font-bold" :class="correct ? 'text-emerald-600' : 'text-rose-600'" x-text="correct ? 'Benar' : 'Salah'"></h3>
+            <p class="mt-2 text-gray-700"><b>Jawaban benar:</b> <span x-text="current.answer"></span></p>
+            <p class="mt-1 text-gray-700"><b>Pembahasan:</b> <span x-text="current.explanation"></span></p>
+            <div class="pt-3 flex justify-end">
+              <button @click="next()" class="px-5 py-2 rounded-xl bg-sky-600 text-white font-semibold hover:bg-sky-700" x-text="idx &lt; questions.length-1 ? 'Soal Selanjutnya' : 'Selesai'"></button>
+            </div>
+          </div>
+        </template>
+      </section>
+    </template>
+
+    <template x-if="finished">
+      <section class="bg-white rounded-2xl shadow p-8 text-center space-y-2">
+        <h2 class="text-3xl font-extrabold text-emerald-600">Selesai 🎉</h2>
+        <p class="text-lg">Skor Anda: <b x-text="score"></b> dari <span x-text="questions.length"></span></p>
+        <p class="text-gray-600">Silakan ulangi untuk menguatkan materi.</p>
+        <div class="pt-4 flex gap-3 justify-center">
+          <button @click="restart(true)" class="px-5 py-2 rounded-xl bg-sky-600 text-white font-semibold hover:bg-sky-700">Ulangi (Acak)</button>
+          <button @click="restart(false)" class="px-5 py-2 rounded-xl bg-gray-800 text-white font-semibold hover:bg-black">Ulangi (Urut)</button>
+        </div>
+      </section>
+    </template>
+  </main>
+
+  <script>
+    'use strict';
+
+    // Tampilkan error ramah jika ada error lintas-origin ("Script error.")
+    window.onerror = function(message, source, lineno, colno, error){
+      try{
+        var box = document.getElementById('errorBox');
+        if(box){
+          box.classList.remove('hidden');
+          box.textContent = 'Terjadi error: ' + (message || 'Tidak diketahui') + (source ? ' ('+ source +')' : '');
+        }
+      }catch(e){}
+    };
+
+    function quizApp(){
+      // --- BANK SOAL ---
+      const bank = [
+        // --- KELAS TAMBALAN & RESTORASI (GV BLACK, MATERIAL, TEKNIK) ---
+        {id:1, question:"Kavitas oklusal pada pit & fissure molar termasuk kelas apa menurut G.V. Black?", options:["Kelas I","Kelas II","Kelas III","Kelas IV","Kelas V"], answer:"Kelas I", explanation:"Kelas I: pit & fissure oklusal molar/premolar, lingual pit insisif maksila."},
+        {id:2, question:"Kavitas proksimal gigi posterior (melibatkan kontak) adalah kelas…", options:["Kelas I","Kelas II","Kelas III","Kelas IV","Kelas V"], answer:"Kelas II", explanation:"Kelas II: permukaan proksimal gigi posterior (premolar/molar)."},
+        {id:3, question:"Kavitas proksimal gigi anterior tanpa melibatkan tepi insisal adalah…", options:["Kelas II","Kelas III","Kelas IV","Kelas V","Kelas VI"], answer:"Kelas III", explanation:"Kelas III: proksimal gigi anterior, tepi insisal utuh."},
+        {id:4, question:"Kavitas proksimal gigi anterior dengan tepi insisal terlibat termasuk…", options:["Kelas II","Kelas III","Kelas IV","Kelas V","Kelas VI"], answer:"Kelas IV", explanation:"Kelas IV: proksimal + tepi insisal gigi anterior."},
+        {id:5, question:"Lesi servikal pada 1/3 gingival permukaan fasial/lingual semua gigi termasuk…", options:["Kelas I","Kelas II","Kelas III","Kelas IV","Kelas V"], answer:"Kelas V", explanation:"Kelas V: area servikal fasial/lingual semua gigi."},
+        {id:6, question:"Lesi pada cusp tip atau ridge insisal disebut…", options:["Kelas II","Kelas IV","Kelas V","Kelas VI","Bukan klasifikasi"], answer:"Kelas VI", explanation:"Tambahan: Kelas VI (Simon) untuk cusp tip/tepi insisal."},
+        {id:7, question:"Matrix paling umum untuk restorasi kelas II komposit adalah…", options:["Tofflemire (retainer) + band","Matriks seluloid","Mylar strip","Sectional matrix + ring","Tidak perlu matrix"], answer:"Sectional matrix + ring", explanation:"Memberi kontak proksimal anatomi yang lebih baik pada komposit posterior."},
+        {id:8, question:"Bahan dasar (liner) yang paling sering dipakai untuk merangsang dentin sekunder adalah…", options:["Zinc phosphate","ZOE","Calcium hydroxide","IRM","GIC luting"], answer:"Calcium hydroxide", explanation:"Ca(OH)₂ biokompatibel dan merangsang dentin tersier."},
+        {id:9, question:"Waktu etsa enamel untuk komposit (gel 35–37% H₃PO₄) umumnya…", options:["5–10 dtk","15–20 dtk","30–45 dtk","60 dtk",">60 dtk"], answer:"15–20 dtk", explanation:"Standar enamel 15–20 detik; dentin lebih singkat."},
+        {id:10, question:"Glass Ionomer Cement (GIC) paling tepat untuk…", options:["Restorasi estetis kelas IV besar","Basis dengan sifat pelepas fluor","Veneer anterior penuh","Onlay posterior","Core build-up pada gigi rapuh besar"], answer:"Basis dengan sifat pelepas fluor", explanation:"GIC melepaskan fluor, adhesif kimia, cocok untuk basis/ATR/kelas V nonstres."},
+
+        // --- INSTRUMEN & RAK/TRAY/STERILISASI ---
+        {id:11, question:"Urutan set pemeriksaan dasar pada tray biasanya…", options:["Pinset–sonde–cermin","Cermin–pinset–sonde","Sonde–cermin–pinset","Cermin–sonde–pinset","Sonde–pinset–cermin"], answer:"Cermin–sonde–pinset", explanation:"Urutan umum di tray: mouth mirror, explorer/sonde, cotton pliers."},
+        {id:12, question:"Indikator kimia pada pouch sterilisasi berubah warna menandakan…", options:["Bebas mikroba 100%","Siklus tercapai (parameter tertentu)","Alat kering sempurna","Tidak perlu autoclave","Sudah steril meski siklus gagal"], answer:"Siklus tercapai (parameter tertentu)", explanation:"Indikator menunjukkan parameter (waktu/suhu/uap) tercapai, bukan jaminan steril absolut."},
+        {id:13, question:"Autoklaf standar: suhu/tekanan/waktu minimum yang umum…", options:["100°C, 0 psi, 5 mnt","121°C, 15 psi, 15–30 mnt","134°C, 15 psi, 1 mnt","150°C, 20 psi, 60 mnt","160°C, 25 psi, 10 mnt"], answer:"121°C, 15 psi, 15–30 mnt", explanation:"Standar gravitasi 121°C 15 psi selama 15–30 menit."},
+        {id:14, question:"Rak instrumen disusun menurut…", options:["Warna favorit","Urutan alur kerja (workflow)","Ukuran terbesar ke kecil","Random agar cepat","Bahan logam terlebih dahulu"], answer:"Urutan alur kerja (workflow)", explanation:"Dari pemeriksaan → preparasi → restorasi → finishing untuk efisiensi 4-handed."},
+        {id:15, question:"Bur finishing komposit untuk menghaluskan anatomi fosa dan ridge yang halus adalah…", options:["Green stone","White stone","Diamond fine/ultra-fine","Round steel bur besar","Fissure bur kasar"], answer:"Diamond fine/ultra-fine", explanation:"Granul halus untuk finishing/polishing komposit."},
+
+        // --- SCALING MANUAL (INDIKASI, ANGULASI, INSTRUMEN) ---
+        {id:16, question:"Instrumen pilihan untuk subgingival scaling spesifik permukaan adalah…", options:["Sickle scaler","Gracey curette","Universal curette","Scaler hoe","File scaler"], answer:"Gracey curette", explanation:"Gracey: one cutting edge, area-specific, ideal subgingiva."},
+        {id:17, question:"Angulasi ideal saat scaling dengan curette terhadap permukaan akar…", options:["0–10°","15–30°","45–60°","70–80°",">90°"], answer:"70–80°", explanation:"Angulasi kerja efektif 70–80° untuk kalkulus subgingival."},
+        {id:18, question:"Ciri khas universal curette adalah…", options:["Satu sisi potong, sudut 60°","Dua sisi potong, sudut 90°","Ujung lancip, cross-section segitiga","Shank sangat melengkung khusus distal","Hanya untuk supragingiva"], answer:"Dua sisi potong, sudut 90°", explanation:"Universal: dua cutting edge per ujung, face ke shank ≈90°."},
+        {id:19, question:"Instrumen untuk meratakan cementum setelah kalkulus tebal dipecah…", options:["File scaler","Sickle scaler","Perio chisel","Periotom","Probe"], answer:"File scaler", explanation:"File: memecah/meratakan deposit besar sebelum root planing."},
+        {id:20, question:"Tanda instrumen Gracey yang benar untuk permukaan mesial posterior…", options:["Gracey 11/12","Gracey 13/14","Gracey 1/2","Gracey 7/8","Universal 4R/4L"], answer:"Gracey 11/12", explanation:"11/12 untuk mesial posterior; 13/14 untuk distal posterior."},
+        {id:21, question:"Ujung kerja sickle scaler sebaiknya digunakan pada…", options:["Subgingiva dalam","Permukaan akar halus","Supragingiva pada tepi gingiva","Root planing akhir","Furkasio"], answer:"Supragingiva pada tepi gingiva", explanation:"Sickle: segitiga, ujung lancip, terbaik untuk supragingiva."},
+        {id:22, question:"Tes keasahan instrumen manual yang cepat adalah…", options:["Rockwell test","Visual gloss","Plastic stick test","Indikator autoklaf","Shore hardness"], answer:"Plastic stick test", explanation:"Edge yang tajam akan ‘menggigit’ plastik keras (tes sederhana)."},
+        {id:23, question:"Pegangan yang direkomendasikan untuk kontrol saat scaling…", options:["Palm grasp","Modified pen grasp","Tripod kasar","Overhand","Pinch grasp"], answer:"Modified pen grasp", explanation:"Stabil dan presisi; gunakan finger rest (fulcrum)."},
+        {id:24, question:"Jenis gerakan saat mengangkat kalkulus…", options:["Sisir horisontal cepat","Short, firm pull stroke","Push kuat kontinu","Gerak rotasi melingkar","Vibrasi ringan tanpa angkat"], answer:"Short, firm pull stroke", explanation:"Tarikan pendek tegas saat angulasi kerja untuk efisiensi."},
+        {id:25, question:"Terminologi ‘terminal shank’ mengacu pada…", options:["Ujung paling distal dari handle","Segmen shank dekat working end","Face dari blade","Lateral surface","Heel"], answer:"Segmen shank dekat working end", explanation:"Digunakan untuk menilai angulasi & adaptasi."},
+
+        // --- POSISI OPERATOR & ASISTEN (4-HANDED DENTISTRY) ---
+        {id:26, question:"Untuk operator tangan kanan, kerja pada kuadran 1 oklusal/proksimal atas, posisi ergonomis umum…", options:["Jam 7","Jam 9","Jam 11","Jam 12","Jam 2"], answer:"Jam 11", explanation:"Area atas kanan biasanya nyaman dari jam 11–12."},
+        {id:27, question:"Posisi dental asisten (right-handed operator) idealnya…", options:["Jam 1–2","Jam 3–4","Jam 7–8","Jam 9–10","Jam 11–12"], answer:"Jam 1–2", explanation:"Asisten berada sedikit di atas bahu kanan pasien (zona transfer)."},
+        {id:28, question:"Zona transfer instrumen pada pasien dewasa umumnya…", options:["Di atas dada pasien","Antara jam 4–5","Antara jam 12–1","Di atas wajah pasien","Antara jam 3–4 (area mulut)"], answer:"Antara jam 4–5", explanation:"Untuk operator kanan, transfer aman di jam 4–5 setinggi mulut."},
+        {id:29, question:"Evakuator HVE saat kerja pada gigi posterior atas diletakkan…", options:["Lingual, sejajar permukaan kerja","Bukal, menekan pipi","Tepat di atas oklusal","Jauh dari area kerja","Di median wajah"], answer:"Lingual, sejajar permukaan kerja", explanation:"Mengontrol aerosol & visibilitas; dukung cermin."},
+        {id:30, question:"Indirect vision dengan cermin terutama dibutuhkan saat…", options:["Anterior atas fasial","Posterior maksila palatal","Anterior bawah labial","Mengukur probing depth","Memberi anestesi"], answer:"Posterior maksila palatal", explanation:"Bidang sulit dilihat langsung; gunakan cermin & anti-fog."},
+
+        // --- ISOLASI & RUBBER DAM ---
+        {id:31, question:"Tujuan utama rubber dam pada restorasi komposit…", options:["Perlindungan operator","Isolasi kering dari kontaminasi","Kontrol perdarahan berat","Mengurangi waktu setting GIC","Menguatkan email"], answer:"Isolasi kering dari kontaminasi", explanation:"Adhesi komposit sensitif terhadap kelembaban dan saliva."},
+        {id:32, question:"Klem sayap (winged clamp) bermanfaat untuk…", options:["Tanpa dam frame","Penempatan dam dan klem sekaligus","Mengikat benang retraksi","Hanya untuk anterior","Mengurangi traksi jaringan"], answer:"Penempatan dam dan klem sekaligus", explanation:"Sayap membantu membawa dam saat memasang klem."},
+        {id:33, question:"Lubang rubber dam terlalu kecil menyebabkan…", options:["Kebocoran saliva","Iskemia gingiva/robek","Retensi buruk clamp","Aerosol meningkat","Tidak ada efek"], answer:"Iskemia gingiva/robek", explanation:"Lubang kecil menekan jaringan & bisa merobek dam."},
+        {id:34, question:"Bahan pelumas untuk memudahkan dam melalui kontak…", options:["Vaselin berminyak","Water-soluble lubricant","Alkohol 70%","Klorheksidin 2%","NaOCl"], answer:"Water-soluble lubricant", explanation:"Mudahkan lewat kontak dan mudah dibilas."},
+        {id:35, question:"Untuk kelas II, isolasi idealnya mencakup…", options:["Satu gigi saja","Gigi target + satu distal","Gigi target + satu mesial & satu distal","Semua kuadran","Anterior saja"], answer:"Gigi target + satu mesial & satu distal", explanation:"Memberi akses dan kontrol kontak proksimal yang baik."},
+
+        // --- RESTORASI KOMPOSIT/AMALGAM – TEKNIK & FINISHING ---
+        {id:36, question:"Teknik penumpatan komposit posterior yang mengurangi shrinkage…", options:["Bulk 6–8 mm","Inkremental 2 mm","Tanpa matriks","Curing 5 detik","Tekan kuat tanpa curing"], answer:"Inkremental 2 mm", explanation:"Kuret & polimerisasi bertahap ≤2 mm per lapis."},
+        {id:37, question:"Kontak proksimal setelah restorasi dicek dengan…", options:["Explorer 17","Benang gigi/dental floss","Probe periodontal","Articulating paper","Pita seluloid"], answer:"Benang gigi/dental floss", explanation:"Floss harus lewat dengan ‘snap’ lembut, tidak longgar atau terlalu ketat."},
+        {id:38, question:"Oklusi tinggi setelah tambalan diperiksa dengan…", options:["Benang gigi","Articulating paper","Kapas roll","Explorer","Probe"], answer:"Articulating paper", explanation:"Menandai kontak prematur untuk penyesuaian."},
+        {id:39, question:"Bahan untuk bevel email tepi kavitas komposit anterior…", options:["Round bur karbida kecil","Green stone","Steel fissure","Fissure bur kasar","Amalgam carver"], answer:"Round bur karbida kecil", explanation:"Memberi bevel halus meningkatkan retensi & transisi estetis."},
+        {id:40, question:"Polishing akhir komposit sering menggunakan…", options:["Discs abrasif bertahap","Fissure bur karbida","Arkansas stone","Green stone saja","Kertas pasir manual"], answer:"Discs abrasif bertahap", explanation:"System disk grit bertahap memberi kilap & kontur ideal."},
+
+        // --- MATERI & INDIKASI ---
+        {id:41, question:"Indikasi GIC kelas V paling kuat pada…", options:["Lesi abrasif/erosi servikal non-stress","Restorasi estetis besar anterior","Onlay cuspal coverage","Core build-up besar","Veneer"], answer:"Lesi abrasif/erosi servikal non-stress", explanation:"Adhesi kimia + pelepasan fluor, cocok untuk servikal non-stress."},
+        {id:42, question:"IRM (ZOE termodifikasi) sesuai untuk…", options:["Tambalan permanen posterior","Basis sementara/temporary restoration","Bonding komposit","Luting mahkota permanen","Sealant"], answer:"Basis sementara/temporary restoration", explanation:"IRM bersifat sedatif, tidak ideal kontak langsung dengan resin."},
+        {id:43, question:"Komposit tidak boleh terkontaminasi…", options:["Air liur & darah","Udara","Cahaya biru","Kapas","Floss"], answer:"Air liur & darah", explanation:"Kontaminasi mengganggu adhesi; isolasi penting."},
+        {id:44, question:"Etch-and-rinse 3-step urutan yang benar…", options:["Adhesive→Etch→Primer","Etch→Primer→Adhesive","Primer→Etch→Adhesive","Etch→Adhesive→Primer","Primer→Adhesive→Etch"], answer:"Etch→Primer→Adhesive", explanation:"Urutan klasik sistem 3 langkah."},
+        {id:45, question:"Fissure sealant paling efektif pada…", options:["Lesi luas dentin","Fissure dalam oklusal tanpa karies","Kelas V servikal","Proksimal kelas II","Kavitas kelas IV"], answer:"Fissure dalam oklusal tanpa karies", explanation:"Pencegahan karies pit & fissure pada gigi muda."},
+
+        // --- LAIN-LAIN POSISI/PROSEDUR ---
+        {id:46, question:"Posisi pasien untuk kerja maksila umumnya…", options:["Tegak 90°","Semi-reclined (sekitar 45°)","Supine dengan headrest agak ekstensi","Miring kanan","Prone"], answer:"Supine dengan headrest agak ekstensi", explanation:"Memperbaiki akses & visibilitas rahang atas."},
+        {id:47, question:"Saat operator kanan bekerja pada kuadran 4 lingual, posisi yang nyaman…", options:["Jam 7","Jam 8–9","Jam 11","Jam 12","Jam 2"], answer:"Jam 8–9", explanation:"Mandibula kanan bukal/lingual sering nyaman dari jam 8–9."},
+        {id:48, question:"Transfer instrumen yang aman antar operator–asisten…", options:["Di atas wajah pasien","Di zona transfer rendah (jam 4–5)","Lewat belakang kepala pasien","Lewat pipi kiri","Tanpa kontak visual"], answer:"Di zona transfer rendah (jam 4–5)", explanation:"Menghindari area mata/wajah, menjaga kontrol."},
+        {id:49, question:"Pencahayaan untuk anterior maksila sebaiknya diarahkan…", options:["Dari bawah dagu","Dari atas dan sedikit ke depan","Tepat ke mata pasien","Dari belakang kepala","Tidak penting"], answer:"Dari atas dan sedikit ke depan", explanation:"Meminimalkan bayangan & silau, optimalkan visibilitas."},
+        {id:50, question:"Setelah restorasi kelas II selesai, langkah akhir sebelum dismiss…", options:["Langsung pulang","Cek kontak proksimal dan oklusi lalu polis","Foto selfie","Irigrasi NaOCl","Etsa ulang"], answer:"Cek kontak proksimal dan oklusi lalu polis", explanation:"Standar akhir: pastikan kontak & oklusi adekuat, finishing/polishing baik."},
+      ];
+
+      // ——— UTILITAS ———
+      function shuffle(arr){
+        for(let i=arr.length-1;i>0;i--){
+          const j = Math.floor(Math.random()*(i+1));
+          [arr[i],arr[j]] = [arr[j],arr[i]];
+        }
+        return arr;
+      }
+
+      // ——— TESTS ———
+      function runTests(list){
+        const out = [];
+        const push = (name, pass, message='')=>out.push({name,pass,message});
+        // 1. Jumlah soal = 50
+        push('Jumlah soal tepat 50', list.length===50, 'Ditemukan: '+list.length);
+        // 2. Setiap soal punya 5 opsi & answer ada di opsi
+        let badIdx = [];
+        list.forEach((q,idx)=>{
+          const ok5 = Array.isArray(q.options) && q.options.length===5;
+          const hasAns = ok5 && q.options.includes(q.answer);
+          if(!ok5 || !hasAns) badIdx.push(idx+1);
+        });
+        push('Tiap soal 5 opsi & jawaban valid', badIdx.length===0, badIdx.length?('Masalah di nomor: '+badIdx.join(', ')):'' );
+        // 3. ID unik
+        const ids = list.map(q=>q.id);
+        const set = new Set(ids);
+        push('ID soal unik', set.size===ids.length, 'Duplikat mungkin ada.');
+        // 4. Tidak ada duplikat opsi dalam satu soal
+        let dup = [];
+        list.forEach((q,idx)=>{ const s=new Set(q.options); if(s.size!==q.options.length) dup.push(idx+1); });
+        push('Opsi di setiap soal tidak duplikat', dup.length===0, dup.length?('Duplikat pada nomor: '+dup.join(', ')):'' );
+        // 5. Semua field wajib terisi
+        let empty = [];
+        list.forEach((q,idx)=>{ if(!q.question||!q.explanation) empty.push(idx+1); });
+        push('Pertanyaan & pembahasan terisi', empty.length===0, empty.length?('Kosong di nomor: '+empty.join(', ')):'' );
+        return out;
+      }
+
+      return {
+        // STATE
+        started:false, finished:false, idx:0, score:0, answered:false, picked:null,
+        questions:[], tests:[], showTests:false,
+
+        // INIT/CONTROL
+        start(randomize){
+          try{
+            // siapkan list terlebih dahulu untuk menghindari akses undefined saat re-render
+            const q = randomize ? shuffle([...bank]) : [...bank];
+            this.questions = q;
+            this.idx = 0; this.score = 0; this.answered=false; this.picked=null;
+            this.finished=false; this.started=true;
+          }catch(e){
+            const box=document.getElementById('errorBox');
+            if(box){ box.classList.remove('hidden'); box.textContent='Gagal mulai: '+e.message; }
+          }
+        },
+        restart(randomize){ this.started=false; this.finished=false; this.start(randomize); },
+        get current(){
+          return this.questions[this.idx] || {question:'(memuat...)', options:[], answer:'', explanation:''};
+        },
+        letterFor(i){
+          const idx = Number.isFinite(i)? i : -1;
+          return (idx>=0? String.fromCharCode(65+idx):'?') + '.';
+        },
+        get correct(){ return this.picked===this.current.answer; },
+        select(opt){
+          if(this.answered) return;
+          if(!this.current.options.includes(opt)) return;
+          this.picked=opt; this.answered=true; if(opt===this.current.answer){ this.score++; }
+        },
+        next(){
+          if(this.idx < this.questions.length-1){
+            this.idx++; this.answered=false; this.picked=null;
+          } else { this.finished=true; }
+        },
+        toggleTests(){ this.showTests = !this.showTests; if(this.showTests){ this.tests = runTests(bank); } }
+      }
+    }
+  </script>
+
+  <noscript>
+    <div class="max-w-2xl mx-auto mt-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+      Aplikasi ini memerlukan JavaScript diaktifkan (Alpine.js) untuk berjalan.
+    </div>
+  </noscript>
+</body>
+</html>
